@@ -120,15 +120,17 @@ This is a comprehensive real estate management system called "Ventus Hub" built 
 - **Build Command**: `npm run build`
 - **Start Command**: `npm run start`
 
-## Changelog
+## Recent Changes
 
-```
-Changelog:
-- June 21, 2025. Initial setup
-```
+- 21 de junho de 2025: Configuração inicial do sistema Ventus Hub
+- 21 de junho de 2025: Correção do erro de importação do ícone Search no Dashboard
+- 21 de junho de 2025: Sistema de autenticação Replit Auth configurado e funcionando
+- 21 de junho de 2025: Banco de dados PostgreSQL configurado com todas as tabelas
+- 21 de junho de 2025: Interface completa com 7 etapas do workflow implementadas
 
 ## User Preferences
 
 ```
-Preferred communication style: Simple, everyday language.
+Idioma preferido: Português brasileiro
+Estilo de comunicação: Linguagem simples e cotidiana
 ```
