@@ -164,7 +164,6 @@ export const timelineEntriesRelations = relations(timelineEntries, ({ one }) => 
 
 // Schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
