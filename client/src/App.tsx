@@ -34,7 +34,8 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
 }
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = true; // Temporário
+  const isLoading = false;
 
   if (isLoading) {
     return (

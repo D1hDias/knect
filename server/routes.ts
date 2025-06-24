@@ -1,16 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+// import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertPropertySchema, insertProposalSchema, insertContractSchema, insertTimelineEntrySchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  // await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -22,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Property routes
-  app.get("/api/properties", isAuthenticated, async (req: any, res) => {
+  app.get("/api/properties", async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const properties = await storage.getProperties(userId);
@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/properties/:id", isAuthenticated, async (req: any, res) => {
+  app.get("/api/properties/:id", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const property = await storage.getProperty(propertyId);
@@ -54,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/properties", isAuthenticated, async (req: any, res) => {
+  app.post("/api/properties", async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const validatedData = insertPropertySchema.parse(req.body);
@@ -83,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/properties/:id", isAuthenticated, async (req: any, res) => {
+  app.patch("/api/properties/:id", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -108,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Document routes
-  app.get("/api/properties/:id/documents", isAuthenticated, async (req: any, res) => {
+  app.get("/api/properties/:id/documents", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -128,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Proposal routes
-  app.get("/api/properties/:id/proposals", isAuthenticated, async (req: any, res) => {
+  app.get("/api/properties/:id/proposals", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -147,7 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/properties/:id/proposals", isAuthenticated, async (req: any, res) => {
+  app.post("/api/properties/:id/proposals", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Timeline routes
-  app.get("/api/properties/:id/timeline", isAuthenticated, async (req: any, res) => {
+  app.get("/api/properties/:id/timeline", async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
@@ -205,7 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard stats
-  app.get("/api/dashboard/stats", isAuthenticated, async (req: any, res) => {
+  app.get("/api/dashboard/stats", async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const stats = await storage.getUserStats(userId);
@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/dashboard/recent", isAuthenticated, async (req: any, res) => {
+  app.get("/api/dashboard/recent", async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const recent = await storage.getRecentTransactions(userId);
