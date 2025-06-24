@@ -42,7 +42,7 @@ export const users = pgTable("users", {
 // Properties table
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  userId: integer("user_id").notNull().references(() => users.id),
   type: varchar("type").notNull(), // apartamento, casa, cobertura, terreno
   address: text("address").notNull(),
   value: decimal("value", { precision: 15, scale: 2 }).notNull(),
@@ -164,6 +164,7 @@ export const timelineEntriesRelations = relations(timelineEntries, ({ one }) => 
 
 // Schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -198,7 +199,7 @@ export const insertTimelineEntrySchema = createInsertSchema(timelineEntries).omi
 });
 
 // Types
-export type UpsertUser = z.infer<typeof insertUserSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type Property = typeof properties.$inferSelect;

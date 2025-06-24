@@ -6,7 +6,7 @@ import {
   contracts,
   timelineEntries,
   type User,
-  type UpsertUser,
+  type InsertUser,
   type Property,
   type InsertProperty,
   type Document,
@@ -22,14 +22,15 @@ import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
   
   // Property operations
-  getProperties(userId: string): Promise<Property[]>;
+  getProperties(userId: number): Promise<Property[]>;
   getProperty(id: number): Promise<Property | undefined>;
-  createProperty(property: InsertProperty & { userId: string }): Promise<Property>;
+  createProperty(property: InsertProperty & { userId: number }): Promise<Property>;
   updateProperty(id: number, property: Partial<InsertProperty>): Promise<Property>;
   
   // Document operations
@@ -53,45 +54,37 @@ export interface IStorage {
   updateTimelineEntry(id: number, entry: Partial<InsertTimelineEntry>): Promise<TimelineEntry>;
   
   // Dashboard data
-  getUserStats(userId: string): Promise<{
+  getUserStats(userId: number): Promise<{
     captacao: number;
     mercado: number;
     propostas: number;
     contratos: number;
   }>;
-  getRecentTransactions(userId: string): Promise<Property[]>;
+  getRecentTransactions(userId: number): Promise<Property[]>;
 }
 
 export class DatabaseStorage implements IStorage {
   // User operations
-  async getUser(id: string): Promise<User | undefined> {
+  async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          profileImageUrl: userData.profileImageUrl,
-          cpf: userData.cpf,
-          creci: userData.creci,
-          phone: userData.phone,
-          updatedAt: new Date(),
-        },
-      })
       .returning();
     return user;
   }
 
   // Property operations
-  async getProperties(userId: string): Promise<Property[]> {
+  async getProperties(userId: number): Promise<Property[]> {
     return await db
       .select()
       .from(properties)
@@ -107,7 +100,7 @@ export class DatabaseStorage implements IStorage {
     return property;
   }
 
-  async createProperty(property: InsertProperty & { userId: string }): Promise<Property> {
+  async createProperty(property: InsertProperty & { userId: number }): Promise<Property> {
     const [newProperty] = await db
       .insert(properties)
       .values(property)
@@ -229,7 +222,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Dashboard data
-  async getUserStats(userId: string): Promise<{
+  async getUserStats(userId: number): Promise<{
     captacao: number;
     mercado: number;
     propostas: number;
@@ -245,7 +238,7 @@ export class DatabaseStorage implements IStorage {
     return { captacao, mercado, propostas, contratos };
   }
 
-  async getRecentTransactions(userId: string): Promise<Property[]> {
+  async getRecentTransactions(userId: number): Promise<Property[]> {
     return await db
       .select()
       .from(properties)

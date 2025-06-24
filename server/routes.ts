@@ -1,18 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { getSession, isAuthenticated } from "./auth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { insertPropertySchema, insertProposalSchema, insertContractSchema, insertTimelineEntrySchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  // await setupAuth(app);
+  await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', async (req: any, res) => {
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
@@ -22,9 +22,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Property routes
-  app.get("/api/properties", async (req: any, res) => {
+  app.get("/api/properties", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       const properties = await storage.getProperties(userId);
       res.json(properties);
     } catch (error) {
@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/properties/:id", async (req: any, res) => {
+  app.get("/api/properties/:id", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
       const property = await storage.getProperty(propertyId);
@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Ensure user owns this property
-      if (property.userId !== req.user.claims.sub) {
+      if (property.userId !== parseInt(req.session.user.id)) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -54,14 +54,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/properties", async (req: any, res) => {
+  app.post("/api/properties", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       const validatedData = insertPropertySchema.parse(req.body);
       
       const property = await storage.createProperty({
         ...validatedData,
-        userId,
+        userId: userId,
       });
 
       // Create initial timeline entry
@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stage: 1,
         status: "in_progress",
         description: "Captação de imóvel iniciada",
-        responsible: userId,
+        responsible: userId.toString(),
       });
 
       res.status(201).json(property);
@@ -83,10 +83,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/properties/:id", async (req: any, res) => {
+  app.patch("/api/properties/:id", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       
       // Check ownership
       const existingProperty = await storage.getProperty(propertyId);
@@ -108,10 +108,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Document routes
-  app.get("/api/properties/:id/documents", async (req: any, res) => {
+  app.get("/api/properties/:id/documents", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       
       // Check ownership
       const property = await storage.getProperty(propertyId);
@@ -128,10 +128,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Proposal routes
-  app.get("/api/properties/:id/proposals", async (req: any, res) => {
+  app.get("/api/properties/:id/proposals", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       
       // Check ownership
       const property = await storage.getProperty(propertyId);
@@ -147,10 +147,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/properties/:id/proposals", async (req: any, res) => {
+  app.post("/api/properties/:id/proposals", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       
       // Check ownership
       const property = await storage.getProperty(propertyId);
@@ -171,7 +171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stage: 4,
         status: "in_progress",
         description: `Nova proposta recebida de ${proposal.buyerName}`,
-        responsible: userId,
+        responsible: userId.toString(),
       });
 
       res.status(201).json(proposal);
@@ -185,10 +185,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Timeline routes
-  app.get("/api/properties/:id/timeline", async (req: any, res) => {
+  app.get("/api/properties/:id/timeline", isAuthenticated, async (req: any, res) => {
     try {
       const propertyId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       
       // Check ownership
       const property = await storage.getProperty(propertyId);
@@ -205,9 +205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard stats
-  app.get("/api/dashboard/stats", async (req: any, res) => {
+  app.get("/api/dashboard/stats", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       const stats = await storage.getUserStats(userId);
       res.json(stats);
     } catch (error) {
@@ -216,9 +216,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/dashboard/recent", async (req: any, res) => {
+  app.get("/api/dashboard/recent", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = parseInt(req.session.user.id);
       const recent = await storage.getRecentTransactions(userId);
       res.json(recent);
     } catch (error) {
