@@ -65,13 +65,13 @@ const ownerSchema = z.object({
   id: z.string(),
   fullName: z.string().min(1, "Nome completo é obrigatório"),
   cpf: z.string().min(11, "CPF é obrigatório"),
-  rg: z.string().min(1, "RG/CNH é obrigatório"),
-  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
-  maritalStatus: z.string().min(1, "Estado civil é obrigatório"),
-  fatherName: z.string().min(1, "Nome do pai é obrigatório"),
-  motherName: z.string().min(1, "Nome da mãe é obrigatório"),
-  phone: z.string().min(1, "Telefone é obrigatório"),
-  email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
+  rg: z.string().optional(),
+  birthDate: z.string().optional(),
+  maritalStatus: z.string().optional(),
+  fatherName: z.string().optional(),
+  motherName: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().optional(),
 });
 
 const propertySchema = z.object({
@@ -85,8 +85,8 @@ const propertySchema = z.object({
   cep: z.string().min(8, "CEP deve ter 8 dígitos").max(9, "CEP inválido"),
   value: z.string().min(1, "Valor é obrigatório"),
   owners: z.array(ownerSchema).min(1, "Pelo menos um proprietário é obrigatório"),
-  registrationNumber: z.string().min(1, "Número da matrícula é obrigatório"),
-  municipalRegistration: z.string().min(1, "Inscrição Municipal é obrigatória"),
+  registrationNumber: z.string().optional(),
+  municipalRegistration: z.string().optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertySchema>;
