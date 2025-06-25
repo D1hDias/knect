@@ -42,8 +42,10 @@ export default function Login() {
         title: "Login realizado com sucesso!",
         description: "Redirecionando para o dashboard...",
     });
-    // Forçar reload da página para que o AuthProvider pegue o usuário logado
-    window.location.href = "/dashboard";
+    // Aguardar um pouco e recarregar para que o AuthProvider atualize
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
     },
     onError: (error: any) => {
       toast({

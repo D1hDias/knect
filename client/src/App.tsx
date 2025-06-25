@@ -32,8 +32,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    window.location.href = "/login";
-    return null;
+    return <Login />;
   }
 
   return <Layout>{children}</Layout>;
@@ -51,8 +50,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (user) {
-    window.location.href = "/dashboard";
-    return null;
+    return <Layout><Dashboard /></Layout>;
   }
 
   return <>{children}</>;
@@ -123,7 +121,7 @@ function AppRoutes() {
         </ProtectedRoute>
       </Route>
 
-      {/* Rota padrão - redireciona para dashboard se logado, senão para login */}
+      {/* Rota padrão */}
       <Route path="/">
         <ProtectedRoute>
           <Dashboard />
