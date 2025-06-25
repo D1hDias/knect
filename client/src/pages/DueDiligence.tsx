@@ -100,11 +100,11 @@ export default function DueDiligence() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <Clock className="h-6 w-6" style={{color: "#001f3f"}} />
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Em Andamento</p>
-                <p className="text-2xl font-bold text-blue-600">1</p>
+                <p className="text-2xl font-bold" style={{color: "#001f3f"}}>1</p>
               </div>
             </div>
           </CardContent>

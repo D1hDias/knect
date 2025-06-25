@@ -265,7 +265,7 @@ export default function Timeline() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Timeline & Acompanhamento</h1>
+          <h1 className="text-3xl font-bold">Acompanhamento</h1>
           <p className="text-muted-foreground">
             Visualize o progresso completo de todas as transações em uma linha do tempo
           </p>

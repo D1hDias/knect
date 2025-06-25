@@ -25,7 +25,7 @@ const navigationItems = [
   { path: "/propostas", label: "Propostas", icon: Handshake },
   { path: "/contratos", label: "Contratos", icon: File },
   { path: "/instrumento", label: "Instrumento Definitivo", icon: Stamp },
-  { path: "/timeline", label: "Timeline & Acompanhamento", icon: Clock },
+  { path: "/timeline", label: "Acompanhamento", icon: Clock },
 ];
 
 const bottomItems = [
@@ -68,12 +68,18 @@ export function Sidebar({ className }: SidebarProps) {
             {isExpanded ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           
-          <span className={cn(
-            "text-white font-semibold text-lg whitespace-nowrap transition-opacity",
+          <div className={cn(
+            "flex items-center gap-2 transition-opacity",
             isExpanded ? "opacity-100" : "opacity-0 lg:opacity-0"
           )}>
-            Ventus Hub
-          </span>
+            <img 
+              src="/src/assets/logo.png" 
+              alt="Ventus Hub" 
+              className="w-[120px] h-auto"
+            />
+            <span className="text-white font-semibold text-lg">
+            </span>
+          </div>
         </div>
 
         {/* Navigation */}
