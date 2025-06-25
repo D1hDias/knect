@@ -9,16 +9,17 @@ import { PropertyModal } from "@/components/PropertyModal";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { User, Stats, Property } from "@/types";
 
 export default function Dashboard() {
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const { user } = useAuth();
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: recentTransactions, isLoading: recentLoading } = useQuery({
+  const { data: recentTransactions, isLoading: recentLoading } = useQuery<Property[]>({
     queryKey: ["/api/dashboard/recent"],
   });
 
@@ -45,7 +46,7 @@ export default function Dashboard() {
       title: "Imóveis em Captação",
       value: stats?.captacao || 0,
       icon: Home,
-      iconBgColor: "hsl(207, 90%, 54%)",
+      iconBgColor: "#001f3f",
       progress: Math.min((stats?.captacao || 0) * 10, 100),
       subtitle: `${stats?.captacao || 0} captações ativas`
     },
@@ -128,7 +129,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {recentTransactions.map((property: any, index: number) => (
+                  {recentTransactions.map((property: Property, index: number) => (
                     <TimelineStep
                       key={property.id}
                       step={property.currentStage}

@@ -13,7 +13,7 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(207, 90%, 54%);
+  --primary: #001f3f;
   --primary-foreground: hsl(211, 100%, 99%);
   --secondary: hsl(60, 4.8%, 95.9%);
   --secondary-foreground: hsl(24, 9.8%, 10%);
@@ -28,7 +28,7 @@
   --sidebar-background: linear-gradient(135deg, #001f3f, #05498f);
   --sidebar-foreground: hsl(0, 0%, 100%);
   --sidebar-primary: hsl(0, 0%, 100%);
-  --sidebar-primary-foreground: hsl(207, 90%, 54%);
+  --sidebar-primary-foreground: #001f3f;
   --sidebar-accent: hsla(0, 0%, 100%, 0.1);
   --sidebar-accent-foreground: hsl(0, 0%, 100%);
   --sidebar-border: hsla(0, 0%, 100%, 0.1);
@@ -39,7 +39,7 @@
   --success-foreground: hsl(0, 0%, 100%);
   --warning: hsl(32, 81%, 46%);
   --warning-foreground: hsl(0, 0%, 100%);
-  --info: hsl(207, 90%, 54%);
+  --info: #001f3f;
   --info-foreground: hsl(0, 0%, 100%);
 }
 
@@ -118,7 +118,7 @@
   
   /* Custom gradient backgrounds */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(207, 90%, 54%), hsl(224, 71%, 42%));
+    background: linear-gradient(135deg, #001f3f, hsl(224, 71%, 42%));
   }
   
   .gradient-success {
@@ -144,7 +144,7 @@
   
   /* Progress bars */
   .progress-fill {
-    background: linear-gradient(90deg, hsl(207, 90%, 54%), hsl(224, 71%, 42%));
+    background: linear-gradient(90deg, #001f3f, hsl(224, 71%, 42%));
   }
   
   /* Document upload area */

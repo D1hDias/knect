@@ -51,7 +51,7 @@ export function Sidebar({ className }: SidebarProps) {
       )}
       
       <nav className={cn(
-        "fixed top-0 left-0 h-screen bg-gradient-to-b from-primary to-blue-800 transition-all duration-300 z-50",
+        "fixed top-0 left-0 h-screen bg-gradient-to-b from-[#001f3f] to-[#05498f] transition-all duration-300 z-50",
         isExpanded ? "w-60" : "w-16",
         "lg:translate-x-0",
         !isExpanded && "-translate-x-full lg:translate-x-0",
