@@ -57,28 +57,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/properties", isAuthenticated, async (req: any, res) => {
     try {
       const userId = parseInt(req.session.user.id);
-      const validatedData = insertPropertySchema.parse(req.body);
       
-      const property = await storage.createProperty({
-        ...validatedData,
-        userId: userId,
-      });
+      // Validar dados da propriedade
+      const propertyData = {
+        userId,
+        type: req.body.type,
+        street: req.body.street,
+        number: req.body.number,
+        complement: req.body.complement || null,
+        neighborhood: req.body.neighborhood,
+        city: req.body.city,
+        state: req.body.state,
+        cep: req.body.cep,
+        value: req.body.value,
+        registrationNumber: req.body.registrationNumber,
+        municipalRegistration: req.body.municipalRegistration,
+        status: "captacao",
+        currentStage: 1,
+      };
 
-      // Create initial timeline entry
-      await storage.createTimelineEntry({
-        propertyId: property.id,
-        stage: 1,
-        status: "in_progress",
-        description: "Captação de imóvel iniciada",
-        responsible: userId.toString(),
-      });
+      // Criar propriedade
+      const property = await storage.createProperty(propertyData);
+      
+      // Criar proprietários
+      if (req.body.owners && req.body.owners.length > 0) {
+        for (const owner of req.body.owners) {
+          await storage.createPropertyOwner({
+            propertyId: property.id,
+            fullName: owner.fullName,
+            cpf: owner.cpf,
+            rg: owner.rg,
+            birthDate: owner.birthDate,
+            maritalStatus: owner.maritalStatus,
+            fatherName: owner.fatherName,
+            motherName: owner.motherName,
+            phone: owner.phone,
+            email: owner.email,
+          });
+        }
+      }
 
-      res.status(201).json(property);
+      res.json(property);
     } catch (error) {
       console.error("Error creating property:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
       res.status(500).json({ message: "Failed to create property" });
     }
   });

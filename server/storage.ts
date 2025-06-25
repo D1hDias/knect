@@ -1,251 +1,307 @@
-import {
-  users,
-  properties,
-  documents,
-  proposals,
-  contracts,
-  timelineEntries,
-  type User,
-  type InsertUser,
-  type Property,
-  type InsertProperty,
-  type Document,
-  type InsertDocument,
-  type Proposal,
-  type InsertProposal,
-  type Contract,
-  type InsertContract,
-  type TimelineEntry,
-  type InsertTimelineEntry,
-} from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
+import { 
+  users, 
+  properties, 
+  propertyOwners,
+  documents, 
+  proposals, 
+  contracts, 
+  timelineEntries 
+} from "@shared/schema";
 
-export interface IStorage {
-  // User operations
-  getUser(id: number): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  
-  // Property operations
-  getProperties(userId: number): Promise<Property[]>;
-  getProperty(id: number): Promise<Property | undefined>;
-  createProperty(property: InsertProperty & { userId: number }): Promise<Property>;
-  updateProperty(id: number, property: Partial<InsertProperty>): Promise<Property>;
-  
-  // Document operations
-  getPropertyDocuments(propertyId: number): Promise<Document[]>;
-  createDocument(document: InsertDocument): Promise<Document>;
-  updateDocument(id: number, document: Partial<InsertDocument>): Promise<Document>;
-  
-  // Proposal operations
-  getPropertyProposals(propertyId: number): Promise<Proposal[]>;
-  createProposal(proposal: InsertProposal): Promise<Proposal>;
-  updateProposal(id: number, proposal: Partial<InsertProposal>): Promise<Proposal>;
-  
-  // Contract operations
-  getPropertyContracts(propertyId: number): Promise<Contract[]>;
-  createContract(contract: InsertContract): Promise<Contract>;
-  updateContract(id: number, contract: Partial<InsertContract>): Promise<Contract>;
-  
-  // Timeline operations
-  getPropertyTimeline(propertyId: number): Promise<TimelineEntry[]>;
-  createTimelineEntry(entry: InsertTimelineEntry): Promise<TimelineEntry>;
-  updateTimelineEntry(id: number, entry: Partial<InsertTimelineEntry>): Promise<TimelineEntry>;
-  
-  // Dashboard data
-  getUserStats(userId: number): Promise<{
-    captacao: number;
-    mercado: number;
-    propostas: number;
-    contratos: number;
-  }>;
-  getRecentTransactions(userId: number): Promise<Property[]>;
-}
-
-export class DatabaseStorage implements IStorage {
-  // User operations
-  async getUser(id: number): Promise<User | undefined> {
+export const storage = {
+  // USER METHODS
+  async getUser(id: number) {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
-  }
+  },
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(email: string) {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user;
-  }
+  },
 
-  async createUser(userData: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .returning();
+  async createUser(userData: any) {
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
-  }
+  },
 
-  // Property operations
-  async getProperties(userId: number): Promise<Property[]> {
-    return await db
-      .select()
-      .from(properties)
-      .where(eq(properties.userId, userId))
-      .orderBy(desc(properties.createdAt));
-  }
+  async updateUser(id: number, userData: any) {
+    const [user] = await db.update(users).set(userData).where(eq(users.id, id)).returning();
+    return user;
+  },
 
-  async getProperty(id: number): Promise<Property | undefined> {
-    const [property] = await db
-      .select()
-      .from(properties)
-      .where(eq(properties.id, id));
-    return property;
-  }
-
-  async createProperty(property: InsertProperty & { userId: number }): Promise<Property> {
-    const [newProperty] = await db
-      .insert(properties)
-      .values(property)
-      .returning();
-    return newProperty;
-  }
-
-  async updateProperty(id: number, property: Partial<InsertProperty>): Promise<Property> {
-    const [updatedProperty] = await db
-      .update(properties)
-      .set({ ...property, updatedAt: new Date() })
-      .where(eq(properties.id, id))
-      .returning();
-    return updatedProperty;
-  }
-
-  // Document operations
-  async getPropertyDocuments(propertyId: number): Promise<Document[]> {
-    return await db
-      .select()
-      .from(documents)
-      .where(eq(documents.propertyId, propertyId))
-      .orderBy(desc(documents.uploadedAt));
-  }
-
-  async createDocument(document: InsertDocument): Promise<Document> {
-    const [newDocument] = await db
-      .insert(documents)
-      .values(document)
-      .returning();
-    return newDocument;
-  }
-
-  async updateDocument(id: number, document: Partial<InsertDocument>): Promise<Document> {
-    const [updatedDocument] = await db
-      .update(documents)
-      .set(document)
-      .where(eq(documents.id, id))
-      .returning();
-    return updatedDocument;
-  }
-
-  // Proposal operations
-  async getPropertyProposals(propertyId: number): Promise<Proposal[]> {
-    return await db
-      .select()
-      .from(proposals)
-      .where(eq(proposals.propertyId, propertyId))
-      .orderBy(desc(proposals.createdAt));
-  }
-
-  async createProposal(proposal: InsertProposal): Promise<Proposal> {
-    const [newProposal] = await db
-      .insert(proposals)
-      .values(proposal)
-      .returning();
-    return newProposal;
-  }
-
-  async updateProposal(id: number, proposal: Partial<InsertProposal>): Promise<Proposal> {
-    const [updatedProposal] = await db
-      .update(proposals)
-      .set({ ...proposal, updatedAt: new Date() })
-      .where(eq(proposals.id, id))
-      .returning();
-    return updatedProposal;
-  }
-
-  // Contract operations
-  async getPropertyContracts(propertyId: number): Promise<Contract[]> {
-    return await db
-      .select()
-      .from(contracts)
-      .where(eq(contracts.propertyId, propertyId))
-      .orderBy(desc(contracts.createdAt));
-  }
-
-  async createContract(contract: InsertContract): Promise<Contract> {
-    const [newContract] = await db
-      .insert(contracts)
-      .values(contract)
-      .returning();
-    return newContract;
-  }
-
-  async updateContract(id: number, contract: Partial<InsertContract>): Promise<Contract> {
-    const [updatedContract] = await db
-      .update(contracts)
-      .set({ ...contract, updatedAt: new Date() })
-      .where(eq(contracts.id, id))
-      .returning();
-    return updatedContract;
-  }
-
-  // Timeline operations
-  async getPropertyTimeline(propertyId: number): Promise<TimelineEntry[]> {
-    return await db
-      .select()
-      .from(timelineEntries)
-      .where(eq(timelineEntries.propertyId, propertyId))
-      .orderBy(desc(timelineEntries.createdAt));
-  }
-
-  async createTimelineEntry(entry: InsertTimelineEntry): Promise<TimelineEntry> {
-    const [newEntry] = await db
-      .insert(timelineEntries)
-      .values(entry)
-      .returning();
-    return newEntry;
-  }
-
-  async updateTimelineEntry(id: number, entry: Partial<InsertTimelineEntry>): Promise<TimelineEntry> {
-    const [updatedEntry] = await db
-      .update(timelineEntries)
-      .set(entry)
-      .where(eq(timelineEntries.id, id))
-      .returning();
-    return updatedEntry;
-  }
-
-  // Dashboard data
-  async getUserStats(userId: number): Promise<{
-    captacao: number;
-    mercado: number;
-    propostas: number;
-    contratos: number;
-  }> {
-    const userProperties = await this.getProperties(userId);
+  // PROPERTY METHODS
+  async getProperties(userId: number) {
+    const userProperties = await db.select().from(properties).where(eq(properties.userId, userId));
     
-    const captacao = userProperties.filter(p => p.currentStage === 1).length;
-    const mercado = userProperties.filter(p => p.currentStage === 3).length;
-    const propostas = userProperties.filter(p => p.currentStage === 4).length;
-    const contratos = userProperties.filter(p => p.currentStage >= 5).length;
+    // Buscar proprietários para cada propriedade
+    const propertiesWithOwners = [];
+    for (const property of userProperties) {
+      const owners = await this.getPropertyOwners(property.id);
+      propertiesWithOwners.push({
+        ...property,
+        owners: owners
+      });
+    }
+    
+    return propertiesWithOwners;
+  },
 
-    return { captacao, mercado, propostas, contratos };
-  }
+  async getProperty(id: number) {
+    const [property] = await db.select().from(properties).where(eq(properties.id, id));
+    
+    if (property) {
+      // Buscar proprietários da propriedade
+      const owners = await this.getPropertyOwners(property.id);
+      return {
+        ...property,
+        owners: owners
+      };
+    }
+    
+    return property;
+  },
 
-  async getRecentTransactions(userId: number): Promise<Property[]> {
-    return await db
-      .select()
-      .from(properties)
+  async createProperty(data: any) {
+    // Criar apenas os campos que existem na tabela properties
+    const propertyData = {
+      userId: data.userId,
+      type: data.type,
+      street: data.street,
+      number: data.number,
+      complement: data.complement,
+      neighborhood: data.neighborhood,
+      city: data.city,
+      state: data.state,
+      cep: data.cep,
+      value: data.value,
+      registrationNumber: data.registrationNumber,
+      municipalRegistration: data.municipalRegistration,
+      status: data.status || "captacao",
+      currentStage: data.currentStage || 1,
+    };
+
+    const [property] = await db.insert(properties).values(propertyData).returning();
+    return property;
+  },
+
+  async updateProperty(id: number, data: any) {
+    const [property] = await db.update(properties).set({
+      ...data,
+      updatedAt: new Date()
+    }).where(eq(properties.id, id)).returning();
+    return property;
+  },
+
+  async deleteProperty(id: number) {
+    // Os proprietários serão deletados automaticamente devido ao CASCADE
+    await db.delete(properties).where(eq(properties.id, id));
+  },
+
+  // PROPERTY OWNERS METHODS
+  async getPropertyOwners(propertyId: number) {
+    return await db.select().from(propertyOwners).where(eq(propertyOwners.propertyId, propertyId));
+  },
+
+  async createPropertyOwner(data: any) {
+    const [owner] = await db.insert(propertyOwners).values(data).returning();
+    return owner;
+  },
+
+  async updatePropertyOwner(id: number, data: any) {
+    const [owner] = await db.update(propertyOwners).set({
+      ...data,
+      updatedAt: new Date()
+    }).where(eq(propertyOwners.id, id)).returning();
+    return owner;
+  },
+
+  async deletePropertyOwner(id: number) {
+    await db.delete(propertyOwners).where(eq(propertyOwners.id, id));
+  },
+
+  // DOCUMENT METHODS
+  async getPropertyDocuments(propertyId: number) {
+    return await db.select().from(documents).where(eq(documents.propertyId, propertyId));
+  },
+
+  async getDocument(id: number) {
+    const [document] = await db.select().from(documents).where(eq(documents.id, id));
+    return document;
+  },
+
+  async createDocument(data: any) {
+    const [document] = await db.insert(documents).values(data).returning();
+    return document;
+  },
+
+  async updateDocument(id: number, data: any) {
+    const [document] = await db.update(documents).set(data).where(eq(documents.id, id)).returning();
+    return document;
+  },
+
+  async deleteDocument(id: number) {
+    await db.delete(documents).where(eq(documents.id, id));
+  },
+
+  // PROPOSAL METHODS
+  async getPropertyProposals(propertyId: number) {
+    return await db.select().from(proposals).where(eq(proposals.propertyId, propertyId)).orderBy(desc(proposals.createdAt));
+  },
+
+  async getProposal(id: number) {
+    const [proposal] = await db.select().from(proposals).where(eq(proposals.id, id));
+    return proposal;
+  },
+
+  async createProposal(data: any) {
+    const [proposal] = await db.insert(proposals).values(data).returning();
+    return proposal;
+  },
+
+  async updateProposal(id: number, data: any) {
+    const [proposal] = await db.update(proposals).set({
+      ...data,
+      updatedAt: new Date()
+    }).where(eq(proposals.id, id)).returning();
+    return proposal;
+  },
+
+  async deleteProposal(id: number) {
+    await db.delete(proposals).where(eq(proposals.id, id));
+  },
+
+  // CONTRACT METHODS
+  async getPropertyContracts(propertyId: number) {
+    return await db.select().from(contracts).where(eq(contracts.propertyId, propertyId)).orderBy(desc(contracts.createdAt));
+  },
+
+  async getContract(id: number) {
+    const [contract] = await db.select().from(contracts).where(eq(contracts.id, id));
+    return contract;
+  },
+
+  async createContract(data: any) {
+    const [contract] = await db.insert(contracts).values(data).returning();
+    return contract;
+  },
+
+  async updateContract(id: number, data: any) {
+    const [contract] = await db.update(contracts).set({
+      ...data,
+      updatedAt: new Date()
+    }).where(eq(contracts.id, id)).returning();
+    return contract;
+  },
+
+  async deleteContract(id: number) {
+    await db.delete(contracts).where(eq(contracts.id, id));
+  },
+
+  // TIMELINE METHODS
+  async getPropertyTimeline(propertyId: number) {
+    return await db.select().from(timelineEntries)
+      .where(eq(timelineEntries.propertyId, propertyId))
+      .orderBy(timelineEntries.stage, desc(timelineEntries.createdAt));
+  },
+
+  async createTimelineEntry(data: any) {
+    const [entry] = await db.insert(timelineEntries).values(data).returning();
+    return entry;
+  },
+
+  async updateTimelineEntry(id: number, data: any) {
+    const [entry] = await db.update(timelineEntries).set(data).where(eq(timelineEntries.id, id)).returning();
+    return entry;
+  },
+
+  // DASHBOARD METHODS
+  async getUserStats(userId: number) {
+    const userProperties = await db.select().from(properties).where(eq(properties.userId, userId));
+    
+    const stats = {
+      captacao: 0,
+      mercado: 0,
+      propostas: 0,
+      contratos: 0
+    };
+
+    // Contar por status
+    for (const property of userProperties) {
+      switch (property.status) {
+        case 'captacao':
+          stats.captacao++;
+          break;
+        case 'mercado':
+          stats.mercado++;
+          break;
+        case 'proposta':
+          stats.propostas++;
+          break;
+        case 'contrato':
+        case 'instrumento':
+        case 'concluido':
+          stats.contratos++;
+          break;
+      }
+    }
+
+    return stats;
+  },
+
+  async getRecentTransactions(userId: number, limit: number = 10) {
+    const recentProperties = await db.select().from(properties)
       .where(eq(properties.userId, userId))
       .orderBy(desc(properties.updatedAt))
-      .limit(5);
-  }
-}
+      .limit(limit);
 
-export const storage = new DatabaseStorage();
+    // Buscar proprietários para cada propriedade
+    const propertiesWithOwners = [];
+    for (const property of recentProperties) {
+      const owners = await this.getPropertyOwners(property.id);
+      
+      // Criar endereço concatenado para compatibilidade
+      const address = `${property.street}, ${property.number}${property.complement ? ', ' + property.complement : ''} - ${property.neighborhood}, ${property.city}/${property.state}`;
+      
+      propertiesWithOwners.push({
+        ...property,
+        address: address, // Campo legado para compatibilidade
+        owners: owners
+      });
+    }
+
+    return propertiesWithOwners;
+  },
+
+  // UTILITY METHODS
+  async getPropertyWithRelations(propertyId: number) {
+    const property = await this.getProperty(propertyId);
+    
+    if (!property) return null;
+
+    // Buscar todos os dados relacionados
+    const [documents, proposals, contracts, timeline] = await Promise.all([
+      this.getPropertyDocuments(propertyId),
+      this.getPropertyProposals(propertyId),
+      this.getPropertyContracts(propertyId),
+      this.getPropertyTimeline(propertyId)
+    ]);
+
+    return {
+      ...property,
+      documents,
+      proposals,
+      contracts,
+      timeline
+    };
+  },
+
+  // SEARCH METHODS
+  async searchProperties(userId: number, searchTerm: string) {
+    // Implementar busca por endereço, proprietário, etc.
+    // Por enquanto, retorna todas as propriedades do usuário
+    return await this.getProperties(userId);
+  }
+};

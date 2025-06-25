@@ -9,6 +9,7 @@ import {
   integer,
   decimal,
   boolean,
+  date,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -39,24 +40,57 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Properties table
+// Properties table - ATUALIZADA
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   type: varchar("type").notNull(), // apartamento, casa, cobertura, terreno
-  address: text("address").notNull(),
+  
+  // Endereço separado
+  street: varchar("street").notNull(),
+  number: varchar("number").notNull(),
+  complement: varchar("complement"),
+  neighborhood: varchar("neighborhood").notNull(),
+  city: varchar("city").notNull(),
+  state: varchar("state").notNull(),
+  cep: varchar("cep").notNull(),
+  
   value: decimal("value", { precision: 15, scale: 2 }).notNull(),
+  
+  // Documentação
+  registrationNumber: varchar("registration_number").notNull(), // Ex-IPTU
+  municipalRegistration: varchar("municipal_registration").notNull(),
+  
+  // Campos legados (manter compatibilidade temporária)
+  address: text("address"), // DEPRECATED
   bedrooms: integer("bedrooms"),
   bathrooms: integer("bathrooms"),
   area: decimal("area", { precision: 10, scale: 2 }),
-  ownerName: varchar("owner_name").notNull(),
-  ownerCpf: varchar("owner_cpf").notNull(),
-  ownerRg: varchar("owner_rg").notNull(),
-  ownerPhone: varchar("owner_phone").notNull(),
-  iptuNumber: varchar("iptu_number").notNull(),
-  municipalRegistration: varchar("municipal_registration").notNull(),
+  ownerName: varchar("owner_name"), // DEPRECATED
+  ownerCpf: varchar("owner_cpf"), // DEPRECATED
+  ownerRg: varchar("owner_rg"), // DEPRECATED
+  ownerPhone: varchar("owner_phone"), // DEPRECATED
+  iptuNumber: varchar("iptu_number"), // DEPRECATED
+  
   status: varchar("status").notNull().default("captacao"), // captacao, diligence, mercado, proposta, contrato, instrumento, concluido
   currentStage: integer("current_stage").notNull().default(1), // 1-7
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// NOVA TABELA: Property Owners
+export const propertyOwners = pgTable("property_owners", {
+  id: serial("id").primaryKey(),
+  propertyId: integer("property_id").notNull().references(() => properties.id, { onDelete: "cascade" }),
+  fullName: varchar("full_name").notNull(),
+  cpf: varchar("cpf").notNull(),
+  rg: varchar("rg").notNull(),
+  birthDate: date("birth_date").notNull(),
+  maritalStatus: varchar("marital_status").notNull(),
+  fatherName: varchar("father_name").notNull(),
+  motherName: varchar("mother_name").notNull(),
+  phone: varchar("phone").notNull(),
+  email: varchar("email").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -93,40 +127,39 @@ export const contracts = pgTable("contracts", {
   propertyId: integer("property_id").notNull().references(() => properties.id),
   proposalId: integer("proposal_id").notNull().references(() => proposals.id),
   contractData: jsonb("contract_data").notNull(),
-  status: varchar("status").notNull().default("draft"), // draft, sent, signed, completed
+  status: varchar("status").notNull().default("draft"), // draft, active, completed, cancelled
   signedAt: timestamp("signed_at"),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Timeline entries for tracking progress
+// Timeline entries table
 export const timelineEntries = pgTable("timeline_entries", {
   id: serial("id").primaryKey(),
   propertyId: integer("property_id").notNull().references(() => properties.id),
   stage: integer("stage").notNull(), // 1-7
-  status: varchar("status").notNull(), // pending, in_progress, completed, delayed
-  description: text("description").notNull(),
-  responsible: varchar("responsible"),
-  dueDate: timestamp("due_date"),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  status: varchar("status").notNull(), // pending, active, completed
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Relations
-export const usersRelations = relations(users, ({ many }) => ({
-  properties: many(properties),
-}));
-
-export const propertiesRelations = relations(properties, ({ one, many }) => ({
-  user: one(users, {
-    fields: [properties.userId],
-    references: [users.id],
-  }),
+// RELATIONS
+export const propertiesRelations = relations(properties, ({ many }) => ({
+  owners: many(propertyOwners),
   documents: many(documents),
   proposals: many(proposals),
   contracts: many(contracts),
   timelineEntries: many(timelineEntries),
+}));
+
+export const propertyOwnersRelations = relations(propertyOwners, ({ one }) => ({
+  property: one(properties, {
+    fields: [propertyOwners.propertyId],
+    references: [properties.id],
+  }),
 }));
 
 export const documentsRelations = relations(documents, ({ one }) => ({
@@ -136,12 +169,11 @@ export const documentsRelations = relations(documents, ({ one }) => ({
   }),
 }));
 
-export const proposalsRelations = relations(proposals, ({ one, many }) => ({
+export const proposalsRelations = relations(proposals, ({ one }) => ({
   property: one(properties, {
     fields: [proposals.propertyId],
     references: [properties.id],
   }),
-  contracts: many(contracts),
 }));
 
 export const contractsRelations = relations(contracts, ({ one }) => ({
@@ -162,52 +194,18 @@ export const timelineEntriesRelations = relations(timelineEntries, ({ one }) => 
   }),
 }));
 
-// Schemas for validation
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+// SCHEMAS DE VALIDAÇÃO ATUALIZADOS
+export const insertPropertySchema = createInsertSchema(properties);
+export const insertPropertyOwnerSchema = createInsertSchema(propertyOwners);
+export const insertDocumentSchema = createInsertSchema(documents);
+export const insertProposalSchema = createInsertSchema(proposals);
+export const insertContractSchema = createInsertSchema(contracts);
+export const insertTimelineEntrySchema = createInsertSchema(timelineEntries);
 
-export const insertPropertySchema = createInsertSchema(properties).omit({
-  id: true,
-  userId: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertDocumentSchema = createInsertSchema(documents).omit({
-  id: true,
-  uploadedAt: true,
-});
-
-export const insertProposalSchema = createInsertSchema(proposals).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertContractSchema = createInsertSchema(contracts).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export const insertTimelineEntrySchema = createInsertSchema(timelineEntries).omit({
-  id: true,
-  createdAt: true,
-});
-
-// Types
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+// TIPOS
 export type InsertProperty = z.infer<typeof insertPropertySchema>;
-export type Property = typeof properties.$inferSelect;
+export type InsertPropertyOwner = z.infer<typeof insertPropertyOwnerSchema>;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
-export type Document = typeof documents.$inferSelect;
 export type InsertProposal = z.infer<typeof insertProposalSchema>;
-export type Proposal = typeof proposals.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
-export type Contract = typeof contracts.$inferSelect;
 export type InsertTimelineEntry = z.infer<typeof insertTimelineEntrySchema>;
-export type TimelineEntry = typeof timelineEntries.$inferSelect;
