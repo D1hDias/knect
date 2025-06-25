@@ -65,7 +65,7 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-[#001f3f] to-[#004286] shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">V</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Ventus Hub</span>
+            <span className="text-xl font-bold text-white">Ventus Hub</span>
           </div>
           <Button
             variant="ghost"
@@ -96,9 +96,9 @@ export default function Layout({ children }: LayoutProps) {
                 <Link key={item.href} href={item.href}>
                   <div
                     className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-                      isActive
-                        ? "bg-blue-100 text-blue-700 border-r-2 border-blue-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    isActive
+                        ? "bg-white/20 text-white border-r-2 border-white"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <Icon className="mr-3 h-5 w-5" />
@@ -111,7 +111,7 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         <div className="absolute bottom-4 left-0 right-0 px-3">
-          <div className="flex items-center px-3 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-100 rounded-md">
+          <div className="flex items-center px-3 py-2 text-sm text-white/80 cursor-pointer hover:bg-white/10 rounded-md">
             <Settings className="mr-3 h-5 w-5" />
             Configurações
           </div>
