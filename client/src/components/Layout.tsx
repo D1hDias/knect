@@ -274,22 +274,56 @@ export default function Layout({ children }: LayoutProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* User menu - atualizado para mostrar avatar */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-white/10">
-                    <Avatar className="h-8 w-8">
-                      {user?.avatarUrl ? (
-                        <AvatarImage src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
-                      ) : null}
-                      <AvatarFallback className="bg-white/20 text-white text-sm border border-white/20">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                {/* ... resto do user menu ... */}
-              </DropdownMenu>
+            {/* User menu - atualizado para mostrar avatar */}
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-white/10">
+                <Avatar className="h-8 w-8">
+                    {user?.avatarUrl ? (
+                    <AvatarImage src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
+                    ) : null}
+                    <AvatarFallback className="bg-white/20 text-white text-sm border border-white/20">
+                    {getUserInitials()}
+                    </AvatarFallback>
+                </Avatar>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                    {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                    </p>
+                    {user?.creci && (
+                    <p className="text-xs leading-none text-muted-foreground">
+                        CRECI: {user.creci}
+                    </p>
+                    )}
+                </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                <Link href="/configuracoes" className="w-full cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Perfil</span>
+                </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                <Link href="/configuracoes" className="w-full cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Configurações</span>
+                </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+            </DropdownMenu>
             </div>
           </div>
         </header>
