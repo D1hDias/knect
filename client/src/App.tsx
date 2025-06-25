@@ -1,107 +1,134 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
+import { Switch, Route, BrowserRouter } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Sidebar } from "@/components/Sidebar";
-import { TopHeader } from "@/components/TopHeader";
-import { useAuth } from "@/hooks/useAuth";
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/Landing";
-import Dashboard from "@/pages/Dashboard";
-import PropertyCapture from "@/pages/PropertyCapture";
-import DueDiligence from "@/pages/DueDiligence";
-import MarketListing from "@/pages/MarketListing";
-import Proposals from "@/pages/Proposals";
-import Contracts from "@/pages/Contracts";
-import FinalInstrument from "@/pages/FinalInstrument";
-import Timeline from "@/pages/Timeline";
-import Settings from "@/pages/Settings";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { Loader2 } from "lucide-react";
 
-function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-background">
-      <Sidebar />
-      <div className="lg:ml-60 ml-0 transition-all duration-300">
-        <TopHeader />
-        <main className="min-h-[calc(100vh-80px)]">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
-}
+// Pages
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import PropertyCapture from "./pages/PropertyCapture";
+import DueDiligence from "./pages/DueDiligence";
+import PropertiesMarket from "./pages/PropertiesMarket";
+import Proposals from "./pages/Proposals";
+import Contracts from "./pages/Contracts";
+import DefinitiveInstrument from "./pages/DefinitiveInstrument";
+import Timeline from "./pages/Timeline";
 
-function Router() {
-  const isAuthenticated = true; // Temporário
-  const isLoading = false;
+// Components
+import Layout from "./components/Layout";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
+  if (!user) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  return <Layout>{children}</Layout>;
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (user) {
+    window.location.href = "/dashboard";
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+function AppRoutes() {
   return (
     <Switch>
-      {!isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route component={Landing} />
-        </>
-      ) : (
-        <>
-          <Route path="/">
-            <AuthenticatedLayout>
-              <Dashboard />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/captacao">
-            <AuthenticatedLayout>
-              <PropertyCapture />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/diligence">
-            <AuthenticatedLayout>
-              <DueDiligence />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/mercado">
-            <AuthenticatedLayout>
-              <MarketListing />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/propostas">
-            <AuthenticatedLayout>
-              <Proposals />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/contratos">
-            <AuthenticatedLayout>
-              <Contracts />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/instrumento">
-            <AuthenticatedLayout>
-              <FinalInstrument />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/timeline">
-            <AuthenticatedLayout>
-              <Timeline />
-            </AuthenticatedLayout>
-          </Route>
-          <Route path="/configuracoes">
-            <AuthenticatedLayout>
-              <Settings />
-            </AuthenticatedLayout>
-          </Route>
-          <Route component={NotFound} />
-        </>
-      )}
+      {/* Rotas públicas */}
+      <Route path="/login">
+        <PublicRoute>
+          <Login />
+        </PublicRoute>
+      </Route>
+      
+      <Route path="/register">
+        <PublicRoute>
+          <Register />
+        </PublicRoute>
+      </Route>
+
+      {/* Rotas protegidas */}
+      <Route path="/dashboard">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/captacao">
+        <ProtectedRoute>
+          <PropertyCapture />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/due-diligence">
+        <ProtectedRoute>
+          <DueDiligence />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/mercado">
+        <ProtectedRoute>
+          <PropertiesMarket />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/propostas">
+        <ProtectedRoute>
+          <Proposals />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/contratos">
+        <ProtectedRoute>
+          <Contracts />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/instrumento">
+        <ProtectedRoute>
+          <DefinitiveInstrument />
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/timeline">
+        <ProtectedRoute>
+          <Timeline />
+        </ProtectedRoute>
+      </Route>
+
+      {/* Rota padrão - redireciona para dashboard se logado, senão para login */}
+      <Route path="/">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
     </Switch>
   );
 }
@@ -109,12 +136,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
           <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
