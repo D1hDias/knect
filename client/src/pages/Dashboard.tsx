@@ -9,7 +9,32 @@ import { PropertyModal } from "@/components/PropertyModal";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { User, Stats, Property } from "@/types";
+
+// Interfaces corrigidas
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  creci?: string;
+}
+
+interface Stats {
+  captacao: number;
+  mercado: number;
+  propostas: number;
+  contratos: number;
+}
+
+interface Property {
+  id: string;
+  type: string;
+  address: string;
+  value: string | number;
+  currentStage: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Dashboard() {
   const [showPropertyModal, setShowPropertyModal] = useState(false);
@@ -82,10 +107,10 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-1">
-            Bem-vindo, {user?.firstName} {user?.lastName}
+            Bem-vindo, {(user as any)?.firstName || "Usuário"} {(user as any)?.lastName || ""}
           </h1>
           <p className="text-muted-foreground">
-            CRECI: {user?.creci || "Não informado"} | Última atualização: {new Date().toLocaleString('pt-BR')}
+            CRECI: {(user as any)?.creci || "Não informado"} | Última atualização: {new Date().toLocaleString('pt-BR')}
           </p>
         </div>
       </div>
@@ -129,11 +154,11 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {recentTransactions.map((property: Property, index: number) => (
+                  {recentTransactions.map((property: Property) => (
                     <TimelineStep
                       key={property.id}
                       step={property.currentStage}
-                      title={`${property.type.charAt(0).toUpperCase() + property.type.slice(1)} - R$ ${Number(property.value).toLocaleString('pt-BR')}`}
+                      title={`${property.type.charAt(0).toUpperCase() + property.type.slice(1)} - R$ ${typeof property.value === 'number' ? property.value.toLocaleString('pt-BR') : property.value}`}
                       description={property.address}
                       status={
                         property.currentStage >= 5 ? "completed" :
