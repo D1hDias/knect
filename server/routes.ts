@@ -46,6 +46,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/properties", isAuthenticated, async (req: any, res) => {
+    console.log("=== DADOS RECEBIDOS ===");
+    console.log("Body:", JSON.stringify(req.body, null, 2));
+    console.log("User ID:", req.session.user.id);
+    console.log("========================");
+
     try {
       const userId = parseInt(req.session.user.id);
       
@@ -90,8 +95,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(property);
     } catch (error) {
+      console.error("=== ERRO DETALHADO ===");
       console.error("Error creating property:", error);
-      res.status(500).json({ message: "Failed to create property" });
+      if (error instanceof Error) {
+        console.error("Stack:", error.stack);
+      }
+      console.error("======================");
+      res.status(500).json({ message: "Failed to create property", error: error instanceof Error ? error.message : String(error) });
     }
   });
 

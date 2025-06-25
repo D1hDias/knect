@@ -257,7 +257,22 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
   });
 
   const onSubmit = (data: PropertyFormData) => {
-    createPropertyMutation.mutate(data);
+    // Converter valor brasileiro para formato numérico
+    let cleanValue = data.value;
+    if (typeof cleanValue === 'string') {
+      // Remove R$, espaços e pontos (milhares), mantém apenas números e vírgula
+      cleanValue = cleanValue
+        .replace(/R\$|\s/g, '') // Remove R$ e espaços
+        .replace(/\./g, '') // Remove pontos dos milhares
+        .replace(',', '.'); // Troca vírgula por ponto decimal
+    }
+    
+    const propertyData = {
+      ...data,
+      value: cleanValue,
+    };
+    
+    createPropertyMutation.mutate(propertyData);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
