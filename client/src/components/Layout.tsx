@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage  } from "@/components/ui/avatar";
 import { useNotifications } from "@/hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -102,18 +102,6 @@ export default function Layout({ children }: LayoutProps) {
                 className=" w-[120px] h-auto"
             />
         </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="h-8 w-8"
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
         </div>
 
         <nav className="mt-6 px-3">
@@ -159,7 +147,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-card border-b border-border shadow-sm transition-colors duration-200">
+        <header className="bg-gradient-to-r from-[#001f3f] to-[#004286] border-b border-white/10 shadow-sm transition-colors duration-200">
           <div className="flex items-center justify-between h-16 px-6">
             <div className="flex items-center">
               <Button
@@ -182,7 +170,7 @@ export default function Layout({ children }: LayoutProps) {
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="h-8 w-8"
+                className="h-8 w-8 text-white hover:bg-white/10"
             >
                 {theme === "dark" ? (
                 <Sun className="h-4 w-4" />
@@ -194,7 +182,7 @@ export default function Layout({ children }: LayoutProps) {
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative">
+                  <Button variant="ghost" size="sm" className="relative text-white hover:bg-white/10">
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
@@ -218,7 +206,7 @@ export default function Layout({ children }: LayoutProps) {
                     )}
                   </div>
                   
-                  <div className="max-h-96 overflow-y-auto">
+                  <div className="max-h-96 overflow-y-auto dropdown-scroll">
                     {notifications.length === 0 ? (
                       <div className="p-4 text-center text-muted-foreground">
                         <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -283,12 +271,12 @@ export default function Layout({ children }: LayoutProps) {
               {/* User menu - atualizado para mostrar avatar */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-white/10">
                     <Avatar className="h-8 w-8">
                       {user?.avatarUrl ? (
                         <AvatarImage src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
                       ) : null}
-                      <AvatarFallback className="bg-blue-600 text-white text-sm">
+                      <AvatarFallback className="bg-white/20 text-white text-sm border border-white/20">
                         {getUserInitials()}
                       </AvatarFallback>
                     </Avatar>

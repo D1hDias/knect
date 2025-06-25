@@ -50,6 +50,7 @@ const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [settings, setSettings] = useState<UserSettings | null>(null);
   const queryClient = useQueryClient();
 
   // Query para buscar o usuário atual
@@ -95,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: () => {
       setUser(null);
+      setSettings(null);
       queryClient.setQueryData(['auth', 'user'], null);
       queryClient.clear();
       window.location.href = '/login';
@@ -151,6 +153,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  const login = async (email: string, password: string) => {
+    await loginMutation.mutateAsync({ email, password });
+  };
+
+  const logout = async () => {
+    await logoutMutation.mutateAsync();
+  };
+
   const updateProfile = async (data: Partial<User>) => {
     await updateProfileMutation.mutateAsync(data);
   };
@@ -163,6 +173,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await updateSettingsMutation.mutateAsync(data);
   };
 
+  const refetchUser = () => {
+    refetch();
+  };
+
   const value: AuthContextType = {
     user,
     settings,
@@ -172,26 +186,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile,
     uploadAvatar,
     updateSettings,
-    refetchUser,
-  };
-
-  const login = async (email: string, password: string) => {
-    await loginMutation.mutateAsync({ email, password });
-  };
-
-  const logout = async () => {
-    await logoutMutation.mutateAsync();
-  };
-
-  const refetchUser = () => {
-    refetch();
-  };
-
-  const value: AuthContextType = {
-    user,
-    isLoading,
-    login,
-    logout,
     refetchUser,
   };
 

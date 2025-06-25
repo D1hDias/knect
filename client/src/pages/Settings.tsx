@@ -204,7 +204,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="p-6 max-w-6xl mx-auto space-y-6 scroll-area">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Configurações</h1>
@@ -402,7 +402,7 @@ export default function Settings() {
                             <Textarea 
                               {...field} 
                               placeholder="Conte um pouco sobre você e sua experiência no mercado imobiliário..."
-                              className="min-h-[100px]"
+                              className="min-h-[100px] scroll-area"
                             />
                           </FormControl>
                           <FormDescription>
@@ -582,7 +582,7 @@ export default function Settings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-60 overflow-y-auto dropdown-scroll">
                     {activityData?.activities?.map((activity: any) => (
                       <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg border">
                         <div className="h-2 w-2 bg-green-500 rounded-full flex-shrink-0" />
