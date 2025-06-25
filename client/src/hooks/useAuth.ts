@@ -95,11 +95,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refetchUser,
   };
 
-  return (
-      <AuthContext.Provider value={value}>
-        {children}
-      </AuthContext.Provider>
-    );
+  return React.createElement(
+    AuthContext.Provider,
+    { value },
+    children
+  );
 }
 
 export function useAuth() {
