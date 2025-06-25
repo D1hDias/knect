@@ -25,11 +25,17 @@ export default function PropertyCapture() {
     queryKey: ["/api/properties"],
   });
 
-  const filteredProperties = properties?.filter((property: any) => 
-    `${property.street || ''} ${property.number || ''} ${property.neighborhood || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (property.owners?.[0]?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (property.type || '').toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredProperties = properties?.filter((property: any) => {
+    // Criar endereço concatenado a partir dos campos separados
+    const address = `${property.street || ''} ${property.number || ''} ${property.neighborhood || ''}`;
+    // Pegar o nome do primeiro proprietário (se existir)
+    const ownerName = property.owners && property.owners.length > 0 ? property.owners[0].fullName || '' : '';
+    const type = property.type || '';
+    
+    return address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          type.toLowerCase().includes(searchTerm.toLowerCase());
+}) || [];
 
   const getStatusBadge = (currentStage: number) => {
     switch (currentStage) {

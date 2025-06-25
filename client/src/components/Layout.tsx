@@ -69,13 +69,14 @@ export default function Layout({ children }: LayoutProps) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">V</span>
-            </div>
-            <span className="text-xl font-bold text-white">Ventus Hub</span>
-          </div>
+        <div className="flex items-center justify-between h-16 px-6 border-b border-white/10">
+          <div className="flex items-center justify-center space-x-2 w-full">
+            <img 
+                src="/src/assets/logo.png" 
+                alt="Ventus Hub" 
+                className=" w-[120px] h-auto"
+            />
+        </div>
           <Button
             variant="ghost"
             size="sm"
