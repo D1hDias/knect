@@ -1,4 +1,4 @@
-import { Bell, Search, Moon, Sun, User } from "lucide-react";
+import { Bell, Search, Moon, Sun, User, Settings, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,9 @@ import { useAuth } from "@/hooks/useAuth";
 export function TopHeader() {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  
+  console.log("Theme atual:", theme); // Adicione esta linha para debug
+  console.log("ToggleTheme function:", toggleTheme); // E esta também
 
   return (
     <header className="bg-background border-b border-border px-6 py-4">
@@ -33,34 +36,32 @@ export function TopHeader() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Theme toggle */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleTheme}
-            className="h-9 w-9"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-          </Button>
+            {/* Theme toggle */}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                console.log("Clicou no botão theme");
+                if (document.documentElement.classList.contains('dark')) {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              }}
+              className="h-9 w-9"
+            >
+              🌙
+            </Button>
 
-          {/* Notifications */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9 relative">
-                <Bell className="h-4 w-4" />
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                >
-                  3
-                </Badge>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
+            {/* Notifications */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="h-9 w-9 relative">
+                  <Bell className="h-4 w-4" />
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">3</Badge>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
               <div className="px-3 py-2 font-medium">Notificações</div>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="flex items-start gap-3 p-3">
@@ -111,16 +112,17 @@ export function TopHeader() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = "/configuracoes"}>
                 <User className="mr-2 h-4 w-4" />
                 Meu Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => window.location.href = "/configuracoes"}>
+                <Settings className="mr-2 h-4 w-4" />
                 Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => window.location.href = "/api/logout"}>
+                <LogOut className="mr-2 h-4 w-4" />
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>

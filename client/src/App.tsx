@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PropertyCapture from "./pages/PropertyCapture";
+import Settings from "./pages/Settings";
 import DueDiligence from "./pages/DueDiligence";
 import PropertiesMarket from "./pages/MarketListing";
 import Proposals from "./pages/Proposals";
@@ -73,6 +74,12 @@ function AppRoutes() {
       </Route>
 
       {/* Rotas protegidas */}
+      <Route path="/configuracoes">
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      </Route>
+
       <Route path="/dashboard">
         <ProtectedRoute>
           <Dashboard />

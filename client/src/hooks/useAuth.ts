@@ -10,6 +10,7 @@ interface User {
   cpf?: string;
   creci?: string;
   phone?: string;
+  profileImageUrl?: string;
   createdAt?: string;
   updatedAt?: string;
 }
