@@ -18,7 +18,7 @@ import DefinitiveInstrument from "./pages/FinalInstrument";
 import Timeline from "./pages/Timeline";
 
 // Components
-import Layout from "./components/Layout";
+import Layout from "./components/Layout.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -36,7 +36,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {

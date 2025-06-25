@@ -9,7 +9,7 @@ import {
   HandHeart,
   FileText,
   FileCheck,
-  Timeline,
+  Clock,
   Settings,
   LogOut,
   Menu,
@@ -36,7 +36,7 @@ const navigationItems = [
   { href: "/propostas", label: "Propostas", icon: HandHeart },
   { href: "/contratos", label: "Contratos", icon: FileText },
   { href: "/instrumento", label: "Instrumento Definitivo", icon: FileCheck },
-  { href: "/timeline", label: "Acompanhamento", icon: Timeline },
+  { href: "/timeline", label: "Acompanhamento", icon: Clock },
 ];
 
 interface LayoutProps {
