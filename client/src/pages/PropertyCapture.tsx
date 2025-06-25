@@ -25,10 +25,10 @@ export default function PropertyCapture() {
     queryKey: ["/api/properties"],
   });
 
-  const filteredProperties = properties?.filter((property: any) =>
-    property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    property.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    property.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProperties = properties?.filter((property: any) => 
+    `${property.street || ''} ${property.number || ''} ${property.neighborhood || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (property.owners?.[0]?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (property.type || '').toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const getStatusBadge = (currentStage: number) => {
@@ -133,17 +133,17 @@ export default function PropertyCapture() {
                     <TableCell>
                       <div>
                         <div className="font-medium">
-                          {property.type.charAt(0).toUpperCase() + property.type.slice(1)} - {property.address.split(',')[0]}
+                          {property.type.charAt(0).toUpperCase() + property.type.slice(1)} - {property.street}, {property.number}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {property.bedrooms}q • {property.bathrooms}b • {property.area}m² • R$ {Number(property.value).toLocaleString('pt-BR')}
+                          {property.neighborhood} • R$ {Number(property.value).toLocaleString('pt-BR')}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{property.ownerName}</div>
-                        <div className="text-sm text-muted-foreground">{property.ownerPhone}</div>
+                        <div className="font-medium">{property.owners?.[0]?.fullName || 'Não informado'}</div>
+                        <div className="text-sm text-muted-foreground">{property.owners?.[0]?.phone || 'Não informado'}</div>
                       </div>
                     </TableCell>
                     <TableCell>
