@@ -55,7 +55,7 @@ const propertySchema = z.object({
   cep: z.string().min(8, "CEP deve ter 8 dígitos").max(9, "CEP inválido"),
   value: z.string().min(1, "Valor é obrigatório"),
   owners: z.array(ownerSchema).min(1, "Pelo menos um proprietário é obrigatório"),
-  iptuNumber: z.string().min(1, "Número do IPTU é obrigatório"),
+  registrationNumber: z.string().min(1, "Número da matrícula é obrigatório"),
   municipalRegistration: z.string().min(1, "Inscrição Municipal é obrigatória"),
 });
 
@@ -106,7 +106,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
         motherName: '',
         phone: ''
       }],
-      iptuNumber: "",
+      registrationNumber: "",
       municipalRegistration: "",
     },
   });
@@ -575,10 +575,10 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="iptuNumber"
+                  name="registrationNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Número do IPTU</FormLabel>
+                      <FormLabel>Número da Matrícula</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
