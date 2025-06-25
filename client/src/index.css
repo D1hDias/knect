@@ -25,7 +25,7 @@
   --radius: 0.5rem;
   
   /* Sidebar Variables */
-  --sidebar-background: hsl(207, 90%, 54%);
+  --sidebar-background: linear-gradient(135deg, #001f3f, #05498f);
   --sidebar-foreground: hsl(0, 0%, 100%);
   --sidebar-primary: hsl(0, 0%, 100%);
   --sidebar-primary-foreground: hsl(207, 90%, 54%);
