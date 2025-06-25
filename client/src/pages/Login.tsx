@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +22,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -42,7 +42,7 @@ export default function Login() {
         title: "Login realizado com sucesso!",
         description: "Redirecionando para o dashboard...",
       });
-      navigate("/dashboard");
+      setLocation("/dashboard");
     },
     onError: (error: any) => {
       toast({
@@ -136,7 +136,7 @@ export default function Login() {
           <div className="mt-6 text-center text-sm">
             <span className="text-muted-foreground">Não tem uma conta? </span>
             <Link
-              to="/register"
+              href="/register"
               className="text-blue-600 hover:text-blue-500 font-medium"
             >
               Cadastre-se

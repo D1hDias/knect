@@ -1,4 +1,4 @@
-import { Switch, Route, BrowserRouter } from "wouter";
+import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,10 +11,10 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PropertyCapture from "./pages/PropertyCapture";
 import DueDiligence from "./pages/DueDiligence";
-import PropertiesMarket from "./pages/PropertiesMarket";
+import PropertiesMarket from "./pages/MarketListing";
 import Proposals from "./pages/Proposals";
 import Contracts from "./pages/Contracts";
-import DefinitiveInstrument from "./pages/DefinitiveInstrument";
+import DefinitiveInstrument from "./pages/FinalInstrument";
 import Timeline from "./pages/Timeline";
 
 // Components
@@ -36,7 +36,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return <Layout>{children}</Layout>;
+  return <>{children}</>;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -136,12 +136,10 @@ function AppRoutes() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRoutes />
-          <Toaster />
-        </AuthProvider>
-      </BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

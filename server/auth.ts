@@ -30,7 +30,7 @@ export function isAuthenticated(req: any, res: any, next: any) {
 // Rotas de autenticação
 export function setupAuthRoutes(app: Express) {
   // Registro
-  app.post("/api/auth/register", async (req, res) => {
+  app.post("/api/auth/register", async (req: any, res: any) => {
     try {
       const { firstName, lastName, email, password, cpf, creci, phone } = req.body;
 
@@ -68,7 +68,7 @@ export function setupAuthRoutes(app: Express) {
   });
 
   // Login
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", async (req: any, res: any) => {
     try {
       const { email, password } = req.body;
 
@@ -107,7 +107,7 @@ export function setupAuthRoutes(app: Express) {
   });
 
   // Logout
-  app.post("/api/auth/logout", (req: any, res) => {
+  app.post("/api/auth/logout", (req: any, res: any) => {
     req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ message: "Erro ao fazer logout" });
@@ -118,7 +118,7 @@ export function setupAuthRoutes(app: Express) {
   });
 
   // Verificar usuário atual
-  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
+  app.get("/api/auth/user", isAuthenticated, async (req: any, res: any) => {
     try {
       const userId = req.session.user.id;
       const user = await storage.getUser(userId);

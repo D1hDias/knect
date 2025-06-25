@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +32,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -59,7 +59,7 @@ export default function Register() {
         title: "Conta criada com sucesso!",
         description: "Você já pode fazer login.",
       });
-      navigate("/login");
+      setLocation("/login");
     },
     onError: (error: any) => {
       toast({
@@ -278,7 +278,7 @@ export default function Register() {
           <div className="mt-6 text-center text-sm">
             <span className="text-muted-foreground">Já tem uma conta? </span>
             <Link
-              to="/login"
+              href="/login"
               className="text-blue-600 hover:text-blue-500 font-medium"
             >
               Faça login

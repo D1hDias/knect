@@ -22,7 +22,7 @@ interface AuthContextType {
   refetchUser: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -96,10 +96,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+      <AuthContext.Provider value={value}>
+        {children}
+      </AuthContext.Provider>
+    );
 }
 
 export function useAuth() {

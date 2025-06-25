@@ -95,7 +95,7 @@ export default function Layout({ children }: LayoutProps) {
               return (
                 <Link key={item.href} href={item.href}>
                   <div
-                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
                       isActive
                         ? "bg-blue-100 text-blue-700 border-r-2 border-blue-700"
                         : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -111,7 +111,7 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         <div className="absolute bottom-4 left-0 right-0 px-3">
-          <div className="flex items-center px-3 py-2 text-sm text-gray-600">
+          <div className="flex items-center px-3 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-100 rounded-md">
             <Settings className="mr-3 h-5 w-5" />
             Configurações
           </div>
