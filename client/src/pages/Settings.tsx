@@ -204,7 +204,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6 scroll-area">
+    <div className="p-6 max-w-6xl mx-auto space-y-6 scroll-elegant">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Configurações</h1>

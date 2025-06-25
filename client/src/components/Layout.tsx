@@ -145,7 +145,13 @@ export default function Layout({ children }: LayoutProps) {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div 
+        className="flex-1 flex flex-col overflow-hidden"
+        style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#001f3f #e2e8f0'
+        }}
+        >
         {/* Header */}
         <header className="bg-gradient-to-r from-[#001f3f] to-[#004286] border-b border-white/10 shadow-sm transition-colors duration-200">
           <div className="flex items-center justify-between h-16 px-6">
