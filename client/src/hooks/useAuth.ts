@@ -59,6 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(data.user);
       queryClient.setQueryData(['auth', 'user'], data.user);
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      // Forçar reload para evitar loop
+      window.location.href = "/dashboard";
     },
   });
 

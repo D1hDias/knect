@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/api";
+import { apiRequest } from "@/lib/queryClient";
 import { CloudUpload, Plus, Trash2 } from "lucide-react";
 const BRAZILIAN_STATES = [
   { value: "AC", label: "AC" },
