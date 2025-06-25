@@ -31,6 +31,35 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { CloudUpload, Plus, Trash2 } from "lucide-react";
+const BRAZILIAN_STATES = [
+  { value: "AC", label: "AC - Acre" },
+  { value: "AL", label: "AL - Alagoas" },
+  { value: "AP", label: "AP - Amapá" },
+  { value: "AM", label: "AM - Amazonas" },
+  { value: "BA", label: "BA - Bahia" },
+  { value: "CE", label: "CE - Ceará" },
+  { value: "DF", label: "DF - Distrito Federal" },
+  { value: "ES", label: "ES - Espírito Santo" },
+  { value: "GO", label: "GO - Goiás" },
+  { value: "MA", label: "MA - Maranhão" },
+  { value: "MT", label: "MT - Mato Grosso" },
+  { value: "MS", label: "MS - Mato Grosso do Sul" },
+  { value: "MG", label: "MG - Minas Gerais" },
+  { value: "PA", label: "PA - Pará" },
+  { value: "PB", label: "PB - Paraíba" },
+  { value: "PR", label: "PR - Paraná" },
+  { value: "PE", label: "PE - Pernambuco" },
+  { value: "PI", label: "PI - Piauí" },
+  { value: "RJ", label: "RJ - Rio de Janeiro" },
+  { value: "RN", label: "RN - Rio Grande do Norte" },
+  { value: "RS", label: "RS - Rio Grande do Sul" },
+  { value: "RO", label: "RO - Rondônia" },
+  { value: "RR", label: "RR - Roraima" },
+  { value: "SC", label: "SC - Santa Catarina" },
+  { value: "SP", label: "SP - São Paulo" },
+  { value: "SE", label: "SE - Sergipe" },
+  { value: "TO", label: "TO - Tocantins" }
+];
 
 const ownerSchema = z.object({
   id: z.string(),
@@ -42,6 +71,7 @@ const ownerSchema = z.object({
   fatherName: z.string().min(1, "Nome do pai é obrigatório"),
   motherName: z.string().min(1, "Nome da mãe é obrigatório"),
   phone: z.string().min(1, "Telefone é obrigatório"),
+  email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
 });
 
 const propertySchema = z.object({
@@ -80,7 +110,8 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
     maritalStatus: '',
     fatherName: '',
     motherName: '',
-    phone: ''
+    phone: '',
+    email: ''
   }]);
 
   const form = useForm<PropertyFormData>({
@@ -104,7 +135,8 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
         maritalStatus: '',
         fatherName: '',
         motherName: '',
-        phone: ''
+        phone: '',
+        email: ''
       }],
       registrationNumber: "",
       municipalRegistration: "",
@@ -121,7 +153,8 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
       maritalStatus: '',
       fatherName: '',
       motherName: '',
-      phone: ''
+      phone: '',
+      email: ''
     };
     const currentOwners = form.getValues('owners');
     form.setValue('owners', [...currentOwners, newOwner]);
@@ -157,6 +190,30 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
     }
   };
 
+  const formatCurrency = (value: string) => {
+    // Remove tudo que não é número
+    const numbers = value.replace(/\D/g, '');
+    
+    // Se não tem números, retorna 0,00
+    if (!numbers || numbers === '') {
+      return '0,00';
+    } 
+
+    // Converte para número e divide por 100 para ter centavos
+    const amount = parseInt(numbers) / 100;
+    
+    // Se o resultado é NaN ou inválido, retorna 0,00
+    if (isNaN(amount)) {
+      return '0,00';
+    }
+
+    // Formata como moeda brasileira
+    return amount.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
   const createPropertyMutation = useMutation({
     mutationFn: async (data: PropertyFormData) => {
       const propertyData = {
@@ -186,7 +243,8 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
         maritalStatus: '',
         fatherName: '',
         motherName: '',
-        phone: ''
+        phone: '',
+        email: ''
       }]);
     },
     onError: (error: Error) => {
@@ -236,6 +294,9 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                         <SelectItem value="casa">Casa</SelectItem>
                         <SelectItem value="cobertura">Cobertura</SelectItem>
                         <SelectItem value="terreno">Terreno</SelectItem>
+                        <SelectItem value="sala">Sala</SelectItem>
+                        <SelectItem value="loja">Loja</SelectItem>
+                        <SelectItem value="outo">Outro</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -250,7 +311,20 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                   <FormItem>
                     <FormLabel>Valor de Venda (R$)</FormLabel>
                     <FormControl>
-                      <Input placeholder="1.500.000" {...field} />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm font-medium">
+                          R$
+                        </span>
+                        <Input 
+                          placeholder="0,00"
+                          {...field}
+                          className="pl-8"
+                          onChange={(e) => {
+                            const formatted = formatCurrency(e.target.value);
+                            field.onChange(formatted);
+                          }}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -272,13 +346,15 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                         <Input 
                           placeholder="00000-000" 
                           {...field}
-                          onChange={async (e) => {
+                          onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '');
                             const formattedCep = value.replace(/(\d{5})(\d{3})/, '$1-$2');
                             field.onChange(formattedCep);
-                            
-                            if (value.length === 8) {
-                              const addressData = await fetchAddressByCep(value);
+                          }}
+                          onBlur={async () => {
+                            const cleanCep = field.value.replace(/\D/g, '');
+                            if (cleanCep.length === 8) {
+                              const addressData = await fetchAddressByCep(cleanCep);
                               if (addressData) {
                                 form.setValue('street', addressData.street);
                                 form.setValue('neighborhood', addressData.neighborhood);
@@ -302,7 +378,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem className="md:col-span-2">
                       <FormLabel>Rua/Avenida</FormLabel>
                       <FormControl>
-                        <Input placeholder="Rua das Flores" {...field} />
+                        <Input placeholder="Rua ABC" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -332,7 +408,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem>
                       <FormLabel>Complemento</FormLabel>
                       <FormControl>
-                        <Input placeholder="Apto 45" {...field} />
+                        <Input placeholder="Apto 123" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -346,7 +422,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem>
                       <FormLabel>Bairro</FormLabel>
                       <FormControl>
-                        <Input placeholder="Vila Madalena" {...field} />
+                        <Input placeholder="Digite aqui..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -360,7 +436,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem>
                       <FormLabel>Cidade</FormLabel>
                       <FormControl>
-                        <Input placeholder="São Paulo" {...field} />
+                        <Input placeholder="Digite aqui..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -373,9 +449,20 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Estado</FormLabel>
-                      <FormControl>
-                        <Input placeholder="SP" {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {BRAZILIAN_STATES.map((state) => (
+                            <SelectItem key={state.value} value={state.value}>
+                              {state.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -546,6 +633,24 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                                 field.onChange(formattedPhone);
                               }}
                               maxLength={15}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.email`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>E-mail</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="email"
+                              placeholder="exemplo@email.com" 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
