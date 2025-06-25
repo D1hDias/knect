@@ -27,6 +27,10 @@ export const sessions = pgTable(
 );
 
 export const users = pgTable("users", {
+  avatarUrl: varchar("avatar_url"),
+  bio: text("bio"),
+  lastLoginAt: timestamp("last_login_at"),
+  isActive: boolean("is_active").default(true),
   id: serial("id").primaryKey(),
   email: varchar("email").unique().notNull(),
   password: varchar("password").notNull(),
@@ -209,3 +213,48 @@ export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type InsertProposal = z.infer<typeof insertProposalSchema>;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type InsertTimelineEntry = z.infer<typeof insertTimelineEntrySchema>;
+
+// Notifications table
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  type: varchar("type").notNull(), // 'info', 'warning', 'error', 'success'
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  category: varchar("category").notNull(), // 'property', 'contract', 'document', 'system'
+  relatedId: integer("related_id"), // ID relacionado (property, contract, etc)
+  actionUrl: varchar("action_url"), // URL para ação (se aplicável)
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  readAt: timestamp("read_at"),
+});
+
+// User settings table
+export const userSettings = pgTable("user_settings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  theme: varchar("theme").default("light"), // 'light', 'dark', 'system'
+  language: varchar("language").default("pt-BR"),
+  timezone: varchar("timezone").default("America/Sao_Paulo"),
+  emailNotifications: boolean("email_notifications").default(true),
+  pushNotifications: boolean("push_notifications").default(true),
+  smsNotifications: boolean("sms_notifications").default(false),
+  marketingEmails: boolean("marketing_emails").default(false),
+  weeklyReports: boolean("weekly_reports").default(true),
+  reminderDeadlines: boolean("reminder_deadlines").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Activity logs table
+export const activityLogs = pgTable("activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  action: varchar("action").notNull(), // 'created', 'updated', 'deleted', 'viewed'
+  entity: varchar("entity").notNull(), // 'property', 'contract', 'document'
+  entityId: integer("entity_id"),
+  description: text("description"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});

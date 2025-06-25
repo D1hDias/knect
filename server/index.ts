@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
+import { setupAuth } from "./auth";
+import { setupNotifications } from "./notifications";
+import { setupProfile } from "./profile";
 
 const app = express();
 app.use(express.json());
@@ -35,6 +39,14 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// Servir arquivos estáticos para uploads
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// Setup das rotas
+setupAuth(app);
+setupNotifications(app);
+setupProfile(app);
 
 (async () => {
   const server = await registerRoutes(app);

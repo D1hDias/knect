@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { 
   User, 
   Bell, 
@@ -14,7 +15,11 @@ import {
   Mail,
   CreditCard,
   MapPin,
-  Info
+  Info,
+  Upload,
+  Activity,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +49,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 const profileSchema = z.object({
@@ -53,23 +59,19 @@ const profileSchema = z.object({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
   cpf: z.string().min(11, "CPF deve ter 11 dígitos"),
   creci: z.string().min(1, "CRECI é obrigatório"),
+  bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    smsNotifications: false,
-    marketingEmails: false,
-  });
-
-  const { user } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const { user, updateProfile, uploadAvatar, updateSettings } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -80,38 +82,97 @@ export default function Settings() {
       phone: user?.phone || "",
       cpf: user?.cpf || "",
       creci: user?.creci || "",
+      bio: user?.bio || "",
     },
   });
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: ProfileFormData) => {
-      return await apiRequest("PATCH", "/api/auth/profile", data);
+  // Query para buscar logs de atividade
+  const { data: activityData } = useQuery({
+    queryKey: ['profile', 'activity'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/profile/activity?limit=10');
+      return await response.json();
     },
-    onSuccess: () => {
+    enabled: activeTab === 'security',
+  });
+
+  const onSubmitProfile = async (data: ProfileFormData) => {
+    try {
+      await updateProfile(data);
       toast({
         title: "Sucesso!",
         description: "Perfil atualizado com sucesso.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-    },
-    onError: (error: Error) => {
+    } catch (error: any) {
       toast({
         title: "Erro",
         description: error.message || "Erro ao atualizar perfil.",
         variant: "destructive",
       });
-    },
-  });
-
-  const onSubmitProfile = (data: ProfileFormData) => {
-    updateProfileMutation.mutate(data);
+    }
   };
 
-  const handleNotificationChange = (key: string, value: boolean) => {
-    setNotificationSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Erro",
+        description: "Tipo de arquivo não permitido. Use JPG, PNG, GIF ou WebP.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar tamanho do arquivo (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "Erro",
+        description: "Arquivo muito grande. Máximo 2MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      await uploadAvatar(file);
+      toast({
+        title: "Sucesso!",
+        description: "Avatar atualizado com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao fazer upload do avatar.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleSettingsUpdate = async (settingKey: string, value: any) => {
+    try {
+      await updateSettings({ [settingKey]: value });
+      toast({
+        title: "Sucesso!",
+        description: "Configuração atualizada.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar configuração.",
+        variant: "destructive",
+      });
+    }
   };
 
   const tabs = [
@@ -121,6 +182,26 @@ export default function Settings() {
     { id: "appearance", label: "Aparência", icon: Palette },
     { id: "about", label: "Sobre", icon: Info },
   ];
+
+  const formatActionText = (action: string, entity: string) => {
+    const actions: Record<string, string> = {
+      'created': 'criou',
+      'updated': 'atualizou',
+      'deleted': 'deletou',
+      'viewed': 'visualizou',
+    };
+    
+    const entities: Record<string, string> = {
+      'profile': 'perfil',
+      'avatar': 'avatar',
+      'settings': 'configurações',
+      'property': 'propriedade',
+      'contract': 'contrato',
+      'document': 'documento',
+    };
+    
+    return `${actions[action] || action} ${entities[entity] || entity}`;
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -170,18 +251,41 @@ export default function Settings() {
                 {/* Profile Photo */}
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20">
-                    <AvatarImage src="" />
+                    {user?.avatarUrl ? (
+                      <AvatarImage src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
+                    ) : null}
                     <AvatarFallback className="text-lg">
                       {user?.firstName?.[0]}{user?.lastName?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <Button variant="outline" size="sm">
-                      <Camera className="h-4 w-4 mr-2" />
-                      Alterar Foto
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      className="hidden"
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      {isUploading ? (
+                        <>
+                          <Upload className="h-4 w-4 mr-2 animate-spin" />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          <Camera className="h-4 w-4 mr-2" />
+                          Alterar Foto
+                        </>
+                      )}
                     </Button>
                     <p className="text-sm text-muted-foreground mt-1">
-                      JPG, PNG ou GIF. Máximo 2MB.
+                      JPG, PNG, GIF ou WebP. Máximo 2MB.
                     </p>
                   </div>
                 </div>
@@ -226,11 +330,11 @@ export default function Settings() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email</FormLabel>
+                          <FormLabel>E-mail</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input {...field} className="pl-10" />
+                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input {...field} className="pl-10" type="email" />
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -247,8 +351,8 @@ export default function Settings() {
                             <FormLabel>Telefone</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input {...field} placeholder="(11) 99999-9999" className="pl-10" />
+                                <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input {...field} className="pl-10" placeholder="(11) 99999-9999" />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -263,7 +367,10 @@ export default function Settings() {
                           <FormItem>
                             <FormLabel>CPF</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="000.000.000-00" />
+                              <div className="relative">
+                                <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <Input {...field} className="pl-10" placeholder="000.000.000-00" />
+                              </div>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -278,26 +385,37 @@ export default function Settings() {
                         <FormItem>
                           <FormLabel>CRECI</FormLabel>
                           <FormControl>
-                            <div className="relative">
-                              <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                              <Input {...field} placeholder="12345-SP" className="pl-10" />
-                            </div>
+                            <Input {...field} placeholder="Número do CRECI" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="bio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Bio</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              {...field} 
+                              placeholder="Conte um pouco sobre você e sua experiência no mercado imobiliário..."
+                              className="min-h-[100px]"
+                            />
                           </FormControl>
                           <FormDescription>
-                            Número do seu registro profissional no CRECI
+                            Máximo 500 caracteres
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <Button 
-                      type="submit" 
-                      disabled={updateProfileMutation.isPending}
-                      className="w-full md:w-auto"
-                    >
+                    <Button type="submit" className="w-full md:w-auto">
                       <Save className="h-4 w-4 mr-2" />
-                      {updateProfileMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+                      Salvar Alterações
                     </Button>
                   </form>
                 </Form>
@@ -307,80 +425,105 @@ export default function Settings() {
 
           {/* Notifications Tab */}
           {activeTab === "notifications" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Preferências de Notificação</CardTitle>
-                <CardDescription>
-                  Configure como você deseja receber notificações do sistema
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="font-medium">Notificações por Email</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receba updates importantes por email
-                      </p>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Preferências de Notificação</CardTitle>
+                  <CardDescription>
+                    Configure como e quando você deseja receber notificações
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">Notificações por E-mail</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receber notificações importantes por e-mail
+                        </p>
+                      </div>
+                      <Switch 
+                        defaultChecked 
+                        onCheckedChange={(checked) => handleSettingsUpdate('emailNotifications', checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={notificationSettings.emailNotifications}
-                      onCheckedChange={(checked) => handleNotificationChange("emailNotifications", checked)}
-                    />
-                  </div>
 
-                  <Separator />
+                    <Separator />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="font-medium">Notificações Push</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receba notificações em tempo real no navegador
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">Notificações Push</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receber notificações no navegador
+                        </p>
+                      </div>
+                      <Switch 
+                        defaultChecked 
+                        onCheckedChange={(checked) => handleSettingsUpdate('pushNotifications', checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={notificationSettings.pushNotifications}
-                      onCheckedChange={(checked) => handleNotificationChange("pushNotifications", checked)}
-                    />
-                  </div>
 
-                  <Separator />
+                    <Separator />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="font-medium">SMS</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receba alertas urgentes por SMS
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">SMS</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receber notificações por SMS (apenas urgentes)
+                        </p>
+                      </div>
+                      <Switch 
+                        onCheckedChange={(checked) => handleSettingsUpdate('smsNotifications', checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={notificationSettings.smsNotifications}
-                      onCheckedChange={(checked) => handleNotificationChange("smsNotifications", checked)}
-                    />
-                  </div>
 
-                  <Separator />
+                    <Separator />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="font-medium">Emails de Marketing</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Receba novidades e dicas sobre o mercado imobiliário
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">E-mails de Marketing</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receber dicas, novidades e promoções
+                        </p>
+                      </div>
+                      <Switch 
+                        onCheckedChange={(checked) => handleSettingsUpdate('marketingEmails', checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={notificationSettings.marketingEmails}
-                      onCheckedChange={(checked) => handleNotificationChange("marketingEmails", checked)}
-                    />
-                  </div>
-                </div>
 
-                <Button className="w-full md:w-auto">
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar Preferências
-                </Button>
-              </CardContent>
-            </Card>
+                    <Separator />
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">Relatórios Semanais</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receber resumo semanal das suas atividades
+                        </p>
+                      </div>
+                      <Switch 
+                        defaultChecked 
+                        onCheckedChange={(checked) => handleSettingsUpdate('weeklyReports', checked)}
+                      />
+                    </div>
+
+                    <Separator />
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">Lembretes de Prazos</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Ser notificado sobre prazos importantes
+                        </p>
+                      </div>
+                      <Switch 
+                        defaultChecked 
+                        onCheckedChange={(checked) => handleSettingsUpdate('reminderDeadlines', checked)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {/* Security Tab */}
@@ -398,10 +541,22 @@ export default function Settings() {
                     <div>
                       <h4 className="font-medium">Autenticação</h4>
                       <p className="text-sm text-muted-foreground">
-                        Conectado via Replit Auth
+                        Conectado via sistema interno
                       </p>
                     </div>
                     <Badge variant="secondary">Ativo</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">Alterar Senha</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Última alteração há mais de 30 dias
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Alterar Senha
+                    </Button>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -415,17 +570,36 @@ export default function Settings() {
                       Ver Sessões
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Log de Atividades</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Visualize o histórico de ações na conta
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Ver Log
-                    </Button>
+              {/* Activity Log */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Log de Atividades</CardTitle>
+                  <CardDescription>
+                    Últimas atividades realizadas na sua conta
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {activityData?.activities?.map((activity: any) => (
+                      <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg border">
+                        <div className="h-2 w-2 bg-green-500 rounded-full flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">
+                            {formatActionText(activity.action, activity.entity)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDistanceToNow(new Date(activity.createdAt), {
+                              addSuffix: true,
+                              locale: ptBR
+                            })}
+                          </p>
+                        </div>
+                        <Activity className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -512,37 +686,18 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <Separator />
+<Separator />
 
                   <div>
-                    <Label className="font-medium mb-3 block">Densidade da Interface</Label>
-                    <Select defaultValue="comfortable">
+                    <Label className="font-medium mb-3 block">Fuso Horário</Label>
+                    <Select defaultValue="America/Sao_Paulo" onValueChange={(value) => handleSettingsUpdate('timezone', value)}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="compact">Compacta</SelectItem>
-                        <SelectItem value="comfortable">Confortável</SelectItem>
-                        <SelectItem value="spacious">Espaçosa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Ajuste o espaçamento entre elementos da interface
-                    </p>
-                  </div>
-
-                  <Separator />
-
-                  <div>
-                    <Label className="font-medium mb-3 block">Idioma</Label>
-                    <Select defaultValue="pt-BR">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                        <SelectItem value="en-US">English (US)</SelectItem>
-                        <SelectItem value="es-ES">Español</SelectItem>
+                        <SelectItem value="America/Sao_Paulo">São Paulo (UTC-3)</SelectItem>
+                        <SelectItem value="America/New_York">New York (UTC-5)</SelectItem>
+                        <SelectItem value="Europe/London">London (UTC+0)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -553,74 +708,59 @@ export default function Settings() {
 
           {/* About Tab */}
           {activeTab === "about" && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sobre o Ventus Hub</CardTitle>
-                  <CardDescription>
-                    Informações sobre o sistema e suporte
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label className="font-medium">Versão do Sistema</Label>
-                      <p className="text-sm text-muted-foreground">v1.0.0</p>
-                    </div>
-                    <div>
-                      <Label className="font-medium">Última Atualização</Label>
-                      <p className="text-sm text-muted-foreground">Janeiro 2024</p>
-                    </div>
-                    <div>
-                      <Label className="font-medium">Suporte</Label>
-                      <p className="text-sm text-muted-foreground">suporte@ventushub.com</p>
-                    </div>
-                    <div>
-                      <Label className="font-medium">Documentação</Label>
-                      <p className="text-sm text-muted-foreground">docs.ventushub.com</p>
-                    </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Sobre o Sistema</CardTitle>
+                <CardDescription>
+                  Informações sobre o Ventus Hub
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-xl">V</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Ventus Hub - Corretores</h3>
+                    <p className="text-muted-foreground">Versão 1.0.0</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Funcionalidades</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Gestão completa de imóveis</li>
+                      <li>• Automação de processos com IA</li>
+                      <li>• Due diligence automatizada</li>
+                      <li>• Geração de contratos</li>
+                      <li>• Timeline de acompanhamento</li>
+                      <li>• Notificações inteligentes</li>
+                    </ul>
                   </div>
 
                   <Separator />
 
-                  <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Info className="h-4 w-4 mr-2" />
-                      Termos de Uso
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Shield className="h-4 w-4 mr-2" />
-                      Política de Privacidade
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Bell className="h-4 w-4 mr-2" />
-                      Notas da Versão
-                    </Button>
+                  <div>
+                    <h4 className="font-medium mb-2">Suporte</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Para dúvidas ou suporte técnico, entre em contato através do e-mail:
+                    </p>
+                    <p className="text-sm font-medium">suporte@ventushub.com</p>
                   </div>
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Ajuda e Suporte</CardTitle>
-                  <CardDescription>
-                    Precisa de ajuda? Entre em contato conosco
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <Textarea 
-                      placeholder="Descreva sua dúvida ou problema..."
-                      className="min-h-[100px]"
-                    />
-                    <Button className="w-full">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Enviar Mensagem
-                    </Button>
+                  <Separator />
+
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">
+                      © 2025 Ventus Hub. Todos os direitos reservados.
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

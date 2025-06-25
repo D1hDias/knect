@@ -10,16 +10,39 @@ interface User {
   cpf?: string;
   creci?: string;
   phone?: string;
-  profileImageUrl?: string;
+  bio?: string;
+  avatarUrl?: string;
+  isActive?: boolean;
+  lastLoginAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
+interface UserSettings {
+  id: number;
+  userId: number;
+  theme: string;
+  language: string;
+  timezone: string;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+  marketingEmails: boolean;
+  weeklyReports: boolean;
+  reminderDeadlines: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface AuthContextType {
   user: User | null;
+  settings: UserSettings | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
+  updateSettings: (data: Partial<UserSettings>) => Promise<void>;
   refetchUser: () => void;
 }
 
@@ -77,6 +100,80 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.location.href = '/login';
     },
   });
+
+  // Mutation para atualizar perfil
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: Partial<User>) => {
+      const response = await apiRequest('PATCH', '/api/profile', data);
+      return await response.json();
+    },
+    onSuccess: (updatedUser) => {
+      setUser(updatedUser);
+      queryClient.setQueryData(['auth', 'user'], updatedUser);
+    },
+  });
+
+  // Mutation para upload de avatar
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      const response = await fetch('/api/profile/avatar', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao fazer upload do avatar');
+      }
+      
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      if (user) {
+        const updatedUser = { ...user, avatarUrl: data.avatarUrl };
+        setUser(updatedUser);
+        queryClient.setQueryData(['auth', 'user'], updatedUser);
+      }
+    },
+  });
+
+  // Mutation para atualizar configurações
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: Partial<UserSettings>) => {
+      const response = await apiRequest('PATCH', '/api/profile/settings', data);
+      return await response.json();
+    },
+    onSuccess: (updatedSettings) => {
+      setSettings(updatedSettings);
+      queryClient.setQueryData(['profile', 'settings'], updatedSettings);
+    },
+  });
+
+  const updateProfile = async (data: Partial<User>) => {
+    await updateProfileMutation.mutateAsync(data);
+  };
+
+  const uploadAvatar = async (file: File) => {
+    await uploadAvatarMutation.mutateAsync(file);
+  };
+
+  const updateSettings = async (data: Partial<UserSettings>) => {
+    await updateSettingsMutation.mutateAsync(data);
+  };
+
+  const value: AuthContextType = {
+    user,
+    settings,
+    isLoading,
+    login,
+    logout,
+    updateProfile,
+    uploadAvatar,
+    updateSettings,
+    refetchUser,
+  };
 
   const login = async (email: string, password: string) => {
     await loginMutation.mutateAsync({ email, password });

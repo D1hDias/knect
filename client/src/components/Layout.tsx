@@ -30,6 +30,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useNotifications } from "@/hooks/useNotifications";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const navigationItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -51,6 +54,24 @@ export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications(1, 5);
+
+  const getNotificationIcon = (type: string, category: string) => {
+    if (category === 'property') return Building2;
+    if (category === 'contract') return FileText;
+    if (category === 'document') return FileCheck;
+    if (type === 'warning') return Clock;
+    return Bell;
+  };
+
+  const getNotificationColor = (type: string) => {
+    switch (type) {
+      case 'warning': return 'yellow';
+      case 'error': return 'red';
+      case 'success': return 'green';
+      default: return 'blue';
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -81,14 +102,18 @@ export default function Layout({ children }: LayoutProps) {
                 className=" w-[120px] h-auto"
             />
         </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="h-8 w-8"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </Button>
         </div>
 
         <nav className="mt-6 px-3">
@@ -166,107 +191,111 @@ export default function Layout({ children }: LayoutProps) {
                 )}
             </Button>
 
-            {/* Notifications */}
-            <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                    3
-                </span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-                <div className="px-3 py-2 font-medium border-b">Notificações</div>
-                
-                <DropdownMenuItem className="flex items-start gap-3 p-3 hover:bg-muted/50">
-                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-1.5 rounded-full">
-                    <Clock className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
-                </div>
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Prazo do contrato expira em 2 dias</p>
-                    <p className="text-xs text-muted-foreground">Casa Jardins - Contrato #1234</p>
-                    <p className="text-xs text-muted-foreground">há 30 minutos</p>
-                </div>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem className="flex items-start gap-3 p-3 hover:bg-muted/50">
-                <div className="bg-blue-100 dark:bg-blue-900/30 p-1.5 rounded-full">
-                    <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Novos documentos disponíveis</p>
-                    <p className="text-xs text-muted-foreground">Due diligence concluída - Apartamento Vila Madalena</p>
-                    <p className="text-xs text-muted-foreground">há 1 hora</p>
-                </div>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem className="flex items-start gap-3 p-3 hover:bg-muted/50">
-                <div className="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full">
-                    <Building2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Agendamento de visita confirmado</p>
-                    <p className="text-xs text-muted-foreground">Hoje às 15h - Apartamento Vila Madalena</p>
-                    <p className="text-xs text-muted-foreground">há 2 horas</p>
-                </div>
-                </DropdownMenuItem>
-                
-                <div className="border-t p-2">
-                <Button variant="ghost" size="sm" className="w-full text-xs">
-                    Ver todas as notificações
-                </Button>
-                </div>
-            </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* User menu */}
-            <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-blue-600 text-white text-sm">
-                    {getUserInitials()}
-                    </AvatarFallback>
-                </Avatar>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                    {user?.firstName} {user?.lastName}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email}
-                    </p>
-                    {user?.creci && (
-                    <p className="text-xs leading-none text-muted-foreground">
-                        CRECI: {user.creci}
-                    </p>
+              {/* Notifications */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative">
+                    <Bell className="h-5 w-5" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
                     )}
-                </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                <Link href="/configuracoes" className="w-full">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Perfil</span>
-                </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                <Link href="/configuracoes" className="w-full">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Configurações</span>
-                </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-            </DropdownMenu>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  <div className="flex items-center justify-between px-3 py-2 border-b">
+                    <h3 className="font-medium">Notificações</h3>
+                    {unreadCount > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => markAllAsRead()}
+                        className="text-xs"
+                      >
+                        Marcar todas como lidas
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground">
+                        <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>Nenhuma notificação</p>
+                      </div>
+                    ) : (
+                      notifications.map((notification) => {
+                        const Icon = getNotificationIcon(notification.type, notification.category);
+                        const color = getNotificationColor(notification.type);
+                        
+                        return (
+                          <DropdownMenuItem
+                            key={notification.id}
+                            className={`flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer ${
+                              !notification.isRead ? 'bg-primary/5' : ''
+                            }`}
+                            onClick={() => {
+                              if (!notification.isRead) {
+                                markAsRead(notification.id);
+                              }
+                              if (notification.actionUrl) {
+                                window.location.href = notification.actionUrl;
+                              }
+                            }}
+                          >
+                            <div className={`bg-${color}-100 dark:bg-${color}-900/30 p-1.5 rounded-full flex-shrink-0`}>
+                              <Icon className={`h-3 w-3 text-${color}-600 dark:text-${color}-400`} />
+                            </div>
+                            <div className="flex-1 space-y-1 min-w-0">
+                              <p className="text-sm font-medium line-clamp-2">
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {notification.message}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(notification.createdAt), {
+                                  addSuffix: true,
+                                  locale: ptBR
+                                })}
+                              </p>
+                            </div>
+                            {!notification.isRead && (
+                              <div className="h-2 w-2 bg-primary rounded-full flex-shrink-0 mt-2" />
+                            )}
+                          </DropdownMenuItem>
+                        );
+                      })
+                    )}
+                  </div>
+                  
+                  {notifications.length > 0 && (
+                    <div className="border-t p-2">
+                      <Button variant="ghost" size="sm" className="w-full text-xs">
+                        Ver todas as notificações
+                      </Button>
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* User menu - atualizado para mostrar avatar */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      {user?.avatarUrl ? (
+                        <AvatarImage src={user.avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
+                      ) : null}
+                      <AvatarFallback className="bg-blue-600 text-white text-sm">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                {/* ... resto do user menu ... */}
+              </DropdownMenu>
             </div>
           </div>
         </header>
