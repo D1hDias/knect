@@ -30,19 +30,31 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, Plus, Trash2 } from "lucide-react";
+
+const ownerSchema = z.object({
+  id: z.string(),
+  fullName: z.string().min(1, "Nome completo é obrigatório"),
+  cpf: z.string().min(11, "CPF é obrigatório"),
+  rg: z.string().min(1, "RG/CNH é obrigatório"),
+  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
+  maritalStatus: z.string().min(1, "Estado civil é obrigatório"),
+  fatherName: z.string().min(1, "Nome do pai é obrigatório"),
+  motherName: z.string().min(1, "Nome da mãe é obrigatório"),
+  phone: z.string().min(1, "Telefone é obrigatório"),
+});
 
 const propertySchema = z.object({
   type: z.string().min(1, "Tipo é obrigatório"),
-  address: z.string().min(1, "Endereço é obrigatório"),
+  street: z.string().min(1, "Rua é obrigatória"),
+  number: z.string().min(1, "Número é obrigatório"),
+  complement: z.string().optional(),
+  neighborhood: z.string().min(1, "Bairro é obrigatório"),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  state: z.string().min(1, "Estado é obrigatório"),
+  cep: z.string().min(8, "CEP deve ter 8 dígitos").max(9, "CEP inválido"),
   value: z.string().min(1, "Valor é obrigatório"),
-  bedrooms: z.number().min(0).optional(),
-  bathrooms: z.number().min(0).optional(),
-  area: z.string().optional(),
-  ownerName: z.string().min(1, "Nome do proprietário é obrigatório"),
-  ownerCpf: z.string().min(1, "CPF é obrigatório"),
-  ownerRg: z.string().min(1, "RG/CNH é obrigatório"),
-  ownerPhone: z.string().min(1, "Telefone é obrigatório"),
+  owners: z.array(ownerSchema).min(1, "Pelo menos um proprietário é obrigatório"),
   iptuNumber: z.string().min(1, "Número do IPTU é obrigatório"),
   municipalRegistration: z.string().min(1, "Inscrição Municipal é obrigatória"),
 });
@@ -59,32 +71,97 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const [owners, setOwners] = useState([{
+    id: crypto.randomUUID(),
+    fullName: '',
+    cpf: '',
+    rg: '',
+    birthDate: '',
+    maritalStatus: '',
+    fatherName: '',
+    motherName: '',
+    phone: ''
+  }]);
+
   const form = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
       type: "",
-      address: "",
+      street: "",
+      number: "",
+      complement: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      cep: "",      
       value: "",
-      bedrooms: 0,
-      bathrooms: 0,
-      area: "",
-      ownerName: "",
-      ownerCpf: "",
-      ownerRg: "",
-      ownerPhone: "",
+      owners: [{
+        id: crypto.randomUUID(),
+        fullName: '',
+        cpf: '',
+        rg: '',
+        birthDate: '',
+        maritalStatus: '',
+        fatherName: '',
+        motherName: '',
+        phone: ''
+      }],
       iptuNumber: "",
       municipalRegistration: "",
     },
   });
+
+  const addOwner = () => {
+    const newOwner = {
+      id: crypto.randomUUID(),
+      fullName: '',
+      cpf: '',
+      rg: '',
+      birthDate: '',
+      maritalStatus: '',
+      fatherName: '',
+      motherName: '',
+      phone: ''
+    };
+    const currentOwners = form.getValues('owners');
+    form.setValue('owners', [...currentOwners, newOwner]);
+    setOwners([...owners, newOwner]);
+  };
+
+  const removeOwner = (ownerId: string) => {
+    if (owners.length > 1) {
+      const updatedOwners = owners.filter(owner => owner.id !== ownerId);
+      setOwners(updatedOwners);
+      form.setValue('owners', updatedOwners);
+    }
+  };
+
+  const fetchAddressByCep = async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length !== 8) return null;
+    
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await response.json();
+      
+      if (data.erro) return null;
+      
+      return {
+        street: data.logradouro || '',
+        neighborhood: data.bairro || '',
+        city: data.localidade || '',
+        state: data.uf || ''
+      };
+    } catch (error) {
+      return null;
+    }
+  };
 
   const createPropertyMutation = useMutation({
     mutationFn: async (data: PropertyFormData) => {
       const propertyData = {
         ...data,
         value: data.value,
-        area: data.area || "0",
-        bedrooms: data.bedrooms || 0,
-        bathrooms: data.bathrooms || 0,
       };
       
       return await apiRequest("POST", "/api/properties", propertyData);
@@ -100,6 +177,17 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
       onOpenChange(false);
       form.reset();
       setFiles([]);
+      setOwners([{
+        id: crypto.randomUUID(),
+        fullName: '',
+        cpf: '',
+        rg: '',
+        birthDate: '',
+        maritalStatus: '',
+        fatherName: '',
+        motherName: '',
+        phone: ''
+      }]);
     },
     onError: (error: Error) => {
       toast({
@@ -170,88 +258,37 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Endereço Completo</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Rua das Flores, 123 - Vila Madalena" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="bedrooms"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Quartos</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max="10" 
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="bathrooms"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Banheiros</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max="10" 
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="area"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Área (m²)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="120" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-medium">Dados do Proprietário</h3>
+            <div className="md:col-span-2">
+              <h3 className="font-medium mb-4">Endereço Completo</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <FormField
                   control={form.control}
-                  name="ownerName"
+                  name="cep"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome Completo</FormLabel>
+                      <FormLabel>CEP</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          placeholder="00000-000" 
+                          {...field}
+                          onChange={async (e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            const formattedCep = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+                            field.onChange(formattedCep);
+                            
+                            if (value.length === 8) {
+                              const addressData = await fetchAddressByCep(value);
+                              if (addressData) {
+                                form.setValue('street', addressData.street);
+                                form.setValue('neighborhood', addressData.neighborhood);
+                                form.setValue('city', addressData.city);
+                                form.setValue('state', addressData.state);
+                              }
+                            }
+                          }}
+                          maxLength={9}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -260,12 +297,12 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
 
                 <FormField
                   control={form.control}
-                  name="ownerCpf"
+                  name="street"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>CPF</FormLabel>
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Rua/Avenida</FormLabel>
                       <FormControl>
-                        <Input placeholder="000.000.000-00" {...field} />
+                        <Input placeholder="Rua das Flores" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -274,32 +311,262 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
 
                 <FormField
                   control={form.control}
-                  name="ownerRg"
+                  name="number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>RG/CNH</FormLabel>
+                      <FormLabel>Número</FormLabel>
                       <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="ownerPhone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="(11) 99999-9999" {...field} />
+                        <Input placeholder="123" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                <FormField
+                  control={form.control}
+                  name="complement"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Complemento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Apto 45" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="neighborhood"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bairro</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Vila Madalena" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cidade</FormLabel>
+                      <FormControl>
+                        <Input placeholder="São Paulo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado</FormLabel>
+                      <FormControl>
+                        <Input placeholder="SP" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <h3 className="font-medium">Dados do(s) Proprietário(s)</h3>
+
+              {owners.map((owner, index) => (
+                <div key={owner.id} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-sm">
+                      Proprietário {index + 1}
+                      {index > 0 && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (Cônjuge, Familiar, etc.)
+                        </span>
+                      )}
+                    </h4>
+                    {owners.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeOwner(owner.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.fullName`}
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>Nome Completo</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.cpf`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>CPF</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="000.000.000-00" 
+                              {...field}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '');
+                                const formattedCpf = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                                field.onChange(formattedCpf);
+                              }}
+                              maxLength={14}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.rg`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>RG/CNH</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.birthDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Data de Nascimento</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.maritalStatus`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Estado Civil</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="solteiro">Solteiro(a)</SelectItem>
+                              <SelectItem value="casado">Casado(a)</SelectItem>
+                              <SelectItem value="divorciado">Divorciado(a)</SelectItem>
+                              <SelectItem value="viuvo">Viúvo(a)</SelectItem>
+                              <SelectItem value="separado">Separado(a)</SelectItem>
+                              <SelectItem value="uniao-estavel">União Estável</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.fatherName`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome do Pai</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.motherName`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome da Mãe</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.phone`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Telefone</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="(11) 99999-9999" 
+                              {...field}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '');
+                                const formattedPhone = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                                field.onChange(formattedPhone);
+                              }}
+                              maxLength={15}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addOwner}
+                      className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 font-medium px-3 py-1 text-sm"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Adicionar Proprietário
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="space-y-4">
