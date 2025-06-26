@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,7 +30,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { CloudUpload, Plus, Trash2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { CloudUpload, Plus, Trash2, X, Upload, CheckCircle } from "lucide-react";
+
 const BRAZILIAN_STATES = [
   { value: "AC", label: "AC" },
   { value: "AL", label: "AL" },
@@ -91,15 +93,56 @@ const propertySchema = z.object({
 
 type PropertyFormData = z.infer<typeof propertySchema>;
 
+interface Property {
+  id?: string;
+  type: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  cep: string;
+  value: string | number;
+  owners?: any[];
+  registrationNumber?: string;
+  municipalRegistration?: string;
+}
+
 interface PropertyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  property?: Property | null;
 }
 
-export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
+async function fetchAddressByCep(cep: string) {
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await response.json();
+    
+    if (data.erro) {
+      return null;
+    }
+    
+    return {
+      street: data.logradouro,
+      neighborhood: data.bairro,
+      city: data.localidade,
+      state: data.uf,
+    };
+  } catch (error) {
+    console.error('Erro ao buscar CEP:', error);
+    return null;
+  }
+}
+
+export function PropertyModal({ open, onOpenChange, property }: PropertyModalProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const isEditing = !!property;
 
   const [owners, setOwners] = useState([{
     id: crypto.randomUUID(),
@@ -143,6 +186,111 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
     },
   });
 
+  // Efeito para popular formulário quando editing
+  useEffect(() => {
+    if (property && open) {
+      // Formatar valor para exibição
+      const formatValue = (value: string | number) => {
+        const numValue = Number(value);
+        return new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(numValue);
+      };
+
+      // Popular campos básicos
+      form.reset({
+        type: property.type || "",
+        street: property.street || "",
+        number: property.number || "",
+        complement: property.complement || "",
+        neighborhood: property.neighborhood || "",
+        city: property.city || "",
+        state: property.state || "",
+        cep: property.cep || "",
+        value: formatValue(property.value),
+        registrationNumber: property.registrationNumber || "",
+        municipalRegistration: property.municipalRegistration || "",
+        owners: property.owners && property.owners.length > 0 ? 
+          property.owners.map(owner => ({
+            id: owner.id || crypto.randomUUID(),
+            fullName: owner.fullName || '',
+            cpf: owner.cpf || '',
+            rg: owner.rg || '',
+            birthDate: owner.birthDate || '',
+            maritalStatus: owner.maritalStatus || '',
+            fatherName: owner.fatherName || '',
+            motherName: owner.motherName || '',
+            phone: owner.phone || '',
+            email: owner.email || ''
+          })) : [{
+            id: crypto.randomUUID(),
+            fullName: '',
+            cpf: '',
+            rg: '',
+            birthDate: '',
+            maritalStatus: '',
+            fatherName: '',
+            motherName: '',
+            phone: '',
+            email: ''
+          }]
+      });
+
+      setOwners(property.owners || [{
+        id: crypto.randomUUID(),
+        fullName: '',
+        cpf: '',
+        rg: '',
+        birthDate: '',
+        maritalStatus: '',
+        fatherName: '',
+        motherName: '',
+        phone: '',
+        email: ''
+      }]);
+    } else if (!property && open) {
+      // Reset para novo
+      form.reset({
+        type: "",
+        street: "",
+        number: "",
+        complement: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+        cep: "",      
+        value: "",
+        owners: [{
+          id: crypto.randomUUID(),
+          fullName: '',
+          cpf: '',
+          rg: '',
+          birthDate: '',
+          maritalStatus: '',
+          fatherName: '',
+          motherName: '',
+          phone: '',
+          email: ''
+        }],
+        registrationNumber: "",
+        municipalRegistration: "",
+      });
+      setOwners([{
+        id: crypto.randomUUID(),
+        fullName: '',
+        cpf: '',
+        rg: '',
+        birthDate: '',
+        maritalStatus: '',
+        fatherName: '',
+        motherName: '',
+        phone: '',
+        email: ''
+      }]);
+    }
+  }, [property, open, form]);
+
   const addOwner = () => {
     const newOwner = {
       id: crypto.randomUUID(),
@@ -169,92 +317,89 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
     }
   };
 
-  const fetchAddressByCep = async (cep: string) => {
-    const cleanCep = cep.replace(/\D/g, '');
-    if (cleanCep.length !== 8) return null;
-    
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-      const data = await response.json();
-      
-      if (data.erro) return null;
-      
-      return {
-        street: data.logradouro || '',
-        neighborhood: data.bairro || '',
-        city: data.localidade || '',
-        state: data.uf || ''
-      };
-    } catch (error) {
-      return null;
-    }
-  };
-
-  const formatCurrency = (value: string) => {
-    // Remove tudo que não é número
-    const numbers = value.replace(/\D/g, '');
-    
-    // Se não tem números, retorna 0,00
-    if (!numbers || numbers === '') {
-      return '0,00';
-    } 
-
-    // Converte para número e divide por 100 para ter centavos
-    const amount = parseInt(numbers) / 100;
-    
-    // Se o resultado é NaN ou inválido, retorna 0,00
-    if (isNaN(amount)) {
-      return '0,00';
-    }
-
-    // Formata como moeda brasileira
-    return amount.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  };
-
   const createPropertyMutation = useMutation({
     mutationFn: async (data: PropertyFormData) => {
-      const propertyData = {
-        ...data,
-        value: data.value,
-      };
-      
-      return await apiRequest("POST", "/api/properties", propertyData);
+      const endpoint = isEditing ? `/api/properties/${property.id}` : "/api/properties";
+      const method = isEditing ? "PUT" : "POST";
+      const response = await apiRequest(method, endpoint, data);
+      return await response.json();
     },
-    onSuccess: () => {
-      toast({
-        title: "Sucesso!",
-        description: "Imóvel cadastrado com sucesso.",
-      });
+    onSuccess: async (createdProperty) => {
+      // Upload arquivos se houver
+      if (files.length > 0) {
+        await uploadFilesToSupabase(createdProperty.id || property?.id);
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/recent"] });
+      toast({
+        title: isEditing ? "Imóvel atualizado!" : "Imóvel cadastrado!",
+        description: isEditing ? "Os dados foram atualizados com sucesso." : "Nova captação registrada no sistema.",
+      });
       onOpenChange(false);
       form.reset();
       setFiles([]);
-      setOwners([{
-        id: crypto.randomUUID(),
-        fullName: '',
-        cpf: '',
-        rg: '',
-        birthDate: '',
-        maritalStatus: '',
-        fatherName: '',
-        motherName: '',
-        phone: '',
-        email: ''
-      }]);
+      setUploadedFiles([]);
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
-        title: "Erro",
-        description: error.message || "Erro ao cadastrar imóvel.",
+        title: isEditing ? "Erro ao atualizar" : "Erro ao cadastrar",
+        description: error.message || "Tente novamente.",
         variant: "destructive",
       });
     },
   });
+
+  const uploadFilesToSupabase = async (propertyId: string) => {
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const file of files) {
+        const fileName = `${Date.now()}-${file.name}`;
+        const filePath = `${propertyId}/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('property-documents')
+          .upload(filePath, file);
+
+        if (error) {
+          throw error;
+        }
+
+        // Obter URL pública
+        const { data: { publicUrl } } = supabase.storage
+          .from('property-documents')
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(publicUrl);
+
+        // Salvar metadata no banco via API
+        await apiRequest('POST', '/api/property-documents', {
+          propertyId: propertyId,
+          fileName: file.name,
+          fileUrl: publicUrl,
+          fileType: file.type,
+          fileSize: file.size
+        });
+      }
+
+      setUploadedFiles(uploadedUrls);
+      toast({
+        title: "Arquivos enviados!",
+        description: `${files.length} arquivo(s) enviado(s) com sucesso.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro no upload",
+        description: error.message || "Erro ao enviar arquivos.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onSubmit = (data: PropertyFormData) => {
     // Converter valor brasileiro para formato numérico
@@ -286,7 +431,9 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nova Captação de Imóvel</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Editar Imóvel" : "Nova Captação de Imóvel"}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -298,7 +445,7 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipo de Imóvel</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione..." />
@@ -311,7 +458,9 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                         <SelectItem value="terreno">Terreno</SelectItem>
                         <SelectItem value="sala">Sala</SelectItem>
                         <SelectItem value="loja">Loja</SelectItem>
-                        <SelectItem value="outo">Outro</SelectItem>
+                        <SelectItem value="galpao">Galpão</SelectItem>
+                        <SelectItem value="chacara">Chácara</SelectItem>
+                        <SelectItem value="fazenda">Fazenda</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -324,22 +473,20 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                 name="value"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Valor de Venda (R$)</FormLabel>
+                    <FormLabel>Valor do Imóvel</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm font-medium">
-                          R$
-                        </span>
-                        <Input 
-                          placeholder="0,00"
-                          {...field}
-                          className="pl-8"
-                          onChange={(e) => {
-                            const formatted = formatCurrency(e.target.value);
-                            field.onChange(formatted);
-                          }}
-                        />
-                      </div>
+                      <Input
+                        placeholder="R$ 500.000,00"
+                        {...field}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          const formattedValue = new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                          }).format(Number(value) / 100);
+                          field.onChange(formattedValue);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -347,10 +494,11 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
               />
             </div>
 
-            <div className="md:col-span-2">
-              <h3 className="font-medium mb-4">Endereço Completo</h3>
+            {/* Endereço */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Endereço</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="cep"
@@ -358,8 +506,8 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem>
                       <FormLabel>CEP</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="00000-000" 
+                        <Input
+                          placeholder="00000-000"
                           {...field}
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '');
@@ -388,86 +536,14 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
 
                 <FormField
                   control={form.control}
-                  name="street"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Rua/Avenida</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Rua ABC" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                <FormField
-                  control={form.control}
-                  name="complement"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Complemento</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Apto 123" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="neighborhood"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bairro</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite aqui..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="city"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cidade</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Digite aqui..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="state"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Estado</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione..." />
+                            <SelectValue placeholder="UF" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -482,21 +558,98 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cidade</FormLabel>
+                      <FormControl>
+                        <Input placeholder="São Paulo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="street"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Rua/Avenida</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Rua ABC" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="complement"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Complemento</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Apto 45" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="neighborhood"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bairro</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Centro" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h3 className="font-medium">Dados do(s) Proprietário(s)</h3>
+            {/* Proprietários */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Proprietários</h3>
+                <Button type="button" variant="outline" size="sm" onClick={addOwner}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Proprietário
+                </Button>
+              </div>
 
-              {owners.map((owner, index) => (
+              {form.watch('owners').map((owner, index) => (
                 <div key={owner.id} className="border rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-sm">
+                    <h4 className="font-medium">
                       Proprietário {index + 1}
-                      {index > 0 && (
-                        <span className="text-xs text-muted-foreground ml-2">
-                          (Cônjuge, Familiar, etc.)
-                        </span>
+                      {index === 0 && (
+                        <span className="text-sm text-muted-foreground ml-2">(Principal)</span>
                       )}
                     </h4>
                     {owners.length > 1 && (
@@ -552,88 +705,6 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
 
                     <FormField
                       control={form.control}
-                      name={`owners.${index}.rg`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>RG/CNH</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`owners.${index}.birthDate`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Data de Nascimento</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`owners.${index}.maritalStatus`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Estado Civil</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="solteiro">Solteiro(a)</SelectItem>
-                              <SelectItem value="casado">Casado(a)</SelectItem>
-                              <SelectItem value="divorciado">Divorciado(a)</SelectItem>
-                              <SelectItem value="viuvo">Viúvo(a)</SelectItem>
-                              <SelectItem value="separado">Separado(a)</SelectItem>
-                              <SelectItem value="uniao-estavel">União Estável</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`owners.${index}.fatherName`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome do Pai</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`owners.${index}.motherName`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome da Mãe</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
                       name={`owners.${index}.phone`}
                       render={({ field }) => (
                         <FormItem>
@@ -654,43 +725,14 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name={`owners.${index}.email`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>E-mail</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email"
-                              placeholder="exemplo@email.com" 
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={addOwner}
-                      className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 font-medium px-3 py-1 text-sm"
-                    >
-                      <Plus className="h-3 w-3" />
-                      Adicionar Proprietário
-                    </Button>
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Documentação */}
             <div className="space-y-4">
-              <h3 className="font-medium">Documentação do Imóvel</h3>
+              <h3 className="text-lg font-medium">Documentação</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -698,9 +740,9 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                   name="registrationNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Número da Matrícula</FormLabel>
+                      <FormLabel>Número de Matrícula</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input placeholder="123456" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -714,53 +756,107 @@ export function PropertyModal({ open, onOpenChange }: PropertyModalProps) {
                     <FormItem>
                       <FormLabel>Inscrição Municipal</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input placeholder="789012" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
 
-            <div className="space-y-4">
-              <h3 className="font-medium">Upload de Documentos</h3>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-                <CloudUpload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="mb-2 font-medium">Clique aqui ou arraste arquivos para fazer upload</p>
-                <p className="text-sm text-muted-foreground mb-4">PDF, JPG, PNG até 10MB cada</p>
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <Button type="button" variant="outline" onClick={() => document.getElementById('file-upload')?.click()}>
-                  Selecionar Arquivos
-                </Button>
+              {/* Upload de Documentos */}
+              <div className="space-y-4">
+                <h4 className="font-medium">Upload de Documentos</h4>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+                  <div className="text-center">
+                    <CloudUpload className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <div className="mt-4">
+                      <label htmlFor="file-upload" className="cursor-pointer">
+                        <span className="mt-2 block text-sm font-medium text-foreground">
+                          Clique para fazer upload ou arraste arquivos aqui
+                        </span>
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          PNG, JPG, PDF até 10MB cada
+                        </span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          multiple
+                          accept=".png,.jpg,.jpeg,.pdf"
+                          className="sr-only"
+                          onChange={handleFileChange}
+                          disabled={uploading}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lista de arquivos selecionados */}
                 {files.length > 0 && (
-                  <div className="mt-4 text-left">
-                    <p className="text-sm font-medium mb-2">Arquivos selecionados:</p>
-                    <ul className="text-xs space-y-1">
-                      {files.map((file, index) => (
-                        <li key={index} className="text-muted-foreground">
-                          {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium">Arquivos selecionados:</h5>
+                    {files.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 border rounded">
+                        <div className="flex items-center space-x-2">
+                          <Upload className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm truncate">{file.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setFiles(files.filter((_, i) => i !== index))}
+                          disabled={uploading}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Status do upload */}
+                {uploading && (
+                  <div className="flex items-center space-x-2 text-blue-600">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <span className="text-sm">Enviando arquivos...</span>
+                  </div>
+                )}
+
+                {/* Arquivos enviados com sucesso */}
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-green-600">Arquivos enviados:</h5>
+                    {uploadedFiles.map((url, index) => (
+                      <div key={index} className="flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span className="text-sm text-green-700">Arquivo {index + 1} enviado com sucesso</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" disabled={createPropertyMutation.isPending}>
-                {createPropertyMutation.isPending ? "Salvando..." : "Salvar Captação"}
+              <Button 
+                type="submit" 
+                disabled={createPropertyMutation.isPending || uploading}
+              >
+                {uploading 
+                  ? "Enviando arquivos..." 
+                  : createPropertyMutation.isPending 
+                    ? (isEditing ? "Atualizando..." : "Cadastrando...") 
+                    : (isEditing ? "Atualizar" : "Cadastrar")
+                }
               </Button>
             </DialogFooter>
           </form>

@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { setupAuth, setupAuthRoutes, isAuthenticated } from "./auth";
 import { insertPropertySchema, insertProposalSchema, insertContractSchema, insertTimelineEntrySchema } from "@shared/schema";
 import { z } from "zod";
+import { db } from "./db";
+import { documents as propertyDocuments } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware
@@ -242,6 +244,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recent transactions:", error);
       res.status(500).json({ message: "Failed to fetch recent transactions" });
+    }
+  });
+
+  // Adicione esta route no server/routes.ts
+  app.post("/api/property-documents", isAuthenticated, async (req: any, res) => {
+    try {
+      const { propertyId, fileName, fileUrl, fileType, fileSize } = req.body;
+      
+      // Verificar se o usuário é dono da propriedade
+      const property = await storage.getProperty(propertyId);
+      if (!property || property.userId !== parseInt(req.session.user.id)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Salvar metadata do arquivo
+      const document = await db.insert(propertyDocuments).values({
+        propertyId: propertyId,
+        fileName: fileName,
+        fileUrl: fileUrl,
+        fileType: fileType,
+        fileSize: fileSize    
+      }).returning();
+
+      res.json(document[0]);
+    } catch (error) {
+      console.error("Error saving document metadata:", error);
+      res.status(500).json({ message: "Failed to save document" });
     }
   });
 

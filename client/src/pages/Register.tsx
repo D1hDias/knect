@@ -75,85 +75,135 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">V</span>
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold">Ventus Hub</CardTitle>
-          <p className="text-muted-foreground">Crie sua conta de corretor</p>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome</FormLabel>
-                      <FormControl>
-                        <Input placeholder="João" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sobrenome</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Silva" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>E-mail</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="seu@email.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: `url('/src/assets/fundo_bg.jpg')`
+      }}
+    >
+      {/* Overlay para melhorar legibilidade */}
+      <div className="absolute inset-0 bg-black/20"></div>
+      
+      {/* Card do registro com z-index maior */}
+      <div className="relative z-10 w-full max-w-lg">
+        <Card className="w-full">
+          <CardHeader className="space-y-1 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src="/src/assets/logo2.png" 
+                alt="Ventus Hub" 
+                className="w-[120px] h-auto"
               />
+            </div>
+            <CardTitle className="text-2xl font-bold">Ventus Hub</CardTitle>
+            <p className="text-muted-foreground">Crie sua conta de corretor</p>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome</FormLabel>
+                        <FormControl>
+                          <Input placeholder="João" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sobrenome</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Silva" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
-                  name="cpf"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>CPF</FormLabel>
+                      <FormLabel>E-mail</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="000.000.000-00"
+                          type="email"
+                          placeholder="seu@email.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="cpf"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CPF</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="000.000.000-00"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '');
+                              const formattedCPF = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                              field.onChange(formattedCPF);
+                            }}
+                            maxLength={14}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="creci"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CRECI</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123456" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="(11) 99999-9999"
                           {...field}
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '');
-                            const formattedCpf = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-                            field.onChange(formattedCpf);
+                            const formattedPhone = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                            field.onChange(formattedPhone);
                           }}
-                          maxLength={14}
+                          maxLength={15}
                         />
                       </FormControl>
                       <FormMessage />
@@ -163,129 +213,92 @@ export default function Register() {
 
                 <FormField
                   control={form.control}
-                  name="creci"
+                  name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>CRECI</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
-                        <Input placeholder="123456" {...field} />
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefone</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="(11) 99999-9999"
-                        {...field}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
-                          const formattedPhone = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-                          field.onChange(formattedPhone);
-                        }}
-                        maxLength={15}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirmar Senha</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Senha</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          {...field}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={registerMutation.isPending}
+                >
+                  {registerMutation.isPending ? "Criando conta..." : "Criar conta"}
+                </Button>
+              </form>
+            </Form>
 
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmar Senha</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          {...field}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                          {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={registerMutation.isPending}
+            <div className="mt-6 text-center text-sm">
+              <span className="text-muted-foreground">Já tem uma conta? </span>
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-500 font-medium"
               >
-                {registerMutation.isPending ? "Criando conta..." : "Criar conta"}
-              </Button>
-            </form>
-          </Form>
-
-          <div className="mt-6 text-center text-sm">
-            <span className="text-muted-foreground">Já tem uma conta? </span>
-            <Link
-              href="/login"
-              className="text-blue-600 hover:text-blue-500 font-medium"
-            >
-              Faça login
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+                Faça login
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
