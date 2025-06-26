@@ -75,7 +75,7 @@ export default function PropertyCapture() {
 
     // Filtro por cidade
     if (filters.city.length > 0) {
-      if (!filters.city.includes(property.city)) return false;
+      if (!property.city || !filters.city.includes(property.city)) return false;
     }
 
     // Filtro por faixa de preço
@@ -101,8 +101,8 @@ export default function PropertyCapture() {
   }) || [];
 
   // Obter valores únicos para filtros
-  const uniqueTypes = [...new Set(properties?.map((p: any) => p.type) || [])];
-  const uniqueCities = [...new Set(properties?.map((p: any) => p.city) || [])];
+  const uniqueTypes = [...new Set(properties?.map((p: any) => p.type).filter(Boolean) || [])];
+  const uniqueCities = [...new Set(properties?.map((p: any) => p.city).filter(Boolean) || [])];
 
   const handleFilterChange = (filterType: keyof Filters, value: string) => {
     setFilters(prev => {
