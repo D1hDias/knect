@@ -78,7 +78,7 @@ export default function Register() {
     <div 
       className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat relative"
       style={{
-        backgroundImage: `url('https://i.ibb.co/MDH82jQG/the-deal-was-successfully-done-hose-agent-and-cus-2025-01-10-05-36-33-utc.jpg')`
+        backgroundImage: `url('/src/assets/wallpaper-azul-papel-de-parede-azul-fundo-13.jpg')`
       }}
     >
       {/* Overlay para melhorar legibilidade */}
@@ -86,17 +86,17 @@ export default function Register() {
       
       {/* Card do registro com z-index maior */}
       <div className="relative z-10 w-full max-w-lg">
-        <Card className="w-full">
+        <Card className="w-full" style={{ backgroundColor: '#15355e' }}>
           <CardHeader className="space-y-1 text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="https://i.ibb.co/jPmggGSj/4-1.png" 
-                alt="Ventus Hub" 
+                src="/src/assets/logo.jpeg" 
+                alt="KNECT" 
                 className="w-[120px] h-auto"
               />
             </div>
-            <CardTitle className="text-2xl font-bold">Ventus Hub</CardTitle>
-            <p className="text-muted-foreground">Crie sua conta de corretor</p>
+            <CardTitle className="text-2xl font-bold"></CardTitle>
+            <p className="text-white/80">Crie sua conta de corretor</p>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -107,7 +107,7 @@ export default function Register() {
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nome</FormLabel>
+                        <FormLabel className="text-white">Nome</FormLabel>
                         <FormControl>
                           <Input placeholder="João" {...field} />
                         </FormControl>
@@ -121,7 +121,7 @@ export default function Register() {
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Sobrenome</FormLabel>
+                        <FormLabel className="text-white">Sobrenome</FormLabel>
                         <FormControl>
                           <Input placeholder="Silva" {...field} />
                         </FormControl>
@@ -136,7 +136,7 @@ export default function Register() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>E-mail</FormLabel>
+                      <FormLabel className="text-white">E-mail</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -155,7 +155,7 @@ export default function Register() {
                     name="cpf"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CPF</FormLabel>
+                        <FormLabel className="text-white">CPF</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="000.000.000-00"
@@ -178,7 +178,7 @@ export default function Register() {
                     name="creci"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CRECI</FormLabel>
+                        <FormLabel className="text-white">CRECI</FormLabel>
                         <FormControl>
                           <Input placeholder="123456" {...field} />
                         </FormControl>
@@ -193,7 +193,7 @@ export default function Register() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefone</FormLabel>
+                      <FormLabel className="text-white">Telefone</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="(11) 99999-9999"
@@ -216,7 +216,7 @@ export default function Register() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Senha</FormLabel>
+                      <FormLabel className="text-white">Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -249,7 +249,7 @@ export default function Register() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirmar Senha</FormLabel>
+                      <FormLabel className="text-white">Confirmar Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -288,7 +288,7 @@ export default function Register() {
             </Form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Já tem uma conta? </span>
+              <span className="text-white/80">Já tem uma conta? </span>
               <Link
                 href="/login"
                 className="text-blue-600 hover:text-blue-500 font-medium"

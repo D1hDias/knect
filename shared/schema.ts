@@ -107,6 +107,7 @@ export const documents = pgTable("documents", {
   name: varchar("name").notNull(),          // ← Corrigido
   type: varchar("type").notNull(),          // ← Corrigido  
   url: text("url").notNull(),               // ← Corrigido
+  category: varchar("category"),            // ← NOVO: Para identificar tipo de documento
   status: varchar("status").notNull().default("pending"),  // ← Campo existente
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });

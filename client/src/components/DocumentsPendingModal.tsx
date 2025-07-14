@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -70,8 +70,47 @@ export function DocumentsPendingModal({ open, onOpenChange, property, docData }:
     return value && value !== '';
   };
 
-  // Mock - verificar quais documentos foram enviados (você precisa adaptar para sua API)
-  const [uploadedDocs] = useState(['ESPELHO_IPTU']); // Exemplo: apenas IPTU foi enviado
+  // State para documentos carregados da API
+  const [uploadedDocs, setUploadedDocs] = useState<string[]>([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+
+  // Buscar documentos quando o modal abrir
+  useEffect(() => {
+    if (open && property?.id) {
+      fetchPropertyDocuments();
+    }
+  }, [open, property?.id]);
+
+  const fetchPropertyDocuments = async () => {
+    if (!property?.id) return;
+    
+    setLoadingDocs(true);
+    try {
+      const response = await apiRequest('GET', `/api/properties/${property.id}/documents`);
+      const documents = await response.json();
+      
+      // Extrair categorias dos documentos enviados
+      const categories = documents.map((doc: any) => {
+        // Tentar identificar categoria pelo nome do arquivo ou propriedade category
+        if (doc.category) return doc.category;
+        
+        const fileName = doc.fileName?.toLowerCase() || '';
+        if (fileName.includes('onus') || fileName.includes('ônus')) return 'ONUS_REAIS';
+        if (fileName.includes('iptu')) return 'ESPELHO_IPTU';
+        if (fileName.includes('rg') || fileName.includes('cnh')) return 'RG_CNH';
+        if (fileName.includes('certid') || fileName.includes('civil')) return 'CERTIDAO_ESTADO_CIVIL';
+        if (fileName.includes('residencia') || fileName.includes('comprovante')) return 'COMPROVANTE_RESIDENCIA';
+        
+        return 'OTHER';
+      }).filter((cat: string) => cat !== 'OTHER');
+      
+      setUploadedDocs(categories);
+    } catch (error) {
+      console.error('Erro ao buscar documentos:', error);
+    } finally {
+      setLoadingDocs(false);
+    }
+  };
 
   const getDocumentStatus = (docKey: string) => {
     return uploadedDocs.includes(docKey);
@@ -144,6 +183,9 @@ export function DocumentsPendingModal({ open, onOpenChange, property, docData }:
         return updated;
       });
 
+      // Atualizar lista de documentos enviados
+      setUploadedDocs(prev => [...prev, docKey]);
+      
       // Fechar modal após 1 segundo para mostrar sucesso
       setTimeout(() => {
         onOpenChange(false);
@@ -172,6 +214,14 @@ export function DocumentsPendingModal({ open, onOpenChange, property, docData }:
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Loading indicator */}
+          {loadingDocs && (
+            <div className="flex items-center justify-center p-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+              <span className="text-sm text-gray-600">Carregando documentos...</span>
+            </div>
+          )}
+          
           {/* Resumo */}
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
             <h4 className="font-medium text-amber-800 mb-2">Status Atual</h4>

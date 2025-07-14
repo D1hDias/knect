@@ -109,14 +109,8 @@ export default function Dashboard() {
       case 'due-diligence':
         setLocation('/due-diligence');
         break;
-      case 'mercado':
-        setLocation('/mercado');
-        break;
-      case 'propostas':
-        setLocation('/propostas');
-        break;
-      case 'contratos':
-        setLocation('/contratos');
+      case 'timeline':
+        setLocation('/timeline');
         break;
       default:
         break;
@@ -176,7 +170,7 @@ export default function Dashboard() {
 
   if (propertiesLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between">
           <div>
             <Skeleton className="h-8 w-64 mb-2" />
@@ -197,50 +191,50 @@ export default function Dashboard() {
       title: "Imóveis em Captação",
       value: Math.max(stats.captacao, allProperties.length > 0 ? allProperties.length : 0),
       icon: Home,
-      iconBgColor: "#001f3f",
+      iconBgColor: "#15355e",
       progress: Math.min(stats.captacao * 10, 100),
       subtitle: `${stats.captacao} captações ativas`,
       onClick: () => navigateToSection('captacao')
     },
     {
-      title: "Ativos no Mercado",
-      value: stats.mercado,
-      icon: Store,
-      iconBgColor: "hsl(159, 69%, 38%)",
-      progress: Math.min(stats.mercado * 8, 100),
-      subtitle: "Prontos para venda",
-      onClick: () => navigateToSection('mercado')
+      title: "Due Diligence",
+      value: dueDiligenceCount,
+      icon: Search,
+      iconBgColor: "#22c55e",
+      progress: Math.min(dueDiligenceCount * 8, 100),
+      subtitle: "Verificações pendentes",
+      onClick: () => navigateToSection('due-diligence')
     },
     {
-      title: "Propostas Pendentes",
-      value: stats.propostas,
-      icon: Handshake,
-      iconBgColor: "hsl(32, 81%, 46%)",
-      progress: Math.min(stats.propostas * 15, 100),
-      subtitle: "Aguardando negociação",
-      onClick: () => navigateToSection('propostas')
+      title: "Acompanhamento",
+      value: allProperties.length,
+      icon: TrendingUp,
+      iconBgColor: "#ef4444",
+      progress: Math.min(allProperties.length * 5, 100),
+      subtitle: "Total de propriedades",
+      onClick: () => navigateToSection('timeline')
     },
     {
-      title: "Contratos Ativos",
+      title: "Processos Ativos",
       value: stats.contratos,
       icon: File,
-      iconBgColor: "hsl(0, 72%, 51%)",
+      iconBgColor: "#f59e0b",
       progress: Math.min(stats.contratos * 12, 100),
       subtitle: "Em andamento",
-      onClick: () => navigateToSection('contratos')
+      onClick: () => navigateToSection('timeline')
     }
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-1">
-            Bem-vindo, {(user as any)?.firstName || "Usuário"} {(user as any)?.lastName || ""}
+          <h1 className="text-4xl font-bold mb-1 text-gray-900">
+            Dashboard
           </h1>
-          <p className="text-muted-foreground">
-            CRECI: {(user as any)?.creci || "Não informado"} | Última atualização: {new Date().toLocaleString('pt-BR')}
+          <p className="text-gray-600">
+            Bem-vindo, {(user as any)?.firstName || "Usuário"} {(user as any)?.lastName || ""} | CRECI: {(user as any)?.creci || "Não informado"}
           </p>
         </div>
       </div>
@@ -262,15 +256,18 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Transactions */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Transações Recentes</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900">Transações Recentes</CardTitle>
+                <CardDescription className="text-gray-600">
                   Últimas atualizações em suas propriedades
                 </CardDescription>
               </div>
-              <Button onClick={() => setShowPropertyModal(true)}>
+              <Button 
+                onClick={() => setShowPropertyModal(true)}
+                className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Captação
               </Button>
@@ -278,12 +275,15 @@ export default function Dashboard() {
             <CardContent>
               {!recentTransactions || recentTransactions.length === 0 ? (
                 <div className="text-center py-8">
-                  <Home className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Nenhum imóvel cadastrado</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <Home className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium mb-2 text-gray-900">Nenhum imóvel cadastrado</h3>
+                  <p className="text-gray-600 mb-4">
                     Comece cadastrando seu primeiro imóvel para começar a usar o sistema.
                   </p>
-                  <Button onClick={() => setShowPropertyModal(true)}>
+                  <Button 
+                    onClick={() => setShowPropertyModal(true)}
+                    className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Cadastrar Primeiro Imóvel
                   </Button>
@@ -298,18 +298,18 @@ export default function Dashboard() {
                     return (
                       <div
                         key={property.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 hover:shadow-md hover:border-primary/20 hover:scale-[1.02] cursor-pointer transition-all duration-300 ease-in-out"
+                        className="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 hover:shadow-md hover:border-green-200 hover:scale-[1.02] cursor-pointer transition-all duration-300 ease-in-out bg-white"
                         onClick={() => handleViewProperty(property)}
                       >
                         <div className="flex items-center space-x-4">
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                            <span className="text-primary font-medium">{property.sequenceNumber || '00000'}</span>
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
+                            <span className="text-green-600 font-medium">{property.sequenceNumber || '00001'}</span>
                           </div>
                           <div>
-                            <div className="font-medium">
+                            <div className="font-medium text-gray-900">
                               {property.type.charAt(0).toUpperCase() + property.type.slice(1)} - {formattedValue}
                             </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-gray-600">
                               {property.address}
                             </div>
                           </div>
@@ -317,14 +317,14 @@ export default function Dashboard() {
                         <div className="flex items-center space-x-2">
                           <Badge
                             className={
-                              property.currentStage === 1 ? "bg-orange-100 text-orange-600 border-orange-200" :
-                              property.currentStage === 2 ? "bg-blue-100 text-blue-600 border-blue-200" :
-                              property.currentStage === 3 ? "bg-green-100 text-green-600 border-green-200" :
-                              property.currentStage === 4 ? "bg-purple-100 text-purple-600 border-purple-200" :
-                              property.currentStage === 5 ? "bg-indigo-100 text-indigo-600 border-indigo-200" :
-                              property.currentStage === 6 ? "bg-teal-100 text-teal-600 border-teal-200" :
-                              property.currentStage >= 7 ? "bg-green-100 text-green-600 border-green-200" : 
-                              "bg-gray-100 text-gray-600 border-gray-200"
+                              property.currentStage === 1 ? "bg-orange-100 text-orange-600 border-orange-200 rounded-full" :
+                              property.currentStage === 2 ? "bg-blue-100 text-blue-600 border-blue-200 rounded-full" :
+                              property.currentStage === 3 ? "bg-green-100 text-green-600 border-green-200 rounded-full" :
+                              property.currentStage === 4 ? "bg-purple-100 text-purple-600 border-purple-200 rounded-full" :
+                              property.currentStage === 5 ? "bg-indigo-100 text-indigo-600 border-indigo-200 rounded-full" :
+                              property.currentStage === 6 ? "bg-teal-100 text-teal-600 border-teal-200 rounded-full" :
+                              property.currentStage >= 7 ? "bg-green-100 text-green-600 border-green-200 rounded-full" : 
+                              "bg-gray-100 text-gray-600 border-gray-200 rounded-full"
                             }
                           >
                             {property.currentStage === 1 ? "Captação" :
@@ -339,7 +339,7 @@ export default function Dashboard() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleEditProperty(property, e)}
-                            className="hover:bg-blue-50 hover:text-blue-600"
+                            className="hover:bg-blue-50 hover:text-blue-600 rounded-full"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -347,7 +347,7 @@ export default function Dashboard() {
                             variant="ghost"
                             size="sm"
                             onClick={(e) => handleDeleteProperty(property, e)}
-                            className="hover:bg-red-50 hover:text-red-600"
+                            className="hover:bg-red-50 hover:text-red-600 rounded-full"
                             disabled={deletePropertyMutation.isPending}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -364,59 +364,39 @@ export default function Dashboard() {
 
         {/* Alerts and Quick Actions */}
         <div className="space-y-6">
-          <Card>
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardHeader>
-              <CardTitle>Alertas e Pendências</CardTitle>
+              <CardTitle className="text-gray-900">Alertas e Pendências</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert>
-                <TrendingUp className="h-4 w-4" />
-                <AlertDescription>
+              <Alert className="border-green-200 bg-green-50 rounded-xl">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
                   <strong>Performance do mês:</strong><br />
                   {stats.captacao} novas captações
                 </AlertDescription>
               </Alert>
 
               {dueDiligenceCount > 0 && (
-                <Alert className="cursor-pointer hover:bg-accent/50" onClick={() => navigateToSection('due-diligence')}>
-                  <File className="h-4 w-4" />
-                  <AlertDescription>
+                <Alert className="cursor-pointer hover:bg-blue-50 border-blue-200 bg-blue-50 rounded-xl" onClick={() => navigateToSection('due-diligence')}>
+                  <File className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
                     <strong>{dueDiligenceCount} imóveis em Due Diligence</strong><br />
                     Verificar documentação pendente
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              {stats.propostas > 0 && (
-                <Alert className="cursor-pointer hover:bg-accent/50" onClick={() => navigateToSection('propostas')}>
-                  <Handshake className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>{stats.propostas} propostas pendentes</strong><br />
-                    Revisar negociações em andamento
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {stats.contratos > 0 && (
-                <Alert className="cursor-pointer hover:bg-accent/50" onClick={() => navigateToSection('contratos')}>
-                  <File className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>{stats.contratos} contratos ativos</strong><br />
-                    Acompanhar prazos e documentação
                   </AlertDescription>
                 </Alert>
               )}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardHeader>
-              <CardTitle>Ações Rápidas</CardTitle>
+              <CardTitle className="text-gray-900">Ações Rápidas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button 
                 variant="outline" 
-                className="w-full justify-start"
+                className="w-full justify-start rounded-full border-gray-200 hover:bg-gray-50"
                 onClick={() => setShowPropertyModal(true)}
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -424,13 +404,16 @@ export default function Dashboard() {
               </Button>
               <Button 
                 variant="outline" 
-                className="w-full justify-start"
+                className="w-full justify-start rounded-full border-gray-200 hover:bg-gray-50"
                 onClick={() => navigateToSection('captacao')}
               >
                 <Search className="h-4 w-4 mr-2" />
                 Buscar Imóvel
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start rounded-full border-gray-200 hover:bg-gray-50"
+              >
                 <File className="h-4 w-4 mr-2" />
                 Gerar Relatório
               </Button>

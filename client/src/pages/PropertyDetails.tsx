@@ -18,7 +18,9 @@ import {
   FileCheck,
   Award,
   Home,
-  DollarSign
+  DollarSign,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +71,15 @@ export default function PropertyDetails() {
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [showDueDiligenceModal, setShowDueDiligenceModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [expandedStages, setExpandedStages] = useState<{[key: number]: boolean}>({});
+
+  // Function to toggle stage expansion
+  const toggleStageExpansion = (stageId: number) => {
+    setExpandedStages(prev => ({
+      ...prev,
+      [stageId]: !prev[stageId]
+    }));
+  };
 
   const { data: property, isLoading } = useQuery({
     queryKey: [`/api/properties/${propertyId}`],
@@ -92,7 +103,7 @@ export default function PropertyDetails() {
 
   // Obter o sequenceNumber da propriedade
   const getSequenceNumber = () => {
-    return property?.sequenceNumber || '00000';
+    return property?.sequenceNumber || '00001';
   };
 
   const getStageInfo = (currentStage: number): StageInfo[] => {
@@ -115,43 +126,11 @@ export default function PropertyDetails() {
       },
       {
         id: 3,
-        label: "No Mercado",
-        description: "Imóvel disponível para visualização",
-        icon: Home,
-        color: "#10b981",
-        completed: currentStage >= 3
-      },
-      {
-        id: 4,
-        label: "Com Proposta",
-        description: "Negociação em andamento",
-        icon: FileText,
-        color: "#8b5cf6",
-        completed: currentStage >= 4
-      },
-      {
-        id: 5,
-        label: "Em Contrato",
-        description: "Contrato assinado, aguardando financiamento",
-        icon: Pen,
-        color: "#6366f1",
-        completed: currentStage >= 5
-      },
-      {
-        id: 6,
-        label: "Instrumento",
-        description: "Escritura e transferência de propriedade",
-        icon: FileCheck,
-        color: "#14b8a6",
-        completed: currentStage >= 6
-      },
-      {
-        id: 7,
         label: "Concluído",
-        description: "Venda finalizada com sucesso",
+        description: "Processo finalizado com sucesso",
         icon: Award,
         color: "#059669",
-        completed: currentStage >= 7
+        completed: currentStage >= 3
       }
     ];
 
@@ -159,7 +138,7 @@ export default function PropertyDetails() {
   };
 
   const calculateProgress = (currentStage: number): number => {
-    return Math.min(((currentStage - 1) / 6) * 100, 100);
+    return Math.min(((currentStage - 1) / 2) * 100, 100);
   };
 
   const getDueDiligenceStatus = () => {
@@ -256,14 +235,14 @@ export default function PropertyDetails() {
             <Button
               variant="outline"
               onClick={() => window.history.back()}
-              className="border-gray-300"
+              className="border-gray-300 rounded-full"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-lg font-mono text-gray-500 bg-gray-100 px-3 py-1 rounded">
+                <span className="text-green-600 font-medium">
                   {getSequenceNumber()}
                 </span>
                 <h1 className="text-3xl font-bold text-gray-900">
@@ -276,7 +255,7 @@ export default function PropertyDetails() {
             </div>
           </div>
           <Button 
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#15355e] hover:bg-[#15355e]/90 rounded-full"
             onClick={() => setShowPropertyModal(true)}
           >
             <Edit3 className="h-4 w-4 mr-2" />
@@ -285,7 +264,7 @@ export default function PropertyDetails() {
         </div>
 
         {/* Progress Bar */}
-        <Card className="mb-8">
+        <Card className="bg-white rounded-xl shadow-sm border-0 mb-8">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl">Progresso do Processo</CardTitle>
@@ -294,13 +273,13 @@ export default function PropertyDetails() {
                   variant="outline" 
                   size="sm"
                   onClick={() => setShowDueDiligenceModal(true)}
-                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50 rounded-full"
                 >
                   <FileCheck className="h-4 w-4 mr-2" />
                   Due Diligence
                 </Button>
                 <Badge variant="secondary" className="text-sm">
-                  Etapa {property.currentStage || 1} de 7
+                  Etapa {property.currentStage || 1} de 3
                 </Badge>
               </div>
             </div>
@@ -315,11 +294,12 @@ export default function PropertyDetails() {
                 <Progress value={progress} className="h-3" />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {stages.map((stage, index) => {
                   const IconComponent = stage.icon;
                   const isActive = property.currentStage === stage.id;
                   const dueDiligenceStatus = getDueDiligenceStatus();
+                  const isExpanded = expandedStages[stage.id] || false;
                   
                   // Lógica especial para Due Diligence (stage 2)
                   let stageStatus = 'pending';
@@ -334,7 +314,7 @@ export default function PropertyDetails() {
                   return (
                     <div
                       key={stage.id}
-                      className={`text-center p-3 rounded-lg border-2 transition-all ${
+                      className={`rounded-lg border-2 transition-all duration-300 ease-in-out overflow-hidden ${
                         stageStatus === 'completed'
                           ? 'border-green-200 bg-green-50'
                           : stageStatus === 'in_progress'
@@ -344,30 +324,167 @@ export default function PropertyDetails() {
                           : 'border-gray-200 bg-gray-50'
                       }`}
                     >
-                      <div className={`w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center ${
-                        stageStatus === 'completed'
-                          ? 'bg-green-500 text-white'
-                          : stageStatus === 'in_progress'
-                          ? 'bg-blue-500 text-white'
-                          : stageStatus === 'active'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-300 text-gray-600'
-                      }`}>
-                        <IconComponent className="h-5 w-5" />
+                      {/* Stage Header - Always visible and clickable */}
+                      <div 
+                        className="text-center p-3 cursor-pointer hover:bg-opacity-80 transition-all duration-200"
+                        onClick={() => toggleStageExpansion(stage.id)}
+                      >
+                        <div className={`w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center ${
+                          stageStatus === 'completed'
+                            ? 'bg-green-500 text-white'
+                            : stageStatus === 'in_progress'
+                            ? 'bg-blue-500 text-white'
+                            : stageStatus === 'active'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-300 text-gray-600'
+                        }`}>
+                          <IconComponent className="h-5 w-5" />
+                        </div>
+                        <h3 className={`text-xs font-medium mb-1 flex items-center justify-center gap-1 ${
+                          stageStatus !== 'pending' ? 'text-gray-900' : 'text-gray-500'
+                        }`}>
+                          {stage.label}
+                          {isExpanded ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )}
+                        </h3>
+                        <p className="text-xs text-gray-500 leading-tight">
+                          {stage.id === 2 && stageStatus === 'in_progress' 
+                            ? 'Documentos em validação'
+                            : stage.id === 2 && stageStatus === 'completed'
+                            ? 'Todos documentos validados'
+                            : stage.description
+                          }
+                        </p>
                       </div>
-                      <h3 className={`text-xs font-medium mb-1 ${
-                        stageStatus !== 'pending' ? 'text-gray-900' : 'text-gray-500'
+
+                      {/* Expandable Content */}
+                      <div className={`transition-all duration-300 ease-in-out ${
+                        isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                       }`}>
-                        {stage.label}
-                      </h3>
-                      <p className="text-xs text-gray-500 leading-tight">
-                        {stage.id === 2 && stageStatus === 'in_progress' 
-                          ? 'Documentos em validação'
-                          : stage.id === 2 && stageStatus === 'completed'
-                          ? 'Todos documentos validados'
-                          : stage.description
-                        }
-                      </p>
+                        <div className="p-4 border-t border-gray-200">
+                          
+                          {/* Stage 1 - Captação specific content */}
+                          {stage.id === 1 && (
+                            <div className="space-y-3">
+                              <h4 className="text-sm font-semibold text-gray-800">Detalhes da Captação</h4>
+                              <div className="space-y-2 text-xs text-gray-600">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                  <span>Imóvel cadastrado no sistema</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                  <span>Dados básicos coletados</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                  <span>Proprietário identificado</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-3 w-3 text-blue-500" />
+                                  <span>Criado em: {property.createdAt ? new Date(property.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Stage 2 - Due Diligence specific content */}
+                          {stage.id === 2 && (
+                            <div className="space-y-3">
+                              <h4 className="text-sm font-semibold text-gray-800">Status do Due Diligence</h4>
+                              <div className="space-y-2 text-xs text-gray-600">
+                                {stageStatus === 'completed' && (
+                                  <>
+                                    <div className="flex items-center gap-2">
+                                      <CheckCircle className="h-3 w-3 text-green-500" />
+                                      <span>Todos os documentos validados</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <CheckCircle className="h-3 w-3 text-green-500" />
+                                      <span>Análise jurídica concluída</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <CheckCircle className="h-3 w-3 text-green-500" />
+                                      <span>Imóvel aprovado para comercialização</span>
+                                    </div>
+                                  </>
+                                )}
+                                {stageStatus === 'in_progress' && (
+                                  <>
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-3 w-3 text-blue-500" />
+                                      <span>Documentos em análise</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-3 w-3 text-blue-500" />
+                                      <span>Validação em andamento</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-3 w-3 text-blue-500" />
+                                      <span>Aguardando conclusão</span>
+                                    </div>
+                                  </>
+                                )}
+                                {stageStatus === 'pending' && (
+                                  <>
+                                    <div className="flex items-center gap-2">
+                                      <Circle className="h-3 w-3 text-gray-400" />
+                                      <span>Aguardando início da validação</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <FileText className="h-3 w-3 text-gray-400" />
+                                      <span>Documentos ainda não enviados</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Circle className="h-3 w-3 text-gray-400" />
+                                      <span>Pronto para iniciar due diligence</span>
+                                    </div>
+                                  </>
+                                )}
+                                <div className="mt-2 pt-2 border-t border-gray-100">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setShowDueDiligenceModal(true);
+                                    }}
+                                    className="w-full text-xs h-7"
+                                  >
+                                    <FileCheck className="h-3 w-3 mr-1" />
+                                    {stageStatus === 'pending' ? 'Iniciar Due Diligence' : 'Gerenciar Due Diligence'}
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Stage 3 - Concluído specific content */}
+                          {stage.id === 3 && (
+                            <div className="space-y-3">
+                              <h4 className="text-sm font-semibold text-gray-800">Processo Finalizado</h4>
+                              <div className="space-y-2 text-xs text-gray-600">
+                                <div className="flex items-center gap-2">
+                                  <Award className="h-3 w-3 text-green-500" />
+                                  <span>Processo completo finalizado</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-3 w-3 text-green-500" />
+                                  <span>Todas as etapas concluídas</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-3 w-3 text-blue-500" />
+                                  <span>Finalizado em: {property.updatedAt ? new Date(property.updatedAt).toLocaleDateString('pt-BR') : 'Data não disponível'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
@@ -381,7 +498,7 @@ export default function PropertyDetails() {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Property Information */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Home className="h-5 w-5 mr-2" />
@@ -457,7 +574,7 @@ export default function PropertyDetails() {
             </Card>
 
             {/* Owners Information */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <User className="h-5 w-5 mr-2" />
@@ -494,7 +611,7 @@ export default function PropertyDetails() {
             </Card>
 
             {/* Documentation */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <FileText className="h-5 w-5 mr-2" />
@@ -517,7 +634,7 @@ export default function PropertyDetails() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle>Ações Rápidas</CardTitle>
               </CardHeader>
@@ -538,7 +655,7 @@ export default function PropertyDetails() {
             </Card>
 
             {/* Timeline */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle>Timeline</CardTitle>
               </CardHeader>
@@ -569,7 +686,7 @@ export default function PropertyDetails() {
             </Card>
 
             {/* Property Stats */}
-            <Card>
+            <Card className="bg-white rounded-xl shadow-sm border-0">
               <CardHeader>
                 <CardTitle>Estatísticas</CardTitle>
               </CardHeader>
@@ -585,7 +702,7 @@ export default function PropertyDetails() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Etapa atual</span>
-                  <span className="font-medium">{property.currentStage || 1}/7</span>
+                  <span className="font-medium">{property.currentStage || 1}/3</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Progresso</span>

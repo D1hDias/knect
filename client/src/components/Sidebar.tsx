@@ -74,7 +74,7 @@ export function Sidebar({ className }: SidebarProps) {
           )}>
             <img 
               src="https://i.ibb.co/jPmggGSj/4-1.png" 
-              alt="Ventus Hub" 
+              alt="KNECT" 
               className="w-[120px] h-auto"
             />
             <span className="text-white font-semibold text-lg">

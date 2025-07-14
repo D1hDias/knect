@@ -151,7 +151,7 @@ The application runs exclusively on port 5000 for both development and productio
 
 ## Outras informações relevantes
 
-Leia os arquivos de PDF nos seguintes endereços "C:\Users\diego\OneDrive\Desktop\Projeto Imobiliário\VentusHub\attached_assets\Projeto de Software Imobiliário 1.0 – Etapas e Funcionalidades.docx" e "C:\Users\diego\OneDrive\Desktop\Projeto Imobiliário\VentusHub\attached_assets\sistema_imobiliario_completo_ia_2025.pdf", absorva, analise e treine com o conteúdo que lá está pois é uma apresentação completa sobre como deverá ser o sistema. Use como "livro de cabeceira" pois é uma bússola para chegarmos até nosso objetivo final.
+Leia os arquivos de PDF nos seguintes endereços "C:\Users\diego\OneDrive\Desktop\Projeto Imobiliário\KNECTHub\attached_assets\Projeto de Software Imobiliário 1.0 – Etapas e Funcionalidades.docx" e "C:\Users\diego\OneDrive\Desktop\Projeto Imobiliário\KNECTHub\attached_assets\sistema_imobiliario_completo_ia_2025.pdf", absorva, analise e treine com o conteúdo que lá está pois é uma apresentação completa sobre como deverá ser o sistema. Use como "livro de cabeceira" pois é uma bússola para chegarmos até nosso objetivo final.
 
 - Evite desperdício de tokens.
 - Você tem acesso ao meu repositório Github desse projeto então tentarei deixá-lo sempre atualizado para que nossos ajustes e alterações sejam todos bem sucedidos. Conforme for me orientando com códigos de programação pra alterar alguma parte do sistema que eu solicite, eu o farei nos códigos e nos fim você terá a atualização dos mesmos em tempo real junto comigo.

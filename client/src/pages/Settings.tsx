@@ -711,7 +711,7 @@ export default function Settings() {
               <CardHeader>
                 <CardTitle>Sobre o Sistema</CardTitle>
                 <CardDescription>
-                  Informações sobre o Ventus Hub
+                  Informações sobre o KNECT
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -720,7 +720,7 @@ export default function Settings() {
                     <span className="text-white font-bold text-xl">V</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">Ventus Hub - Corretores</h3>
+                    <h3 className="font-semibold text-lg">KNECT Hub - Corretores</h3>
                     <p className="text-muted-foreground">Versão 1.0.0</p>
                   </div>
                 </div>
@@ -747,14 +747,14 @@ export default function Settings() {
                     <p className="text-sm text-muted-foreground">
                       Para dúvidas ou suporte técnico, entre em contato através do e-mail:
                     </p>
-                    <p className="text-sm font-medium">suporte@ventushub.com</p>
+                    <p className="text-sm font-medium">suporte@knecthub.com</p>
                   </div>
 
                   <Separator />
 
                   <div className="text-center">
                     <p className="text-xs text-muted-foreground">
-                      © 2025 Ventus Hub. Todos os direitos reservados.
+                      © 2025 KNECT Hub. Todos os direitos reservados.
                     </p>
                   </div>
                 </div>

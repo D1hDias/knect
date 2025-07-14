@@ -118,6 +118,7 @@ interface PropertyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   property?: Property | null;
+  onDocumentUpdate?: () => void; // Callback para notificar parent sobre atualizações
 }
 
 // Estender File para incluir categoria
@@ -147,12 +148,12 @@ async function fetchAddressByCep(cep: string) {
   }
 }
 
-export function PropertyModal({ open, onOpenChange, property }: PropertyModalProps) {
+export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }: PropertyModalProps) {
   const [files, setFiles] = useState<FileWithCategory[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [propertyDocuments, setPropertyDocuments] = useState<any[]>([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [recentlyUploaded, setRecentlyUploaded] = useState<string[]>([]); // Para mostrar mensagem de sucesso permanente
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isEditing = !!property;
@@ -358,7 +359,6 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
       onOpenChange(false);
       form.reset();
       setFiles([]);
-      setUploadedFiles([]);
     },
     onError: (error: any) => {
       toast({
@@ -371,7 +371,6 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
 
   const uploadFilesToSupabase = async (propertyId: string) => {
     setUploading(true);
-    const uploadedUrls: string[] = [];
 
     console.log("=== UPLOAD DEBUG ===");
     console.log("PropertyId:", propertyId);
@@ -388,8 +387,12 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
           .upload(filePath, file);
 
         if (error) {
-          console.error("Supabase error:", error);
-          throw error;
+          console.error("Supabase error:", {
+            message: error.message,
+            code: error.statusCode,
+            details: error
+          });
+          throw new Error(`Erro no Supabase: ${error.message || 'Bucket não encontrado'}`);
         }
 
         // Obter URL pública
@@ -397,14 +400,13 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
           .from('property-documents')
           .getPublicUrl(filePath);
 
-        uploadedUrls.push(publicUrl);
-
         // Preparar dados para API
         const documentData = {
           propertyId: parseInt(propertyId),
           fileName: file.name,
           fileUrl: publicUrl,
           fileType: file.type,
+          category: file.category, // ADICIONAR CATEGORIA
         };
 
         console.log("Enviando para API:", documentData);
@@ -413,11 +415,19 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
         const response = await apiRequest('POST', '/api/property-documents', documentData);
         console.log("Resposta da API:", response);
       }
-
-      setUploadedFiles(uploadedUrls);
       
     } catch (error: any) {
-      console.error("Upload error:", error);
+      console.error("Upload error:", {
+        message: error.message,
+        stack: error.stack,
+        fullError: error
+      });
+      
+      // Mostrar mensagem mais amigável ao usuário
+      if (error.message?.includes('Bucket not found')) {
+        throw new Error('Bucket de armazenamento não configurado. Verifique a configuração do Supabase.');
+      }
+      
       throw error;
     } finally {
       setUploading(false);
@@ -486,19 +496,26 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
     }
 
     try {
+      // Marcar categorias como recém-enviadas ANTES de limpar files
+      const uploadedCategories = files.map(f => f.category).filter(Boolean) as string[];
+      
       await uploadFilesToSupabase(property.id);
       setFiles([]);
-      setUploadedFiles([]);
+      
+      setRecentlyUploaded(uploadedCategories);
       
       // Recarregar lista de documentos
       await fetchPropertyDocuments(property.id.toString());
       
-      toast({
-        title: "Documentos atualizados!",
-        description: "Os documentos foram enviados com sucesso.",
-      });
+      // Notificar parent sobre atualização (para refresh da barra de progresso)
+      if (onDocumentUpdate) {
+        onDocumentUpdate();
+      }
       
-      onOpenChange(false);
+      // TOAST REMOVIDO - confirmação agora fica dentro das DIVs
+      // Mensagem de sucesso fica permanente até ser deletada
+      
+      // NÃO FECHAR O MODAL - apenas fazer refresh interno
       
     } catch (error) {
       toast({
@@ -519,6 +536,17 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
       
       // REMOVER DA LISTA IMEDIATAMENTE (sem esperar o servidor)
       setPropertyDocuments(prev => prev.filter(doc => doc.id !== documentId));
+      
+      // Remover da lista de recém-enviados se estiver lá
+      setRecentlyUploaded(prev => prev.filter(category => {
+        const doc = propertyDocuments.find(d => d.id === documentId);
+        return !doc || !doc.fileName || !files.some(f => f.category === category && f.name === doc.fileName);
+      }));
+      
+      // Notificar parent sobre atualização (para refresh da barra de progresso)
+      if (onDocumentUpdate) {
+        onDocumentUpdate();
+      }
       
       toast({
         title: "Documento deletado!",
@@ -541,13 +569,236 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
     }
   };
 
+  // Helper para verificar se um documento já foi enviado
+  const hasDocument = (category: string) => {
+    return propertyDocuments.some(doc => 
+      doc.fileName?.toLowerCase().includes(category.toLowerCase()) ||
+      doc.category === category
+    );
+  };
+
+  // Helper para obter documento específico
+  const getDocument = (category: string) => {
+    return propertyDocuments.find(doc => 
+      doc.fileName?.toLowerCase().includes(category.toLowerCase()) ||
+      doc.category === category
+    );
+  };
+
+  // Componente para campo de upload com status visual
+  const DocumentUploadField = ({ 
+    category, 
+    title, 
+    icon, 
+    inputId 
+  }: { 
+    category: string; 
+    title: string; 
+    icon: string; 
+    inputId: string; 
+  }) => {
+    const existingDoc = getDocument(category);
+    const hasFile = hasDocument(category);
+    const pendingFile = files.find(f => f.category === category);
+    const wasRecentlyUploaded = recentlyUploaded.includes(category);
+    
+    // Debug logs removidos
+
+    return (
+      <div className="border rounded-lg p-4 space-y-3">
+        <div className="flex items-center space-x-2">
+          <span className="text-lg">{icon}</span>
+          <h5 className="font-medium text-sm">{title}</h5>
+        </div>
+        
+        {/* Mensagem de sucesso permanente com todas as informações */}
+        {wasRecentlyUploaded && (() => {
+          
+          // Encontrar documento por categoria (preferência) ou por nome do arquivo
+          const recentDoc = propertyDocuments
+            .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+            .find(doc => {
+              // Primeiro: verificar categoria exata
+              if (doc.category === category) {
+                return true;
+              }
+              
+              // Segundo: verificar nome do arquivo como fallback
+              if (!doc.fileName && !doc.name) return false;
+              
+              const fileName = (doc.fileName || doc.name || '').toLowerCase();
+              let matchByName = false;
+              
+              if (category === 'ONUS_REAIS' && (fileName.includes('onus') || fileName.includes('ônus'))) matchByName = true;
+              if (category === 'ESPELHO_IPTU' && fileName.includes('iptu')) matchByName = true;
+              if (category === 'RG_CNH' && (fileName.includes('rg') || fileName.includes('cnh'))) matchByName = true;
+              if (category === 'CERTIDAO_ESTADO_CIVIL' && (fileName.includes('certid') || fileName.includes('civil'))) matchByName = true;
+              if (category === 'COMPROVANTE_RESIDENCIA' && (fileName.includes('residencia') || fileName.includes('comprovante'))) matchByName = true;
+              
+              return matchByName;
+            });
+
+          return recentDoc ? (
+            <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4">
+              <div className="space-y-3">
+                {/* Header com ícone de sucesso */}
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="text-sm font-bold text-green-800">✅ Arquivo enviado com sucesso!</span>
+                </div>
+                
+                {/* Informações do documento */}
+                <div className="bg-white rounded-md p-3 border border-green-200">
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Nome do arquivo:</span>
+                      <p className="text-sm text-gray-900">{recentDoc.fileName || recentDoc.name}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Data do envio:</span>
+                      <p className="text-sm text-gray-600">
+                        {new Date(recentDoc.uploadedAt).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botões de ação */}
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(`/api/documents/${recentDoc.id}/view`, '_blank')}
+                      className="text-blue-600 hover:text-blue-800 border-blue-200 hover:bg-blue-50"
+                      title="Visualizar documento"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Ver
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(`/api/documents/${recentDoc.id}/download`, '_blank')}
+                      className="text-green-600 hover:text-green-800 border-green-200 hover:bg-green-50"
+                      title="Baixar documento"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Baixar
+                    </Button>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      deleteDocument(recentDoc.id, recentDoc.fileName || recentDoc.name);
+                      setRecentlyUploaded(prev => prev.filter(cat => cat !== category));
+                    }}
+                    className="text-red-600 hover:text-red-800 border-red-200 hover:bg-red-50"
+                    title="Deletar documento"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Deletar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null;
+        })()}
+        
+        {/* Documento já enviado (servidor) */}
+        {hasFile && !pendingFile && !wasRecentlyUploaded ? (
+          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <div>
+                  <span className="text-sm font-medium text-green-700">Documento enviado</span>
+                  <p className="text-xs text-green-600">{existingDoc?.fileName}</p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => existingDoc && deleteDocument(existingDoc.id, existingDoc.fileName)}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : pendingFile && !wasRecentlyUploaded ? (
+          /* Arquivo selecionado (pendente para upload) - DENTRO DA BOX VERDE */
+          <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <div>
+                  <span className="text-sm font-medium text-green-700">Arquivo selecionado</span>
+                  <p className="text-xs text-green-600">{pendingFile.name}</p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setFiles(files.filter(f => f !== pendingFile))}
+                disabled={uploading}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : !wasRecentlyUploaded ? (
+          /* Campo de upload vazio */
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
+            <label htmlFor={inputId} className="cursor-pointer">
+              <div className="text-center">
+                <CloudUpload className="mx-auto h-8 w-8 text-gray-400" />
+                <div className="mt-2">
+                  <span className="text-xs font-medium text-gray-600">Clique para enviar</span>
+                  <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG até 10MB</p>
+                </div>
+              </div>
+              <input
+                id={inputId}
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                className="sr-only"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const fileWithCategory = Object.assign(file, { category }) as FileWithCategory;
+                    setFiles(prev => [...prev, fileWithCategory]);
+                  }
+                }}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[1000px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEditing 
-              ? `Editar Imóvel #${property?.sequenceNumber || '00000'}` 
+              ? `Editar Imóvel ${property?.sequenceNumber || '00000'}` 
               : 'Nova Captação'
             }
           </DialogTitle>
@@ -921,104 +1172,20 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* ÔNUS REAIS */}
-                  <div className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">⚖️</span>
-                      <h5 className="font-medium text-sm">Ônus Reais</h5>
-                    </div>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
-                      <label htmlFor="file-ONUS_REAIS" className="cursor-pointer">
-                        <div className="text-center">
-                          <CloudUpload className="mx-auto h-8 w-8 text-gray-400" />
-                          <div className="mt-2">
-                            <span className="text-xs font-medium text-gray-600">Clique para enviar</span>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG até 10MB</p>
-                          </div>
-                        </div>
-                        <input
-                          id="file-ONUS_REAIS"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          className="sr-only"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const fileWithCategory = Object.assign(file, { category: 'ONUS_REAIS' }) as FileWithCategory;
-                              setFiles(prev => [...prev, fileWithCategory]);
-                            }
-                          }}
-                          disabled={uploading}
-                        />
-                      </label>
-                    </div>
-                    {files.filter(f => f.category === 'ONUS_REAIS').map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
-                        <div className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs truncate">{file.name}</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFiles(files.filter(f => f !== file))}
-                          disabled={uploading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <DocumentUploadField 
+                    category="ONUS_REAIS"
+                    title="Ônus Reais"
+                    icon="⚖️"
+                    inputId="file-ONUS_REAIS"
+                  />
 
                   {/* ESPELHO DE IPTU */}
-                  <div className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">🏠</span>
-                      <h5 className="font-medium text-sm">Espelho de IPTU</h5>
-                    </div>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
-                      <label htmlFor="file-ESPELHO_IPTU" className="cursor-pointer">
-                        <div className="text-center">
-                          <CloudUpload className="mx-auto h-8 w-8 text-gray-400" />
-                          <div className="mt-2">
-                            <span className="text-xs font-medium text-gray-600">Clique para enviar</span>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG até 10MB</p>
-                          </div>
-                        </div>
-                        <input
-                          id="file-ESPELHO_IPTU"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          className="sr-only"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const fileWithCategory = Object.assign(file, { category: 'ESPELHO_IPTU' }) as FileWithCategory;
-                              setFiles(prev => [...prev, fileWithCategory]);
-                            }
-                          }}
-                          disabled={uploading}
-                        />
-                      </label>
-                    </div>
-                    {files.filter(f => f.category === 'ESPELHO_IPTU').map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
-                        <div className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs truncate">{file.name}</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFiles(files.filter(f => f !== file))}
-                          disabled={uploading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <DocumentUploadField 
+                    category="ESPELHO_IPTU"
+                    title="Espelho de IPTU"
+                    icon="🏠"
+                    inputId="file-ESPELHO_IPTU"
+                  />
 
                   {/* RG/CNH - DINÂMICO BASEADO NA QUANTIDADE DE PROPRIETÁRIOS */}
                   {form.watch('owners').map((owner, ownerIndex) => (
@@ -1078,104 +1245,20 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
                   ))}
 
                   {/* CERTIDÃO DE ESTADO CIVIL */}
-                  <div className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">💍</span>
-                      <h5 className="font-medium text-sm">Certidão de Estado Civil</h5>
-                    </div>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
-                      <label htmlFor="file-CERTIDAO_ESTADO_CIVIL" className="cursor-pointer">
-                        <div className="text-center">
-                          <CloudUpload className="mx-auto h-8 w-8 text-gray-400" />
-                          <div className="mt-2">
-                            <span className="text-xs font-medium text-gray-600">Clique para enviar</span>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG até 10MB</p>
-                          </div>
-                        </div>
-                        <input
-                          id="file-CERTIDAO_ESTADO_CIVIL"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          className="sr-only"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const fileWithCategory = Object.assign(file, { category: 'CERTIDAO_ESTADO_CIVIL' }) as FileWithCategory;
-                              setFiles(prev => [...prev, fileWithCategory]);
-                            }
-                          }}
-                          disabled={uploading}
-                        />
-                      </label>
-                    </div>
-                    {files.filter(f => f.category === 'CERTIDAO_ESTADO_CIVIL').map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
-                        <div className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs truncate">{file.name}</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFiles(files.filter(f => f !== file))}
-                          disabled={uploading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <DocumentUploadField 
+                    category="CERTIDAO_ESTADO_CIVIL"
+                    title="Certidão de Estado Civil"
+                    icon="💍"
+                    inputId="file-CERTIDAO_ESTADO_CIVIL"
+                  />
 
                   {/* COMPROVANTE DE RESIDÊNCIA */}
-                  <div className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">📮</span>
-                      <h5 className="font-medium text-sm">Comprovante de Residência</h5>
-                    </div>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-3">
-                      <label htmlFor="file-COMPROVANTE_RESIDENCIA" className="cursor-pointer">
-                        <div className="text-center">
-                          <CloudUpload className="mx-auto h-8 w-8 text-gray-400" />
-                          <div className="mt-2">
-                            <span className="text-xs font-medium text-gray-600">Clique para enviar</span>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG até 10MB</p>
-                          </div>
-                        </div>
-                        <input
-                          id="file-COMPROVANTE_RESIDENCIA"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          className="sr-only"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const fileWithCategory = Object.assign(file, { category: 'COMPROVANTE_RESIDENCIA' }) as FileWithCategory;
-                              setFiles(prev => [...prev, fileWithCategory]);
-                            }
-                          }}
-                          disabled={uploading}
-                        />
-                      </label>
-                    </div>
-                    {files.filter(f => f.category === 'COMPROVANTE_RESIDENCIA').map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
-                        <div className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-blue-500" />
-                          <span className="text-xs truncate">{file.name}</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFiles(files.filter(f => f !== file))}
-                          disabled={uploading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <DocumentUploadField 
+                    category="COMPROVANTE_RESIDENCIA"
+                    title="Comprovante de Residência"
+                    icon="📮"
+                    inputId="file-COMPROVANTE_RESIDENCIA"
+                  />
                 </div>
 
                 {/* Status do upload */}
@@ -1186,82 +1269,7 @@ export function PropertyModal({ open, onOpenChange, property }: PropertyModalPro
                   </div>
                 )}
               </div>
-
-              {/* Arquivos enviados com sucesso */}
-              {uploadedFiles.length > 0 && (
-                <div className="space-y-2">
-                  <h5 className="text-sm font-medium text-green-600">Arquivos enviados:</h5>
-                  {uploadedFiles.map((url, index) => (
-                    <div key={index} className="flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-700">Arquivo {index + 1} enviado com sucesso</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-
-            {/* Documentos Enviados */}
-            {(propertyDocuments.length > 0 || loadingDocuments) && (
-              <div className="space-y-4 border-t pt-4">
-                <h4 className="font-medium">Documentos Enviados</h4>
-                
-                {loadingDocuments ? (
-                  <div className="flex items-center space-x-2 text-blue-600">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                    <span className="text-sm">Carregando documentos...</span>
-                  </div>
-                ) : (
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {propertyDocuments.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <div>
-                          <span className="text-sm font-medium text-green-700">{doc.name}</span>
-                          <div className="text-xs text-green-600">
-                            Enviado em {new Date(doc.uploadedAt).toLocaleDateString('pt-BR')}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(`/api/documents/${doc.id}/view`, '_blank')}
-                          className="text-blue-600 hover:text-blue-800"
-                          title="Visualizar documento"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
-                          className="text-green-600 hover:text-green-800"
-                          title="Baixar documento"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteDocument(doc.id, doc.name)}
-                          className="text-red-600 hover:text-red-800"
-                          title="Deletar documento"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

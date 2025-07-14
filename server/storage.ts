@@ -55,18 +55,18 @@ export const storage = {
       .from(properties);
     
     if (result.length === 0) {
-      return "#00001"; // Primeiro registro
+      return "00001"; // Primeiro registro
     }
     
     // Extrair todos os números e encontrar o maior
     const numbers = result
-      .map(r => parseInt(r.sequenceNumber.replace('#', '')) || 0)
+      .map(r => parseInt(r.sequenceNumber.replace(/^#+/, '')) || 0)
       .filter(n => n > 0); // Filtrar números válidos
     
     const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
     const nextNumber = maxNumber + 1;
     
-    return "#" + String(nextNumber).padStart(5, '0');
+    return String(nextNumber).padStart(5, '0');
   },
 
   async getProperty(id: number) {

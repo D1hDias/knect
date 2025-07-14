@@ -27,7 +27,9 @@ import {
   Users,
   Send,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 
 interface Property {
@@ -111,7 +113,7 @@ export default function DueDiligence() {
 
       return {
         id: prop.id.toString(),
-        sequenceNumber: prop.sequenceNumber || '00000',
+        sequenceNumber: prop.sequenceNumber || '00001',
         type: prop.type,
         street: prop.street,
         number: prop.number,
@@ -209,6 +211,79 @@ export default function DueDiligence() {
     setSelectedProperty(null);
   };
 
+  const handleAdvanceStage = async (property: Property, newStage: number) => {
+    try {
+      const stageStatusMap: { [key: number]: string } = {
+        1: 'captacao',
+        2: 'diligence',
+        3: 'concluido'
+      };
+
+      const response = await fetch(`/api/properties/${property.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentStage: newStage,
+          status: stageStatusMap[newStage]
+        }),
+      });
+
+      if (response.ok) {
+        // Recarregar a página para mostrar as mudanças
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Erro ao alterar estágio:', error);
+    }
+  };
+
+  const getStageButtons = (property: Property) => {
+    const currentStage = property.currentStage || 2; // Due Diligence é stage 2
+    const buttons = [];
+
+    // Botão de retroceder para Captação (se estiver em Due Diligence)
+    if (currentStage > 1) {
+      buttons.push(
+        <Button
+          key="prev"
+          variant="outline"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAdvanceStage(property, currentStage - 1);
+          }}
+          className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 border-gray-300"
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Retornar para Captação
+        </Button>
+      );
+    }
+
+    // Botão de avançar para Concluído (se Due Diligence estiver completa)
+    if (currentStage === 2 && property.diligenceStatus === 'completed') {
+      buttons.push(
+        <Button
+          key="next"
+          variant="default"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAdvanceStage(property, 3);
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white"
+        >
+          <ArrowRight className="h-4 w-4 mr-1" />
+          Marcar como Concluído
+        </Button>
+      );
+    }
+
+    return buttons;
+  };
+
   const filteredProperties = properties.filter((property: Property) => {
     const matchesSearch = searchTerm === "" || 
       property.street?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -237,8 +312,8 @@ export default function DueDiligence() {
   const hasActiveFilters = filters.status.length > 0 || filters.progress !== "all";
 
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto px-6 py-4 space-y-6">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      <div className="mx-auto space-y-6">
         
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
@@ -247,65 +322,68 @@ export default function DueDiligence() {
               Emissão de certidões e pré-análise jurídica com IA
             </p>
           </div>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white shadow-sm">
+          <Button 
+            className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full shadow-sm"
+            onClick={() => setLocation('/analise-risco')}
+          >
             <Bot className="h-4 w-4 mr-2" />
-            Análise IA
+            Análise de Risco
           </Button>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="border-blue-200 bg-blue-50">
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#15355e] rounded-xl flex items-center justify-center">
                   <Clock className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-blue-600">Em Andamento</p>
-                  <p className="text-2xl font-bold text-blue-700">{stats.inProgress}</p>
+                  <p className="text-sm font-medium text-gray-600">Em Andamento</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.inProgress}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-orange-200 bg-orange-50">
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#22c55e] rounded-xl flex items-center justify-center">
                   <AlertTriangle className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-orange-600">Pendentes</p>
-                  <p className="text-2xl font-bold text-orange-700">{stats.pending}</p>
+                  <p className="text-sm font-medium text-gray-600">Pendentes</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-green-200 bg-green-50">
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#ef4444] rounded-xl flex items-center justify-center">
                   <CheckCircle className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-green-600">Concluídas</p>
-                  <p className="text-2xl font-bold text-green-700">{stats.completed}</p>
+                  <p className="text-sm font-medium text-gray-600">Concluídas</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-gray-200 bg-gray-50">
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#f59e0b] rounded-xl flex items-center justify-center">
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-700">{stats.total}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
                 </div>
               </div>
             </CardContent>
@@ -313,7 +391,7 @@ export default function DueDiligence() {
         </div>
 
         {/* Search and Filters */}
-        <Card className="shadow-sm border-gray-200">
+        <Card className="bg-white rounded-xl shadow-sm border-0">
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
@@ -358,8 +436,8 @@ export default function DueDiligence() {
         </Card>
 
         {/* Properties List */}
-        <Card className="shadow-sm border-gray-200">
-          <CardHeader className="px-6 py-4 border-b border-gray-200">
+        <Card className="bg-white rounded-xl shadow-sm border-0">
+          <CardHeader className="px-6 py-4">
             <CardTitle className="text-xl font-semibold text-gray-900">
               Imóveis em Due Diligence ({filteredProperties.length})
             </CardTitle>
@@ -380,7 +458,7 @@ export default function DueDiligence() {
                   return (
                     <Card 
                       key={property.id} 
-                      className="border-gray-200 hover:bg-accent/50 hover:shadow-md hover:border-primary/20 hover:scale-[1.02] cursor-pointer transition-all duration-300 ease-in-out"
+                      className="bg-white rounded-xl border-0 shadow-sm hover:bg-gray-50 hover:shadow-md hover:border-green-200 hover:scale-[1.02] cursor-pointer transition-all duration-300 ease-in-out"
                       onClick={() => handleViewProperty(property)}
                     >
                       <CardContent className="p-6">
@@ -389,9 +467,9 @@ export default function DueDiligence() {
                         <div className="flex items-start justify-between mb-4">
                           <div className="space-y-1">
                             <div className="flex items-center gap-3">
-                              <span className="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                {property.sequenceNumber}
-                              </span>
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
+                            <span className="text-green-600 font-medium">{property.sequenceNumber || '00001'}</span>
+                          </div>
                               <h3 className="text-lg font-semibold text-gray-900">
                                 {property.type} - {property.street}, {property.number}
                               </h3>
@@ -472,7 +550,7 @@ export default function DueDiligence() {
                                 e.stopPropagation();
                                 handleStartDiligence(property.id);
                               }}
-                              className="bg-orange-500 hover:bg-orange-600 text-white"
+                              className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full"
                             >
                               <Send className="h-4 w-4 mr-2" />
                               Iniciar Due Diligence
@@ -486,7 +564,7 @@ export default function DueDiligence() {
                                 e.stopPropagation();
                                 handleStartDiligence(property.id);
                               }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              className="bg-[#22c55e] hover:bg-[#22c55e]/90 text-white rounded-full"
                             >
                               <Clock className="h-4 w-4 mr-2" />
                               Continuar Due Diligence
@@ -498,25 +576,19 @@ export default function DueDiligence() {
                               <Button 
                                 size="sm" 
                                 variant="outline" 
-                                className="border-green-600 text-green-600 hover:bg-green-50"
+                                className="rounded-full border-gray-200 hover:bg-gray-50"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <FileText className="h-4 w-4 mr-2" />
                                 Ver Relatório
                               </Button>
-                              <Button 
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = '/mercado';
-                                }}
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                Anunciar o Imóvel
-                              </Button>
                             </div>
                           )}
+
+                          {/* Botões de Navegação entre Etapas */}
+                          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
+                            {getStageButtons(property)}
+                          </div>
                         </div>
 
                       </CardContent>
@@ -535,7 +607,7 @@ export default function DueDiligence() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Card className="shadow-sm border-gray-200">
+          <Card className="bg-white rounded-xl shadow-sm border-0">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">

@@ -1,13 +1,13 @@
-Prompt para Criação do Sistema "Ventus Hub - Corretores" em Bootstrap no Low-Code/No-Code (Lovable)
+Prompt para Criação do Sistema "KNECT Hub - Corretores" em Bootstrap no Low-Code/No-Code (Lovable)
 
-Como um especialista em desenvolvimento Low-Code/No-Code, com foco em Low-Code/No-Code, e profundo conhecimento em Bootstrap e design de UI/UX, preciso que você gere o código e a estrutura visual para o sistema "Ventus Hub - Corretores". O objetivo é criar um sistema intuitivo e funcional que digitalize e automatize processos do mercado imobiliário, conforme detalhado no PRD anexo.
+Como um especialista em desenvolvimento Low-Code/No-Code, com foco em Low-Code/No-Code, e profundo conhecimento em Bootstrap e design de UI/UX, preciso que você gere o código e a estrutura visual para o sistema "KNECT Hub - Corretores". O objetivo é criar um sistema intuitivo e funcional que digitalize e automatize processos do mercado imobiliário, conforme detalhado no PRD anexo.
 
 As instruções a seguir devem ser interpretadas como requisitos para a geração do código e da estrutura visual, incluindo componentes Bootstrap e funcionalidades de UI/UX.
 
 1. Configuração Inicial e Estrutura Base:
 
 Framework: Bootstrap 5 (ou a versão mais recente e estável).
-Nome do Projeto: Ventus Hub - Corretores.
+Nome do Projeto: KNECT Hub - Corretores.
 Tema: Implementar funcionalidade de "Light and Dark Mode" (modo claro e escuro) com um seletor visível e fácil de usar. O modo claro deve ser o padrão.
 Responsividade: Design 100% responsivo para desktop, tablet e mobile.
 Tipografia e Cores: Utilizar uma paleta de cores e tipografia amigável e profissional, coerente com a proposta de um sistema imobiliário moderno.
@@ -17,7 +17,7 @@ Tipografia e Cores: Utilizar uma paleta de cores e tipografia amigável e profis
 
 Layout: Centralizado, com campos de e-mail e senha.
 Componentes:
-Logotipo do "Ventus Hub - Corretores" visível e centralizado.
+Logotipo do "KNECT Hub - Corretores" visível e centralizado.
 Campo de entrada para e-mail.
 Campo de entrada para senha.
 Botão "Entrar" (ou "Login").

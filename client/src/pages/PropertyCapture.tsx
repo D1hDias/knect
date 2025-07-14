@@ -189,12 +189,8 @@ const PropertyActions = ({ property, onEdit }: PropertyActionsProps) => {
     try {
       const stageStatusMap: { [key: number]: string } = {
         1: 'captacao',
-        2: 'diligence', 
-        3: 'mercado',
-        4: 'proposta',
-        5: 'contrato',
-        6: 'instrumento',
-        7: 'concluido'
+        2: 'diligence',
+        3: 'concluido'
       };
 
       const response = await fetch(`/api/properties/${property.id}`, {
@@ -225,11 +221,7 @@ const PropertyActions = ({ property, onEdit }: PropertyActionsProps) => {
     if (currentStage > 1) {
       const prevStageLabels: { [key: number]: string } = {
         2: 'Captação',
-        3: 'Due Diligence', 
-        4: 'Mercado',
-        5: 'Propostas',
-        6: 'Contratos',
-        7: 'Instrumento'
+        3: 'Due Diligence'
       };
       
       buttons.push(
@@ -247,14 +239,10 @@ const PropertyActions = ({ property, onEdit }: PropertyActionsProps) => {
     }
 
     // Botão de avançar (se não estiver no último estágio)
-    if (currentStage < 7) {
+    if (currentStage < 3) {
       const nextStageLabels: { [key: number]: string } = {
         1: 'Due Diligence',
-        2: 'Mercado',
-        3: 'Propostas', 
-        4: 'Contratos',
-        5: 'Instrumento',
-        6: 'Concluído'
+        2: 'Concluído'
       };
       
       buttons.push(
@@ -312,7 +300,7 @@ export default function PropertyCapture() {
     priceRange: "all"
   });
 
-  const { data: properties = [], isLoading } = useQuery({
+  const { data: properties = [], isLoading, refetch } = useQuery({
     queryKey: ["/api/properties"],
     queryFn: async () => {
       const response = await fetch("/api/properties");
@@ -655,9 +643,9 @@ export default function PropertyCapture() {
                     {filteredProperties.map((property: Property, index: number) => (
                       <TableRow key={property.id || Math.random()} className="border-gray-200 hover:bg-gray-50/50">
                         <TableCell className="px-4 py-3">
-                          <span className="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                            {property.sequenceNumber || String(index + 1).padStart(5, '0')}
-                          </span>
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
+                            <span className="text-green-600 font-medium">{property.sequenceNumber || '00001'}</span>
+                          </div>
                         </TableCell>
                         <TableCell className="px-4 py-3">
                           <div className="space-y-1">
@@ -699,7 +687,7 @@ export default function PropertyCapture() {
                             onEdit={(prop) => {
                               setSelectedProperty({
                                 ...prop,
-                                sequenceNumber: prop.sequenceNumber || String(index + 1).padStart(5, '0')
+                                sequenceNumber: prop.sequenceNumber || '00001'
                               });
                               setShowPropertyModal(true);
                             }} 
@@ -724,6 +712,10 @@ export default function PropertyCapture() {
             }
           }}
           property={selectedProperty}
+          onDocumentUpdate={() => {
+            // Fazer refresh da lista de propriedades para atualizar barras de progresso
+            refetch();
+          }}
         />
         
       </div>

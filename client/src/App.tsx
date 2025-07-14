@@ -12,22 +12,28 @@ import Dashboard from "./pages/Dashboard";
 import PropertyCapture from "./pages/PropertyCapture";
 import Settings from "./pages/Settings";
 import DueDiligence from "./pages/DueDiligence";
-import PropertiesMarket from "./pages/MarketListing";
-import Proposals from "./pages/Proposals";
-import Contracts from "./pages/Contracts";
-import DefinitiveInstrument from "./pages/FinalInstrument";
+import RiskAnalysis from "./pages/RiskAnalysis";
 import Timeline from "./pages/Timeline";
 import PropertyDetails from "./pages/PropertyDetails";
-import SimuladorValorRegistro from "./pages/SimuladorValorRegistro";
-import SimuladorFinanciamento from "./pages/SimuladorFinanciamento";
-import SimuladorMetroQuadrado from "./pages/SimuladorMetroQuadrado";
-import SimuladorValorImovel from "./pages/SimuladorValorImovel";
 
 // Components
 import Layout from "./components/Layout.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // Teste: removendo autenticação - vai direto para o layout
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
+  }
+
   return <Layout>{children}</Layout>;
 }
 
@@ -90,27 +96,9 @@ function AppRoutes() {
         </ProtectedRoute>
       </Route>
 
-      <Route path="/mercado">
+      <Route path="/analise-risco">
         <ProtectedRoute>
-          <PropertiesMarket />
-        </ProtectedRoute>
-      </Route>
-
-      <Route path="/propostas">
-        <ProtectedRoute>
-          <Proposals />
-        </ProtectedRoute>
-      </Route>
-
-      <Route path="/contratos">
-        <ProtectedRoute>
-          <Contracts />
-        </ProtectedRoute>
-      </Route>
-
-      <Route path="/instrumento">
-        <ProtectedRoute>
-          <DefinitiveInstrument />
+          <RiskAnalysis />
         </ProtectedRoute>
       </Route>
 
@@ -126,36 +114,12 @@ function AppRoutes() {
         </ProtectedRoute>
       </Route>
 
-      {/* Rotas dos Simuladores */}
-      <Route path="/simulador-valor-registro">
-        <ProtectedRoute>
-          <SimuladorValorRegistro />
-        </ProtectedRoute>
-      </Route>
 
-      <Route path="/simulador-financiamento">
-        <ProtectedRoute>
-          <SimuladorFinanciamento />
-        </ProtectedRoute>
-      </Route>
-
-      <Route path="/simulador-metro-quadrado">
-        <ProtectedRoute>
-          <SimuladorMetroQuadrado />
-        </ProtectedRoute>
-      </Route>
-
-      <Route path="/simulador-valor-imovel">
-        <ProtectedRoute>
-          <SimuladorValorImovel />
-        </ProtectedRoute>
-      </Route>
-
-      {/* Rota padrão - redirecionando direto para dashboard */}
+      {/* Rota padrão - redirecionando para dashboard com autenticação */}
       <Route path="/">
-        <Layout>
+        <ProtectedRoute>
           <Dashboard />
-        </Layout>
+        </ProtectedRoute>
       </Route>
     </Switch>
   );

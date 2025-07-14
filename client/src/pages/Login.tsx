@@ -64,24 +64,24 @@ export default function Login() {
     <div 
       className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat relative"
       style={{
-        backgroundImage: `url('https://i.ibb.co/MDH82jQG/the-deal-was-successfully-done-hose-agent-and-cus-2025-01-10-05-36-33-utc.jpg')`
+        backgroundImage: `url('/src/assets/wallpaper-azul-papel-de-parede-azul-fundo-13.jpg')`
       }}
     >
       {/* Overlay para melhorar legibilidade */}
-      <div className="absolute inset-0 bg-black/70"></div>
+      <div className="absolute inset-0 bg-black/20"></div>
       
       {/* Card do login com z-index maior */}
       <div className="relative z-10 w-full max-w-md">
-        <Card className="w-full">
+        <Card className="w-full" style={{ backgroundColor: '#15355e' }}>
           <CardHeader className="space-y-1 text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="https://i.ibb.co/jPmggGSj/4-1.png" 
-                alt="Ventus Hub" 
+                src="/src/assets/logo.jpeg" 
+                alt="KNECT" 
                 className="w-[120px] h-auto"
               />
             </div>
-            <p className="text-muted-foreground">Entre na sua conta</p>
+            <p className="text-white/80">Entre na sua conta</p>
           </CardHeader>
           
           <CardContent>
@@ -92,7 +92,7 @@ export default function Login() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>E-mail</FormLabel>
+                      <FormLabel className="text-white">E-mail</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -110,7 +110,7 @@ export default function Login() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Senha</FormLabel>
+                      <FormLabel className="text-white">Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -149,7 +149,7 @@ export default function Login() {
             </Form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Não tem uma conta? </span>
+              <span className="text-white/80">Não tem uma conta? </span>
               <Link
                 href="/register"
                 className="text-blue-600 hover:text-blue-500 font-medium"

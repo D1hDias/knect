@@ -498,7 +498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("User:", req.session.user);
       console.log("===================================");
 
-      const { propertyId, fileName, fileUrl, fileType, fileSize } = req.body;
+      const { propertyId, fileName, fileUrl, fileType, fileSize, category } = req.body;
       
       // Validar campos obrigatórios
       if (!propertyId || !fileName || !fileUrl) {
@@ -531,6 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: fileName,              // ← Mapear fileName → name
         url: fileUrl,                // ← Mapear fileUrl → url
         type: fileType || 'application/octet-stream',  // ← Mapear fileType → type
+        category: category || null,  // ← NOVO: Salvar categoria
         status: 'uploaded'           // ← Campo obrigatório
       }).returning();
 

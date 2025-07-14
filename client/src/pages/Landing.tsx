@@ -50,7 +50,7 @@ export default function Landing() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Home className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">Ventus Hub</span>
+            <span className="text-xl font-bold">KNECT</span>
           </div>
           <Button onClick={() => window.location.href = "/api/login"}>
             Entrar
@@ -62,7 +62,7 @@ export default function Landing() {
       <section className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Ventus Hub - Corretores
+          KNECT
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             A plataforma completa para digitalizar e automatizar todos os processos do mercado imobiliário. 
@@ -118,7 +118,7 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Por que escolher o Ventus Hub?</h2>
+              <h2 className="text-3xl font-bold mb-6">Por que escolher a KNECT?</h2>
               <div className="space-y-4">
                 {[
                   "Redução de 70% no tempo de processamento",
@@ -163,7 +163,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="border-t bg-background py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>&copy; 2024 Ventus Hub. Todos os direitos reservados.</p>
+          <p>&copy; 2025 KNECT. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
