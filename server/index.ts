@@ -2,8 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { type Request, Response, NextFunction } from "express";
+import { WebSocketServer } from 'ws';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { handleWebSocketConnection } from './websocket';
 
 const app = express();
 app.use(express.json());
@@ -67,4 +69,8 @@ app.use((req, res, next) => {
   server.listen(port, host, () => {
     log(`serving on ${host}:${port}`);
   });
+
+  // Setup WebSocket Server
+  const wss = new WebSocketServer({ server });
+  wss.on('connection', handleWebSocketConnection);
 })();

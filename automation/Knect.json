@@ -1,0 +1,175 @@
+{
+  "name": "Knect",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-analysis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "beefc871-cf3d-4161-8a6a-e1ae066e700a",
+      "name": "Webhook",
+      "webhookId": "b434db55-2b1f-4892-8570-67da5cca92fc"
+    },
+    {
+      "parameters": {
+        "jsCode": "const requiredFields = ['analysisId', 'prompt', 'fullContext', 'requestType'];\nconst data = $json.body || $json; // pega de body se existir, senão direto\nconst missing = requiredFields.filter(field => !data[field]);\n\nif (missing.length > 0) {\n  throw new Error(`Campos obrigatórios ausentes: ${missing.join(', ')}`);\n}\n\nreturn [ { json: data } ];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "cc086ce6-0abe-4787-a34a-79bd77bc6340",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"moonshotai/kimi-k2:free\", \n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Você é um assistente jurídico especializado em análise de risco imobiliário. Responda sempre em português e siga o formato solicitado.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{$json.prompt}}\"\n    }\n  ],\n  \"max_tokens\": 1024,\n  \"temperature\": 0.2\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "8346b6e3-80df-4d55-8458-c2318bf6b4f7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Captura o texto retornado pela LLM\nconst raw = $json.choices[0].message.content;\n\n// 2. Função para extrair o primeiro bloco JSON válido do texto\nfunction extractJSON(text) {\n  const regex = /{[\\s\\S]*}/g;\n  const matches = text.match(regex);\n  if (matches && matches.length > 0) {\n    try {\n      return JSON.parse(matches[0]);\n    } catch (e) {\n      // Tenta corrigir aspas simples para duplas (caso a LLM erre)\n      try {\n        const fixed = matches[0].replace(/'/g, '\"');\n        return JSON.parse(fixed);\n      } catch (e2) {\n        return null;\n      }\n    }\n  }\n  return null;\n}\n\nlet result = extractJSON(raw);\n\n// 3. Se não conseguir extrair, retorna o texto bruto para debug\nif (!result) {\n  result = {\n    error: \"Não foi possível extrair JSON da resposta da LLM.\",\n    raw\n  };\n}\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "b9ee1dff-54c6-4752-ae40-0f65d102bf0d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const expectedFields = [\n  \"riskLevel\",\n  \"summary\",\n  \"alerts\",\n  \"recommendations\",\n  \"pendencies\",\n  \"contractModels\"\n];\n\nconst resposta = $json;\n\n// Verifica se todos os campos existem\nconst missing = expectedFields.filter(field => !(field in resposta));\n\nif (missing.length > 0) {\n  return [{\n    json: {\n      error: \"Campos obrigatórios ausentes na resposta da LLM.\",\n      missing,\n      resposta\n    }\n  }];\n}\n\n// Se tudo certo, retorna a resposta normalmente\nreturn [{ json: resposta }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "93af636d-afea-4376-8fdb-45df29c874cb",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        736,
+        0
+      ],
+      "id": "0ac5ac14-69a4-4fbf-83aa-980cd1874bc8",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "LQd41mAMYos9jprB"
+  },
+  "versionId": "0496ac8d-aa8c-4807-9a6f-38766ada9ba6",
+  "meta": {
+    "instanceId": "92e4022f920fb351596ed09fba120f6970bd5a2492a2e7bb991099811f1b1a67"
+  },
+  "id": "LQd41mAMYos9jprB",
+  "tags": []
+}

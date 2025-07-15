@@ -11,9 +11,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CheckCircle, Clock, ExternalLink, FileText, User, Building, Video, RotateCcw, Upload } from "lucide-react";
+import { CheckCircle, Clock, ExternalLink, FileText, User, Building, Video, RotateCcw, Upload, Bot } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CondominiumEmailModal } from "./CondominiumEmailModal";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DueDiligenceModalProps {
   open: boolean;
@@ -45,10 +46,13 @@ interface ChecklistItem {
   requiresModal?: boolean;
   documentFile?: File;
   documentUrl?: string;
+  automationStatus?: 'idle' | 'running' | 'paused' | 'success' | 'error';
+  automationLog?: string[];
 }
 
 export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligenceModalProps) {
   const { toast } = useToast();
+  const { user } = useAuth(); // Get user from auth context
   const [showCondominiumModal, setShowCondominiumModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState<{
@@ -56,12 +60,13 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
     category: 'property' | 'personal';
     itemName: string;
   } | null>(null);
+  const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
 
   // Estado inicial dos itens do checklist
   const [propertyItems, setPropertyItems] = useState<ChecklistItem[]>([
     { 
       id: 'onus_reais', 
-      name: 'ÔNUS REAIS', 
+      name: 'Ônus Reais', 
       status: 'pending',
       url: 'https://ridigital.org.br/CertidaoDigital/frmPedidosCertidao.aspx?from=menu&digital=1',
       tutorialUrl: 'https://youtube.com/watch?v=placeholder1'
@@ -249,6 +254,76 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
       };
 
       window.addEventListener('focus', handleFocus);
+    }
+  };
+
+  const handleStartAutomation = async (itemId: string, category: 'property' | 'personal') => {
+    toast({ title: "Iniciando Automação...", description: `Conectando com o servidor para processar ${itemId}.` });
+
+    // Iniciar chamada para o backend
+    try {
+      const response = await fetch('/api/automations/start-diligence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ propertyId: property.id, certidaoId: itemId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao iniciar o processo de automação no servidor.');
+      }
+
+      // Conectar ao WebSocket para receber atualizações
+      const ws = new WebSocket(`ws://${window.location.host}`);
+      setWebSocket(ws);
+
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        if (user?.id) {
+          ws.send(JSON.stringify({ type: 'register', userId: user.id }));
+        } else {
+          toast({ title: "Erro de Autenticação", description: "Usuário não identificado para a conexão em tempo real.", variant: "destructive" });
+        }
+      };
+
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log("WebSocket message received:", message);
+
+        if (message.type === 'automation_update') {
+          const { certidaoId, status, log } = message;
+
+          const updateItems = (prevItems: ChecklistItem[]) => prevItems.map(item => {
+            if (item.id === certidaoId) {
+              return {
+                ...item,
+                automationStatus: status,
+                automationLog: [...(item.automationLog || []), log]
+              };
+            }
+            return item;
+          });
+
+          // Determine if it's a property or personal item to update the correct state
+          if (propertyItems.some(item => item.id === certidaoId)) {
+            setPropertyItems(updateItems);
+          } else {
+            setPersonalItems(updateItems);
+          }
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        toast({ title: "Conexão encerrada.", variant: "destructive" });
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        toast({ title: "Erro de Conexão", description: "Não foi possível manter a conexão para atualizações.", variant: "destructive" });
+      };
+
+    } catch (error: any) {
+      toast({ title: "Erro!", description: error.message, variant: "destructive" });
     }
   };
 
@@ -548,6 +623,14 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
                             Solicitado em {new Date(item.requestedAt).toLocaleDateString('pt-BR')}
                           </p>
                         )}
+                        {item.automationStatus === 'running' && item.automationLog && (
+                          <div className="mt-2 p-2 bg-gray-100 rounded-md text-xs">
+                            <p className="font-semibold">Log da Automação:</p>
+                            {item.automationLog.map((log, index) => (
+                              <p key={index} className="text-gray-600">- {log}</p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -566,15 +649,26 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
                         </TooltipContent>
                       </Tooltip>
                       {item.status === 'pending' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRequestDocument(item.id, 'property')}
-                          className="text-blue-600 border-blue-600 hover:bg-blue-50"
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Solicitar
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRequestDocument(item.id, 'property')}
+                            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Solicitar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStartAutomation(item.id, 'property')}
+                            className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                          >
+                            <Bot className="h-3 w-3 mr-1" />
+                            Automatizar
+                          </Button>
+                        </div>
                       )}
                       {item.status === 'requested' && (
                         <div className="flex items-center gap-2">
@@ -667,6 +761,14 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
                             Solicitado em {new Date(item.requestedAt).toLocaleDateString('pt-BR')}
                           </p>
                         )}
+                        {item.automationStatus === 'running' && item.automationLog && (
+                          <div className="mt-2 p-2 bg-gray-100 rounded-md text-xs">
+                            <p className="font-semibold">Log da Automação:</p>
+                            {item.automationLog.map((log, index) => (
+                              <p key={index} className="text-gray-600">- {log}</p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -685,15 +787,26 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
                         </TooltipContent>
                       </Tooltip>
                       {item.status === 'pending' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRequestDocument(item.id, 'personal')}
-                          className="text-blue-600 border-blue-600 hover:bg-blue-50"
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Solicitar
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRequestDocument(item.id, 'personal')}
+                            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Solicitar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStartAutomation(item.id, 'personal')}
+                            className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                          >
+                            <Bot className="h-3 w-3 mr-1" />
+                            Automatizar
+                          </Button>
+                        </div>
                       )}
                       {item.status === 'requested' && (
                         <div className="flex items-center gap-2">

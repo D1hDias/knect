@@ -7,6 +7,8 @@ import { z } from "zod";
 import { db } from "./db";
 import { documents as propertyDocuments } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import puppeteer from "puppeteer";
+import { AutomatorFactory } from "./automation/AutomatorFactory";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware
@@ -586,6 +588,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Erro na correção dos sequence numbers:", error);
       res.status(500).json({ message: "Erro ao corrigir sequence numbers", error: error.message });
+    }
+  });
+
+  // Automation routes
+  app.post("/api/automations/start-diligence", isAuthenticated, async (req: any, res) => {
+    try {
+      const { propertyId, certidaoId } = req.body;
+      const userId = parseInt(req.session.user.id);
+
+      // 1. Validate input
+      if (!propertyId || !certidaoId) {
+        return res.status(400).json({ message: "propertyId and certidaoId are required" });
+      }
+
+      // 2. Check ownership
+      const property = await storage.getProperty(propertyId);
+      if (!property || property.userId !== userId) {
+        return res.status(404).json({ message: "Property not found or access denied" });
+      }
+
+      // Immediately respond to the HTTP request
+      res.json({ message: "Automation process started successfully. Check modal for real-time updates." });
+
+      // --- Run automation in the background ---
+      (async () => {
+        let browser;
+        try {
+          // 1. Launch browser
+          browser = await puppeteer.launch({ headless: false }); // Run in non-headless mode for debugging
+          const page = await browser.newPage();
+
+          // 2. Gather context data
+          const owners = await storage.getPropertyOwners(propertyId);
+          const dadosContexto = {
+            usuario: req.session.user,
+            proprietario: owners?.[0], // Using the first owner for now
+            imovel: property,
+          };
+
+          // 3. Create and run automator
+          const automator = AutomatorFactory.create(certidaoId, page, dadosContexto, userId);
+          await automator.executarAutomacao();
+
+        } catch (e) {
+          console.error(`[AUTOMATION_ERROR] Failed to run automation for ${certidaoId}:`, e);
+          // Here you could use the WebSocket to send a final error message to the client
+        } finally {
+          if (browser) {
+            await browser.close();
+          }
+          console.log(`[AUTOMATION_INFO] Browser closed for ${certidaoId}.`);
+        }
+      })();
+
+    } catch (error) {
+      console.error("Error starting automation:", error);
+      res.status(500).json({ message: "Failed to start automation process" });
     }
   });
 

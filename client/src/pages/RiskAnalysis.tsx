@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -100,8 +100,8 @@ export default function RiskAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   
-  // Estado global para capturar todas as escolhas
-  const [analysisData, setAnalysisData] = useState<RiskAnalysisData>({
+  // Usar ref para evitar loops mas manter dados para N8N
+  const analysisDataRef = useRef<RiskAnalysisData>({
     id: `analysis_${Date.now()}`,
     timestamp: new Date().toISOString(),
     businessNature: {
@@ -116,6 +116,9 @@ export default function RiskAnalysis() {
     currentStep: 1,
     completed: false
   });
+
+  // Estado simplificado apenas para renderização
+  const [analysisData] = useState<RiskAnalysisData>(analysisDataRef.current);
 
   const businessNatures: BusinessNature[] = [
     { id: "compra_venda", label: "Compra e venda", description: "Transferência onerosa de propriedade" },
@@ -178,27 +181,7 @@ export default function RiskAnalysis() {
 
   useEffect(() => {
     initializeDocumentCategories();
-    // Carregar dados salvos se existirem
-    loadSavedAnalysis();
   }, []);
-
-
-  const loadSavedAnalysis = () => {
-    const savedData = localStorage.getItem('currentRiskAnalysis');
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      setAnalysisData(parsed);
-      setCurrentStep(parsed.currentStep);
-      setSelectedNature(parsed.businessNature.type);
-      
-      // Reconstituir respostas do questionário
-      const answersFromData: { [key: string]: string } = {};
-      Object.keys(parsed.questionnaire).forEach(key => {
-        answersFromData[key] = parsed.questionnaire[key].answer;
-      });
-      setAnswers(answersFromData);
-    }
-  };
 
   const saveAnalysisData = () => {
     try {
@@ -209,38 +192,33 @@ export default function RiskAnalysis() {
   };
 
   const updateAnalysisData = (updates: Partial<RiskAnalysisData>) => {
-    setAnalysisData(prev => {
-      const newData = {
-        ...prev,
-        ...updates,
-        timestamp: new Date().toISOString()
-      };
-      
-      // Salvar após atualizar
-      setTimeout(() => {
-        try {
-          localStorage.setItem('currentRiskAnalysis', JSON.stringify(newData));
-        } catch (error) {
-          console.error('Erro ao salvar dados:', error);
-        }
-      }, 0);
-      
-      return newData;
-    });
+    setAnalysisData(prev => ({
+      ...prev,
+      ...updates,
+      timestamp: new Date().toISOString()
+    }));
+  };
+
+  // Função separada para save manual quando necessário
+  const saveToLocalStorage = () => {
+    try {
+      localStorage.setItem('currentRiskAnalysis', JSON.stringify(analysisData));
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+    }
   };
 
   const handleNatureSelect = (nature: string) => {
     setSelectedNature(nature);
-    const selectedBusinessNature = businessNatures.find(b => b.id === nature);
     
+    // Atualizar ref sem causar re-render
+    const selectedBusinessNature = businessNatures.find(b => b.id === nature);
     if (selectedBusinessNature) {
-      updateAnalysisData({
-        businessNature: {
-          type: nature,
-          label: selectedBusinessNature.label,
-          description: selectedBusinessNature.description
-        }
-      });
+      analysisDataRef.current.businessNature = {
+        type: nature,
+        label: selectedBusinessNature.label,
+        description: selectedBusinessNature.description
+      };
     }
   };
 
@@ -250,18 +228,14 @@ export default function RiskAnalysis() {
       [questionId]: value
     }));
 
+    // Atualizar ref sem causar re-render
     const question = questions.find(q => q.id === questionId);
     if (question) {
-      updateAnalysisData({
-        questionnaire: {
-          ...analysisData.questionnaire,
-          [questionId]: {
-            question: question.text,
-            answer: value,
-            timestamp: new Date().toISOString()
-          }
-        }
-      });
+      analysisDataRef.current.questionnaire[questionId] = {
+        question: question.text,
+        answer: value,
+        timestamp: new Date().toISOString()
+      };
     }
   };
 
@@ -285,19 +259,8 @@ export default function RiskAnalysis() {
         uploadTimestamp: new Date().toISOString()
       }));
 
-      updateAnalysisData({
-        documents: {
-          ...analysisData.documents,
-          [categoryId]: {
-            categoryName: category.name,
-            required: category.required,
-            files: [
-              ...(analysisData.documents[categoryId]?.files || []),
-              ...filesData
-            ]
-          }
-        }
-      });
+      // Temporariamente removido para evitar loops
+      // updateAnalysisData({ documents: { ... } });
     }
   };
 
@@ -311,15 +274,8 @@ export default function RiskAnalysis() {
     // Atualizar dados da análise
     if (analysisData.documents[categoryId]) {
       const updatedFiles = analysisData.documents[categoryId].files.filter((_, index) => index !== fileIndex);
-      updateAnalysisData({
-        documents: {
-          ...analysisData.documents,
-          [categoryId]: {
-            ...analysisData.documents[categoryId],
-            files: updatedFiles
-          }
-        }
-      });
+      // Temporariamente removido para evitar loops
+      // updateAnalysisData({ documents: { ... } });
     }
   };
 
@@ -338,7 +294,14 @@ export default function RiskAnalysis() {
 
   const generateAnalysisPath = () => {
     // Geração de caminho baseado no contexto completo
-    const { businessNature, questionnaire } = analysisData;
+    const { businessNature, questionnaire } = analysisDataRef.current;
+    
+    // Debug: verificar se o contexto está sendo capturado
+    console.log("🔍 Contexto atual para IA:", {
+      businessNature,
+      questionnaire,
+      totalQuestions: Object.keys(questionnaire).length
+    });
     
     let steps = ["Verificação da documentação básica"];
     let recommendations = [];
@@ -380,14 +343,14 @@ export default function RiskAnalysis() {
       generatedAt: new Date().toISOString()
     };
 
-    // Salvar o caminho gerado nos dados da análise
-    updateAnalysisData({ analysisPath });
+    // Salvar o caminho gerado no ref
+    analysisDataRef.current.analysisPath = analysisPath;
 
     return analysisPath;
   };
 
   const buildAIPrompt = () => {
-    const { businessNature, questionnaire, documents, analysisPath } = analysisData;
+    const { businessNature, questionnaire, documents, analysisPath } = analysisDataRef.current;
     
     const context = `
 ANÁLISE DE RISCO IMOBILIÁRIO - CONTEXTO COMPLETO
@@ -411,14 +374,18 @@ ${Object.entries(documents).map(([categoryId, categoryData]) =>
    Recomendações: ${analysisPath?.recommendations.join(', ') || 'Não gerado'}
 
 SOLICITAÇÃO:
-Baseado neste contexto completo, realize uma análise jurídica detalhada e forneça:
-1. Nível de risco (baixo/médio/alto) com justificativa
-2. Alertas específicos identificados
-3. Recomendações jurídicas personalizadas
-4. Lista de pendências prioritárias
-5. Sugestão de modelos contratuais aplicáveis
+Baseado neste contexto completo, realize uma análise jurídica detalhada e retorne OBRIGATORIAMENTE um JSON válido no seguinte formato:
 
-Considere especialmente a natureza "${businessNature.label}" e as respostas fornecidas no questionário.
+{
+  "riskLevel": "baixo|médio|alto",
+  "summary": "Resumo da análise de risco",
+  "alerts": ["Alerta 1", "Alerta 2", "Alerta 3"],
+  "recommendations": ["Recomendação 1", "Recomendação 2", "Recomendação 3"],
+  "pendencies": ["Pendência 1", "Pendência 2", "Pendência 3"],
+  "contractModels": ["Modelo 1", "Modelo 2", "Modelo 3"]
+}
+
+IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. Considere especialmente a natureza "${businessNature.label}" e as respostas fornecidas no questionário.
 `;
 
     return context;
@@ -430,53 +397,102 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
     const prompt = buildAIPrompt();
     
     try {
-      // Preparar payload para envio à IA (N8N ou outra API)
+      // Preparar payload exatamente como o workflow N8N espera
       const aiPayload = {
-        analysisId: analysisData.id,
-        timestamp: new Date().toISOString(),
+        analysisId: analysisDataRef.current.id,
         prompt: prompt,
-        fullContext: analysisData,
+        fullContext: analysisDataRef.current,
         requestType: "risk_analysis"
       };
 
-      console.log("Payload para IA:", aiPayload);
-      
-      // AQUI VOCÊ PODE CONECTAR COM N8N OU SUA LLM PREFERIDA
-      // const response = await fetch('/api/ai-analysis', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(aiPayload)
-      // });
-      // const aiResult = await response.json();
-
-      // Simulação temporária com resultado mais inteligente baseado no contexto
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      const result = generateIntelligentResult();
-
-      // Salvar resultado da IA nos dados da análise
-      updateAnalysisData({
-        aiAnalysis: {
-          prompt: prompt,
-          context: JSON.stringify(aiPayload),
-          result: result,
-          processedAt: new Date().toISOString()
-        },
-        completed: true
+      console.log("📋 Campos obrigatórios validados:", {
+        analysisId: !!aiPayload.analysisId,
+        prompt: !!aiPayload.prompt,
+        fullContext: !!aiPayload.fullContext,
+        requestType: !!aiPayload.requestType
       });
+      
+      // 🚀 CONECTANDO COM N8N WORKFLOW
+      console.log("🚀 Enviando para N8N Cloud:", {
+        url: 'http://localhost:5678/workflow/amu6v0qlSgoj5bql',
+        payload: aiPayload
+      });
+      
+      const response = await fetch('http://localhost:5678/workflow/amu6v0qlSgoj5bql', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(aiPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API do N8N: ${response.status} ${response.statusText}`);
+      }
+
+      const aiResult = await response.json();
+      console.log("📥 Resposta do N8N:", aiResult);
+      
+      // Verificar se há erro no workflow
+      if (aiResult.error) {
+        console.error("❌ Erro no workflow N8N:", aiResult.error);
+        console.log("🔄 Usando simulação como fallback...");
+        const result = generateIntelligentResult();
+        setAnalysisResult(result);
+        setCurrentStep(6);
+        alert(`Erro no N8N: ${aiResult.error}. Usando análise simulada.`);
+        return;
+      }
+      
+      // Verificar se tem todos os campos obrigatórios
+      const requiredFields = ['riskLevel', 'summary', 'alerts', 'recommendations', 'pendencies', 'contractModels'];
+      const missingFields = requiredFields.filter(field => !aiResult[field]);
+      
+      if (missingFields.length > 0) {
+        console.error("❌ Campos obrigatórios ausentes:", missingFields);
+        console.log("🔄 Usando simulação como fallback...");
+        const result = generateIntelligentResult();
+        setAnalysisResult(result);
+        setCurrentStep(6);
+        alert(`Resposta incompleta do N8N. Campos ausentes: ${missingFields.join(', ')}`);
+        return;
+      }
+      
+      // Usar resultado do N8N se tudo estiver correto
+      const result = aiResult;
+      
+      console.log("✅ Análise N8N concluída com sucesso:", {
+        riskLevel: result.riskLevel,
+        alertsCount: result.alerts?.length || 0,
+        recommendationsCount: result.recommendations?.length || 0,
+        pendenciesCount: result.pendencies?.length || 0,
+        contractModelsCount: result.contractModels?.length || 0
+      });
+
+      // Temporariamente removido para evitar loops
+      // updateAnalysisData({ aiAnalysis: { ... }, completed: true });
 
       setAnalysisResult(result);
       setCurrentStep(6);
       
     } catch (error) {
-      console.error('Erro na análise com IA:', error);
+      console.error('❌ Erro na análise com IA:', error);
+      
+      // Fallback para simulação em caso de erro
+      console.log("🔄 Usando simulação como fallback...");
+      const result = generateIntelligentResult();
+      setAnalysisResult(result);
+      setCurrentStep(6);
+      
+      // Mostrar erro amigável para o usuário
+      alert('Erro de conexão com N8N. Usando análise simulada como backup.');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   const generateIntelligentResult = () => {
-    const { businessNature, questionnaire } = analysisData;
+    const { businessNature, questionnaire } = analysisDataRef.current;
     
     let riskLevel = "baixo";
     let alerts: string[] = [];
@@ -623,6 +639,17 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Caminho de Análise Gerado</h2>
               <p className="text-gray-600">Baseado nas suas respostas, este é o procedimento recomendado</p>
+              
+              {/* Indicador de contexto capturado */}
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg inline-block">
+                <div className="flex items-center gap-2 text-green-700 text-sm">
+                  <Bot className="h-4 w-4" />
+                  <span>
+                    Contexto IA: {analysisDataRef.current.businessNature.label || 'Não selecionado'} • 
+                    {Object.keys(analysisDataRef.current.questionnaire).length} respostas capturadas
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -746,9 +773,14 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
             <Card className="border-blue-200 bg-blue-50 text-center p-8">
               <CardContent>
                 <Bot className="h-16 w-16 text-blue-600 mx-auto mb-4 animate-pulse" />
-                <h3 className="text-xl font-semibold text-blue-800 mb-2">Processando Análise</h3>
+                <h3 className="text-xl font-semibold text-blue-800 mb-2">
+                  {isAnalyzing ? "Conectando com N8N..." : "Processando Análise"}
+                </h3>
                 <p className="text-blue-700 mb-6">
-                  Estamos utilizando OCR e IA para extrair dados, detectar inconsistências e identificar riscos
+                  {isAnalyzing 
+                    ? "Enviando dados para o workflow N8N e aguardando resposta da IA..."
+                    : "Estamos utilizando OCR e IA para extrair dados, detectar inconsistências e identificar riscos"
+                  }
                 </p>
                 <Progress value={75} className="w-full mb-4" />
                 <p className="text-sm text-blue-600">Analisando documentos... 75% concluído</p>
@@ -764,12 +796,12 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
                 {isAnalyzing ? (
                   <>
                     <Clock className="h-4 w-4 mr-2 animate-spin" />
-                    Analisando...
+                    Conectando com N8N...
                   </>
                 ) : (
                   <>
                     <Bot className="h-4 w-4 mr-2" />
-                    Iniciar Análise com IA
+                    Iniciar Análise com N8N + IA
                   </>
                 )}
               </Button>
@@ -911,7 +943,7 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
           <Button 
             onClick={() => {
               setCurrentStep(2);
-              updateAnalysisData({ currentStep: 2 });
+              // updateAnalysisData({ currentStep: 2 });
             }}
             disabled={!canProceedToNextStep()}
             className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full"
@@ -975,7 +1007,7 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
             onClick={() => {
               const newStep = currentStep - 1;
               setCurrentStep(newStep);
-              updateAnalysisData({ currentStep: newStep });
+              // updateAnalysisData({ currentStep: newStep });
             }}
             className="rounded-full"
           >
@@ -988,8 +1020,8 @@ Considere especialmente a natureza "${businessNature.label}" e as respostas forn
               onClick={() => {
                 const newStep = currentStep + 1;
                 setCurrentStep(newStep);
-                updateAnalysisData({ currentStep: newStep });
-              }}
+                // updateAnalysisData({ currentStep: newStep });
+                }}
               disabled={!canProceedToNextStep()}
               className="bg-[#15355e] hover:bg-[#15355e]/90 text-white rounded-full"
             >
