@@ -37,10 +37,7 @@ export async function setupVite(app: Express, server: Server) {
     },
     server: {
       middlewareMode: true,
-      hmr: { 
-        server,
-        overlay: true,
-      },
+      hmr: false, // Desabilitar HMR WebSocket para evitar conflitos com nossa automação
       watch: {
         usePolling: true,
         interval: 100,

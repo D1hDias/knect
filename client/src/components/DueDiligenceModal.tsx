@@ -61,6 +61,11 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
     itemName: string;
   } | null>(null);
   const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
+  const [showCaptchaModal, setShowCaptchaModal] = useState(false);
+  const [captchaMessage, setCaptchaMessage] = useState('');
+  const [captchaUrl, setCaptchaUrl] = useState('');
+  const [captchaImage, setCaptchaImage] = useState<string | null>(null);
+  const [captchaInfo, setCaptchaInfo] = useState<any>(null);
 
   // Estado inicial dos itens do checklist
   const [propertyItems, setPropertyItems] = useState<ChecklistItem[]>([
@@ -258,71 +263,152 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
   };
 
   const handleStartAutomation = async (itemId: string, category: 'property' | 'personal') => {
+    console.log(`🚀 [DEBUG] Iniciando automação para ${itemId} na categoria ${category}`);
+    console.log(`🚀 [DEBUG] Property ID: ${property.id}`);
+    console.log(`🚀 [DEBUG] User ID: ${user?.id}`);
+    
     toast({ title: "Iniciando Automação...", description: `Conectando com o servidor para processar ${itemId}.` });
 
     // Iniciar chamada para o backend
     try {
+      console.log(`📡 [DEBUG] Enviando requisição para /api/automations/start-diligence`);
+      
       const response = await fetch('/api/automations/start-diligence', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ propertyId: property.id, certidaoId: itemId }),
       });
 
+      console.log(`📡 [DEBUG] Response status: ${response.status}`);
+      console.log(`📡 [DEBUG] Response ok: ${response.ok}`);
+
       if (!response.ok) {
-        throw new Error('Falha ao iniciar o processo de automação no servidor.');
+        const contentType = response.headers.get('content-type');
+        console.error(`❌ [DEBUG] Response not ok. Status: ${response.status}, Content-Type: ${contentType}`);
+        
+        let errorText;
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const errorJson = await response.json();
+            errorText = errorJson.message || JSON.stringify(errorJson);
+          } catch {
+            errorText = await response.text();
+          }
+        } else {
+          errorText = await response.text();
+          console.error(`❌ [DEBUG] HTML Error response (primeira parte): ${errorText.substring(0, 500)}`);
+        }
+        
+        throw new Error(`Falha ao iniciar automação: ${response.status} - ${errorText.substring(0, 200)}`);
       }
 
-      // Conectar ao WebSocket para receber atualizações
-      const ws = new WebSocket(`ws://${window.location.host}`);
+      const responseData = await response.json();
+      console.log(`✅ [DEBUG] Backend response:`, responseData);
+      
+      toast({ title: "Conectado!", description: "Conectando ao WebSocket para atualizações em tempo real..." });
+
+      // Conectar ao WebSocket para receber atualizações (usar path específico para evitar conflito com Vite)
+      const wsUrl = `ws://${window.location.host}/automation-ws`;
+      console.log(`🔌 [DEBUG] Conectando WebSocket em ${wsUrl}`);
+      const ws = new WebSocket(wsUrl);
       setWebSocket(ws);
 
       ws.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('✅ [DEBUG] WebSocket connected');
         if (user?.id) {
+          console.log(`📤 [DEBUG] Registrando usuário ${user.id} no WebSocket`);
           ws.send(JSON.stringify({ type: 'register', userId: user.id }));
+          toast({ title: "WebSocket Conectado!", description: "Aguardando atualizações da automação..." });
         } else {
+          console.error('❌ [DEBUG] User ID não encontrado para WebSocket');
           toast({ title: "Erro de Autenticação", description: "Usuário não identificado para a conexão em tempo real.", variant: "destructive" });
         }
       };
 
       ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        console.log("WebSocket message received:", message);
+        console.log(`📨 [DEBUG] WebSocket message raw:`, event.data);
+        
+        try {
+          const message = JSON.parse(event.data);
+          console.log(`📨 [DEBUG] WebSocket message parsed:`, message);
 
-        if (message.type === 'automation_update') {
-          const { certidaoId, status, log } = message;
+          if (message.type === 'automation_update') {
+            const { certidaoId, status, log, action } = message;
+            console.log(`🔄 [DEBUG] Automation update - certidaoId: ${certidaoId}, status: ${status}, log: ${log}, action: ${action}`);
 
-          const updateItems = (prevItems: ChecklistItem[]) => prevItems.map(item => {
-            if (item.id === certidaoId) {
-              return {
-                ...item,
-                automationStatus: status,
-                automationLog: [...(item.automationLog || []), log]
-              };
+            // Verificar se é uma mensagem de CAPTCHA
+            if (status === 'CAPTCHA_MODAL_SHOW' || action === 'show_modal') {
+              console.log(`🎯 [DEBUG] CAPTCHA modal solicitado!`);
+              console.log(`🎯 [DEBUG] CAPTCHA data:`, message);
+              setCaptchaMessage(log || message.message || 'Resolva o CAPTCHA para continuar');
+              setCaptchaUrl(message.captchaUrl || '');
+              setCaptchaImage(message.captchaImage || null);
+              setCaptchaInfo(message.captchaInfo || null);
+              setShowCaptchaModal(true);
+              toast({ 
+                title: "CAPTCHA Detectado", 
+                description: "Modal aberto com instruções para resolver o CAPTCHA." 
+              });
+              return;
             }
-            return item;
-          });
 
-          // Determine if it's a property or personal item to update the correct state
-          if (propertyItems.some(item => item.id === certidaoId)) {
-            setPropertyItems(updateItems);
+            // Verificar se é para fechar o modal de CAPTCHA
+            if (status === 'CAPTCHA_MODAL_HIDE' || action === 'hide_modal') {
+              console.log(`🎯 [DEBUG] Fechando CAPTCHA modal`);
+              setShowCaptchaModal(false);
+              toast({ 
+                title: "CAPTCHA Resolvido", 
+                description: "Continuando com a automação..." 
+              });
+              return;
+            }
+
+            // Mostrar toast com update normal
+            toast({ 
+              title: "Automação Atualizada", 
+              description: log || `Status: ${status}` 
+            });
+
+            const updateItems = (prevItems: ChecklistItem[]) => prevItems.map(item => {
+              if (item.id === certidaoId) {
+                console.log(`🔄 [DEBUG] Atualizando item ${item.id} com status ${status}`);
+                return {
+                  ...item,
+                  automationStatus: status,
+                  automationLog: [...(item.automationLog || []), log]
+                };
+              }
+              return item;
+            });
+
+            // Determine if it's a property or personal item to update the correct state
+            if (propertyItems.some(item => item.id === certidaoId)) {
+              console.log(`🔄 [DEBUG] Atualizando propertyItems para ${certidaoId}`);
+              setPropertyItems(updateItems);
+            } else {
+              console.log(`🔄 [DEBUG] Atualizando personalItems para ${certidaoId}`);
+              setPersonalItems(updateItems);
+            }
           } else {
-            setPersonalItems(updateItems);
+            console.log(`📨 [DEBUG] Mensagem WebSocket tipo: ${message.type}`);
           }
+        } catch (parseError) {
+          console.error(`❌ [DEBUG] Erro ao fazer parse da mensagem WebSocket:`, parseError);
         }
       };
 
-      ws.onclose = () => {
-        console.log('WebSocket disconnected');
-        toast({ title: "Conexão encerrada.", variant: "destructive" });
+      ws.onclose = (event) => {
+        console.log(`🔌 [DEBUG] WebSocket disconnected. Code: ${event.code}, Reason: ${event.reason}`);
+        toast({ title: "Conexão encerrada.", description: `WebSocket fechado: ${event.reason}`, variant: "destructive" });
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error(`❌ [DEBUG] WebSocket error:`, error);
         toast({ title: "Erro de Conexão", description: "Não foi possível manter a conexão para atualizações.", variant: "destructive" });
       };
 
     } catch (error: any) {
+      console.error(`❌ [DEBUG] Erro geral na automação:`, error);
       toast({ title: "Erro!", description: error.message, variant: "destructive" });
     }
   };
@@ -927,6 +1013,92 @@ export function DueDiligenceModal({ open, onOpenChange, property }: DueDiligence
           ownerData={property.owners?.[0]}
           onEmailSent={handleCondominiumEmailSent}
         />
+
+        {/* CAPTCHA Modal */}
+        <Dialog open={showCaptchaModal} onOpenChange={setShowCaptchaModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Bot className="h-5 w-5 text-orange-600" />
+                CAPTCHA Detectado - Ação Necessária
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                <p className="text-orange-800 font-medium text-center">
+                  {captchaMessage}
+                </p>
+                {captchaInfo?.found && captchaInfo?.sitekey && (
+                  <div className="mt-2 text-center">
+                    <span className="inline-block bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs">
+                      hCaptcha Detectado
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Exibir imagem do CAPTCHA se disponível */}
+              {captchaImage && (
+                <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                  <h4 className="font-medium text-gray-800 mb-2 text-center">Preview da Página:</h4>
+                  <div className="flex justify-center">
+                    <img 
+                      src={captchaImage} 
+                      alt="CAPTCHA Preview" 
+                      className="max-w-full max-h-96 border border-gray-300 rounded shadow-lg"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 text-center mt-2">
+                    Este é um preview da página. Resolva o CAPTCHA na janela do navegador.
+                  </p>
+                </div>
+              )}
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">Instruções:</h4>
+                <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                  <li>Vá para a janela do navegador que foi aberta automaticamente</li>
+                  <li>Resolva o CAPTCHA que apareceu na tela</li>
+                  <li>A automação detectará automaticamente quando você resolver</li>
+                  <li>Este modal será fechado automaticamente quando concluído</li>
+                </ol>
+                
+                {captchaUrl && (
+                  <div className="mt-3 p-2 bg-blue-100 rounded">
+                    <p className="text-xs text-blue-600 font-medium">URL da página:</p>
+                    <a 
+                      href={captchaUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-800 hover:underline break-all"
+                    >
+                      {captchaUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 flex items-center justify-center">
+                <div className="animate-pulse flex items-center gap-2 text-gray-600">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm">Aguardando resolução do CAPTCHA...</span>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCaptchaModal(false)}
+                className="text-gray-600"
+              >
+                Fechar (automação continuará)
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Confirmation Modal */}
         <Dialog open={showConfirmationModal} onOpenChange={setShowConfirmationModal}>

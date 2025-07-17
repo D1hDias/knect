@@ -41,5 +41,6 @@ export default defineConfig({
       usePolling: true,
       interval: 100,
     },
+    hmr: false, // Desabilitar completamente HMR WebSocket para evitar conflitos
   },
 });

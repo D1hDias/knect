@@ -1,0 +1,794 @@
+🚀 [DEBUG] Iniciando automação para certidao_fazendaria na categoria property
+ 🚀 [DEBUG] Property ID: 1
+ 🚀 [DEBUG] User ID: 1
+ 📡 [DEBUG] Enviando requisição para /api/automations/start-diligence
+ 📡 [DEBUG] Response status: 200
+ 📡 [DEBUG] Response ok: true
+ ✅ [DEBUG] Backend response: Object
+ 🔌 [DEBUG] Conectando WebSocket em ws://localhost:5000/automation-ws
+ ✅ [DEBUG] WebSocket connected
+ 📤 [DEBUG] Registrando usuário 1 no WebSocket
+ 📨 [DEBUG] WebSocket message raw: {"type":"welcome","message":"Welcome! Please register with your userId."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 📨 [DEBUG] Mensagem WebSocket tipo: welcome
+ 📨 [DEBUG] WebSocket message raw: {"type":"registered","message":"Successfully registered for real-time updates."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 📨 [DEBUG] Mensagem WebSocket tipo: registered
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Iniciando automação para Certidão Fazendária no TJRJ...","log":"Iniciando automação para Certidão Fazendária no TJRJ..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Iniciando automação para Certidão Fazendária no TJRJ..., log: Iniciando automação para Certidão Fazendária no TJRJ..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Iniciando automação para Certidão Fazendária no TJRJ...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 001_inicial_1752643952926.png","log":"Screenshot debug salvo: 001_inicial_1752643952926.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 001_inicial_1752643952926.png, log: Screenshot debug salvo: 001_inicial_1752643952926.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 001_inicial_1752643952926.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Navegando para: https://www3.tjrj.jus.br/CJE/certidao/judicial/selecionarComarcas","log":"Navegando para: https://www3.tjrj.jus.br/CJE/certidao/judicial/selecionarComarcas"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Navegando para: https://www3.tjrj.jus.br/CJE/certidao/judicial/selecionarComarcas, log: Navegando para: https://www3.tjrj.jus.br/CJE/certidao/judicial/selecionarComarcas, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Navegando para: https://www3.tjrj.jus.br/CJE/certidao/judicial/selecionarComarcas
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Página carregada, verificando conteúdo...","log":"Página carregada, verificando conteúdo..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Página carregada, verificando conteúdo..., log: Página carregada, verificando conteúdo..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Página carregada, verificando conteúdo...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Página carregada: CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica (102 elementos)","log":"Página carregada: CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica (102 elementos)"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Página carregada: CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica (102 elementos), log: Página carregada: CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica (102 elementos), action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Página carregada: CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica (102 elementos)
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passos da Certidão Fazendária...","log":"Executando passos da Certidão Fazendária..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passos da Certidão Fazendária..., log: Executando passos da Certidão Fazendária..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Estamos na página de seleção de Comarca...","log":"Estamos na página de seleção de Comarca..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Estamos na página de seleção de Comarca..., log: Estamos na página de seleção de Comarca..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em .bordasModelos","log":"Executando passo: wait_element em .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em .bordasModelos, log: Executando passo: wait_element em .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: .bordasModelos","log":"Aguardando elemento: .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: .bordasModelos, log: Aguardando elemento: .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passos da Certidão Fazendária...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Estamos na página de seleção de Comarca...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passos da Certidão Fazendária...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Estamos na página de seleção de Comarca...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: .bordasModelos","log":"Elemento encontrado: .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: .bordasModelos, log: Elemento encontrado: .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 002_elemento_encontrado__bordasModelos_1752643960968.png","log":"Screenshot debug salvo: 002_elemento_encontrado__bordasModelos_1752643960968.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 002_elemento_encontrado__bordasModelos_1752643960968.png, log: Screenshot debug salvo: 002_elemento_encontrado__bordasModelos_1752643960968.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 002_elemento_encontrado__bordasModelos_1752643960968.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: select_by_city em .bordasModelos","log":"Executando passo: select_by_city em .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: select_by_city em .bordasModelos, log: Executando passo: select_by_city em .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: select_by_city em .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Selecionando comarca para cidade: Rio de Janeiro","log":"Selecionando comarca para cidade: Rio de Janeiro"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Selecionando comarca para cidade: Rio de Janeiro, log: Selecionando comarca para cidade: Rio de Janeiro, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Selecionando comarca para cidade: Rio de Janeiro
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 003_antes_selecionar_comarca_1752643961131.png","log":"Screenshot debug salvo: 003_antes_selecionar_comarca_1752643961131.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 003_antes_selecionar_comarca_1752643961131.png, log: Screenshot debug salvo: 003_antes_selecionar_comarca_1752643961131.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 003_antes_selecionar_comarca_1752643961131.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 004_depois_selecionar_comarca_1752643961278.png","log":"Screenshot debug salvo: 004_depois_selecionar_comarca_1752643961278.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 004_depois_selecionar_comarca_1752643961278.png, log: Screenshot debug salvo: 004_depois_selecionar_comarca_1752643961278.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 004_depois_selecionar_comarca_1752643961278.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Comarca selecionada: ","log":"Comarca selecionada: "}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Comarca selecionada: , log: Comarca selecionada: , action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Comarca selecionada: 
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 005_pagina_pos_comarca_1752643962014.png","log":"Screenshot debug salvo: 005_pagina_pos_comarca_1752643962014.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 005_pagina_pos_comarca_1752643962014.png, log: Screenshot debug salvo: 005_pagina_pos_comarca_1752643962014.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 005_pagina_pos_comarca_1752643962014.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Comarca selecionada, prosseguindo...","log":"Comarca selecionada, prosseguindo..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Comarca selecionada, prosseguindo..., log: Comarca selecionada, prosseguindo..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em #myForm3","log":"Executando passo: wait_element em #myForm3"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em #myForm3, log: Executando passo: wait_element em #myForm3, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: #myForm3","log":"Aguardando elemento: #myForm3"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: #myForm3, log: Aguardando elemento: #myForm3, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: #myForm3","log":"Elemento encontrado: #myForm3"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: #myForm3, log: Elemento encontrado: #myForm3, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Comarca selecionada, prosseguindo...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #myForm3
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #myForm3
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #myForm3
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Comarca selecionada, prosseguindo...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #myForm3
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #myForm3
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #myForm3
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png","log":"Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png, log: Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: click em #myForm3 .bordasModelos","log":"Executando passo: click em #myForm3 .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: click em #myForm3 .bordasModelos, log: Executando passo: click em #myForm3 .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em #myForm3 .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 006_elemento_encontrado__myForm3_1752643962221.png
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em #myForm3 .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 007_antes_click__myForm3__bordasModelos_1752643962376.png","log":"Screenshot debug salvo: 007_antes_click__myForm3__bordasModelos_1752643962376.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 007_antes_click__myForm3__bordasModelos_1752643962376.png, log: Screenshot debug salvo: 007_antes_click__myForm3__bordasModelos_1752643962376.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 007_antes_click__myForm3__bordasModelos_1752643962376.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em: #myForm3 .bordasModelos","log":"Clicado em: #myForm3 .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em: #myForm3 .bordasModelos, log: Clicado em: #myForm3 .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em: #myForm3 .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 008_depois_click__myForm3__bordasModelos_1752643964563.png","log":"Screenshot debug salvo: 008_depois_click__myForm3__bordasModelos_1752643964563.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 008_depois_click__myForm3__bordasModelos_1752643964563.png, log: Screenshot debug salvo: 008_depois_click__myForm3__bordasModelos_1752643964563.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 008_depois_click__myForm3__bordasModelos_1752643964563.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Escolhida a opção Fazendárias. Aguardando página carregar...","log":"Escolhida a opção Fazendárias. Aguardando página carregar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Escolhida a opção Fazendárias. Aguardando página carregar..., log: Escolhida a opção Fazendárias. Aguardando página carregar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Escolhida a opção Fazendárias. Aguardando página carregar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Escolhida a opção Fazendárias. Aguardando página carregar...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em .bordasModelos","log":"Executando passo: wait_element em .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em .bordasModelos, log: Executando passo: wait_element em .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: .bordasModelos","log":"Aguardando elemento: .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: .bordasModelos, log: Aguardando elemento: .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: .bordasModelos","log":"Elemento encontrado: .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: .bordasModelos, log: Elemento encontrado: .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: .bordasModelos
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 009_elemento_encontrado__bordasModelos_1752643964710.png","log":"Screenshot debug salvo: 009_elemento_encontrado__bordasModelos_1752643964710.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 009_elemento_encontrado__bordasModelos_1752643964710.png, log: Screenshot debug salvo: 009_elemento_encontrado__bordasModelos_1752643964710.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 009_elemento_encontrado__bordasModelos_1752643964710.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Página carregada. Procurando opção Imóveis...","log":"Página carregada. Procurando opção Imóveis..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Página carregada. Procurando opção Imóveis..., log: Página carregada. Procurando opção Imóveis..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Página carregada. Procurando opção Imóveis...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Página carregada. Procurando opção Imóveis...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: select_by_text em .bordasModelos","log":"Executando passo: select_by_text em .bordasModelos"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: select_by_text em .bordasModelos, log: Executando passo: select_by_text em .bordasModelos, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Procurando elemento com texto: \"Imóveis\"","log":"Procurando elemento com texto: \"Imóveis\""}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Procurando elemento com texto: "Imóveis", log: Procurando elemento com texto: "Imóveis", action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: select_by_text em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Procurando elemento com texto: "Imóveis"
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: select_by_text em .bordasModelos
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Procurando elemento com texto: "Imóveis"
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 010_antes_selecionar_texto_Im_veis_1752643964854.png","log":"Screenshot debug salvo: 010_antes_selecionar_texto_Im_veis_1752643964854.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 010_antes_selecionar_texto_Im_veis_1752643964854.png, log: Screenshot debug salvo: 010_antes_selecionar_texto_Im_veis_1752643964854.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 010_antes_selecionar_texto_Im_veis_1752643964854.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 011_depois_selecionar_texto_Im_veis_1752643965007.png","log":"Screenshot debug salvo: 011_depois_selecionar_texto_Im_veis_1752643965007.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 011_depois_selecionar_texto_Im_veis_1752643965007.png, log: Screenshot debug salvo: 011_depois_selecionar_texto_Im_veis_1752643965007.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 011_depois_selecionar_texto_Im_veis_1752643965007.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em elemento com texto: Imóveis","log":"Clicado em elemento com texto: Imóveis"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em elemento com texto: Imóveis, log: Clicado em elemento com texto: Imóveis, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em elemento com texto: Imóveis
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 012_pos_navegacao_Im_veis_1752643967178.png","log":"Screenshot debug salvo: 012_pos_navegacao_Im_veis_1752643967178.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 012_pos_navegacao_Im_veis_1752643967178.png, log: Screenshot debug salvo: 012_pos_navegacao_Im_veis_1752643967178.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 012_pos_navegacao_Im_veis_1752643967178.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em Imóveis. Aguardando próxima página...","log":"Clicado em Imóveis. Aguardando próxima página..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em Imóveis. Aguardando próxima página..., log: Clicado em Imóveis. Aguardando próxima página..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em Imóveis. Aguardando próxima página...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em Imóveis. Aguardando próxima página...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando formulário de dados do Requerente carregar...","log":"Aguardando formulário de dados do Requerente carregar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando formulário de dados do Requerente carregar..., log: Aguardando formulário de dados do Requerente carregar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em #nomerequerente","log":"Executando passo: wait_element em #nomerequerente"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em #nomerequerente, log: Executando passo: wait_element em #nomerequerente, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: #nomerequerente","log":"Aguardando elemento: #nomerequerente"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: #nomerequerente, log: Aguardando elemento: #nomerequerente, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: #nomerequerente","log":"Elemento encontrado: #nomerequerente"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: #nomerequerente, log: Elemento encontrado: #nomerequerente, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando formulário de dados do Requerente carregar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando formulário de dados do Requerente carregar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #nomerequerente
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png","log":"Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png, log: Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 013_elemento_encontrado__nomerequerente_1752643967341.png
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Formulário encontrado! Preenchendo dados do Requerente...","log":"Formulário encontrado! Preenchendo dados do Requerente..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Formulário encontrado! Preenchendo dados do Requerente..., log: Formulário encontrado! Preenchendo dados do Requerente..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #nomerequerente","log":"Executando passo: fill em #nomerequerente"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #nomerequerente, log: Executando passo: fill em #nomerequerente, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Formulário encontrado! Preenchendo dados do Requerente...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #nomerequerente
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Formulário encontrado! Preenchendo dados do Requerente...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #nomerequerente
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #nomerequerente com dados de usuario.fullName","log":"Tentando preencher #nomerequerente com dados de usuario.fullName"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #nomerequerente com dados de usuario.fullName, log: Tentando preencher #nomerequerente com dados de usuario.fullName, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #nomerequerente com dados de usuario.fullName
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 014_antes_preencher__nomerequerente_1752643967494.png","log":"Screenshot debug salvo: 014_antes_preencher__nomerequerente_1752643967494.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 014_antes_preencher__nomerequerente_1752643967494.png, log: Screenshot debug salvo: 014_antes_preencher__nomerequerente_1752643967494.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 014_antes_preencher__nomerequerente_1752643967494.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #nomerequerente com: Diego Dias","log":"✅ Preenchido #nomerequerente com: Diego Dias"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #nomerequerente com: Diego Dias, log: ✅ Preenchido #nomerequerente com: Diego Dias, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #nomerequerente com: Diego Dias
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 015_depois_preencher__nomerequerente_1752643967689.png","log":"Screenshot debug salvo: 015_depois_preencher__nomerequerente_1752643967689.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 015_depois_preencher__nomerequerente_1752643967689.png, log: Screenshot debug salvo: 015_depois_preencher__nomerequerente_1752643967689.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 015_depois_preencher__nomerequerente_1752643967689.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #cpfcnpj2","log":"Executando passo: fill em #cpfcnpj2"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #cpfcnpj2, log: Executando passo: fill em #cpfcnpj2, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #cpfcnpj2 com dados de usuario.cpf","log":"Tentando preencher #cpfcnpj2 com dados de usuario.cpf"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #cpfcnpj2 com dados de usuario.cpf, log: Tentando preencher #cpfcnpj2 com dados de usuario.cpf, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #cpfcnpj2
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #cpfcnpj2 com dados de usuario.cpf
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #cpfcnpj2
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #cpfcnpj2 com dados de usuario.cpf
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 016_antes_preencher__cpfcnpj2_1752643967885.png","log":"Screenshot debug salvo: 016_antes_preencher__cpfcnpj2_1752643967885.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 016_antes_preencher__cpfcnpj2_1752643967885.png, log: Screenshot debug salvo: 016_antes_preencher__cpfcnpj2_1752643967885.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 016_antes_preencher__cpfcnpj2_1752643967885.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #cpfcnpj2 com: 121.762.207-14","log":"✅ Preenchido #cpfcnpj2 com: 121.762.207-14"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #cpfcnpj2 com: 121.762.207-14, log: ✅ Preenchido #cpfcnpj2 com: 121.762.207-14, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #cpfcnpj2 com: 121.762.207-14
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 017_depois_preencher__cpfcnpj2_1752643968102.png","log":"Screenshot debug salvo: 017_depois_preencher__cpfcnpj2_1752643968102.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 017_depois_preencher__cpfcnpj2_1752643968102.png, log: Screenshot debug salvo: 017_depois_preencher__cpfcnpj2_1752643968102.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 017_depois_preencher__cpfcnpj2_1752643968102.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #email","log":"Executando passo: fill em #email"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #email, log: Executando passo: fill em #email, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #email
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #email com dados de usuario.email","log":"Tentando preencher #email com dados de usuario.email"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #email com dados de usuario.email, log: Tentando preencher #email com dados de usuario.email, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #email com dados de usuario.email
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 018_antes_preencher__email_1752643968268.png","log":"Screenshot debug salvo: 018_antes_preencher__email_1752643968268.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 018_antes_preencher__email_1752643968268.png, log: Screenshot debug salvo: 018_antes_preencher__email_1752643968268.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 018_antes_preencher__email_1752643968268.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #email com: diego@diasconsultor.com","log":"✅ Preenchido #email com: diego@diasconsultor.com"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #email com: diego@diasconsultor.com, log: ✅ Preenchido #email com: diego@diasconsultor.com, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #email com: diego@diasconsultor.com
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 019_depois_preencher__email_1752643968468.png","log":"Screenshot debug salvo: 019_depois_preencher__email_1752643968468.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 019_depois_preencher__email_1752643968468.png, log: Screenshot debug salvo: 019_depois_preencher__email_1752643968468.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 019_depois_preencher__email_1752643968468.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #telefone","log":"Executando passo: fill em #telefone"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #telefone, log: Executando passo: fill em #telefone, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #telefone
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #telefone com dados de usuario.phone","log":"Tentando preencher #telefone com dados de usuario.phone"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #telefone com dados de usuario.phone, log: Tentando preencher #telefone com dados de usuario.phone, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #telefone com dados de usuario.phone
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 020_antes_preencher__telefone_1752643968644.png","log":"Screenshot debug salvo: 020_antes_preencher__telefone_1752643968644.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 020_antes_preencher__telefone_1752643968644.png, log: Screenshot debug salvo: 020_antes_preencher__telefone_1752643968644.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 020_antes_preencher__telefone_1752643968644.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #telefone com: (21) 99678-0178","log":"✅ Preenchido #telefone com: (21) 99678-0178"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #telefone com: (21) 99678-0178, log: ✅ Preenchido #telefone com: (21) 99678-0178, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #telefone com: (21) 99678-0178
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 021_depois_preencher__telefone_1752643968854.png","log":"Screenshot debug salvo: 021_depois_preencher__telefone_1752643968854.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 021_depois_preencher__telefone_1752643968854.png, log: Screenshot debug salvo: 021_depois_preencher__telefone_1752643968854.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 021_depois_preencher__telefone_1752643968854.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Dados do requerente preenchidos. Clicando em Continuar...","log":"Dados do requerente preenchidos. Clicando em Continuar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Dados do requerente preenchidos. Clicando em Continuar..., log: Dados do requerente preenchidos. Clicando em Continuar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: click em input[value=\"Continuar\"]","log":"Executando passo: click em input[value=\"Continuar\"]"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: click em input[value="Continuar"], log: Executando passo: click em input[value="Continuar"], action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Dados do requerente preenchidos. Clicando em Continuar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em input[value="Continuar"]
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Dados do requerente preenchidos. Clicando em Continuar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em input[value="Continuar"]
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 022_antes_click_input_value__Continuar___1752643969040.png","log":"Screenshot debug salvo: 022_antes_click_input_value__Continuar___1752643969040.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 022_antes_click_input_value__Continuar___1752643969040.png, log: Screenshot debug salvo: 022_antes_click_input_value__Continuar___1752643969040.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 022_antes_click_input_value__Continuar___1752643969040.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em: input[value=\"Continuar\"]","log":"Clicado em: input[value=\"Continuar\"]"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em: input[value="Continuar"], log: Clicado em: input[value="Continuar"], action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em: input[value="Continuar"]
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 023_depois_click_input_value__Continuar___1752643971233.png","log":"Screenshot debug salvo: 023_depois_click_input_value__Continuar___1752643971233.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 023_depois_click_input_value__Continuar___1752643971233.png, log: Screenshot debug salvo: 023_depois_click_input_value__Continuar___1752643971233.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 023_depois_click_input_value__Continuar___1752643971233.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando formulário de Dados para Pesquisa carregar...","log":"Aguardando formulário de Dados para Pesquisa carregar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando formulário de Dados para Pesquisa carregar..., log: Aguardando formulário de Dados para Pesquisa carregar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando formulário de Dados para Pesquisa carregar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando formulário de Dados para Pesquisa carregar...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em #NumeroInscricao","log":"Executando passo: wait_element em #NumeroInscricao"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em #NumeroInscricao, log: Executando passo: wait_element em #NumeroInscricao, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: #NumeroInscricao","log":"Aguardando elemento: #NumeroInscricao"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: #NumeroInscricao, log: Aguardando elemento: #NumeroInscricao, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: #NumeroInscricao","log":"Elemento encontrado: #NumeroInscricao"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: #NumeroInscricao, log: Elemento encontrado: #NumeroInscricao, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #NumeroInscricao
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 024_elemento_encontrado__NumeroInscricao_1752643971390.png","log":"Screenshot debug salvo: 024_elemento_encontrado__NumeroInscricao_1752643971390.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 024_elemento_encontrado__NumeroInscricao_1752643971390.png, log: Screenshot debug salvo: 024_elemento_encontrado__NumeroInscricao_1752643971390.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 024_elemento_encontrado__NumeroInscricao_1752643971390.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Formulário de dados do imóvel encontrado! Preenchendo...","log":"Formulário de dados do imóvel encontrado! Preenchendo..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Formulário de dados do imóvel encontrado! Preenchendo..., log: Formulário de dados do imóvel encontrado! Preenchendo..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Formulário de dados do imóvel encontrado! Preenchendo...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Formulário de dados do imóvel encontrado! Preenchendo...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #NumeroInscricao","log":"Executando passo: fill em #NumeroInscricao"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #NumeroInscricao, log: Executando passo: fill em #NumeroInscricao, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration","log":"Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration, log: Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #NumeroInscricao
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #NumeroInscricao com dados de imovel.municipalRegistration
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 025_antes_preencher__NumeroInscricao_1752643971547.png","log":"Screenshot debug salvo: 025_antes_preencher__NumeroInscricao_1752643971547.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 025_antes_preencher__NumeroInscricao_1752643971547.png, log: Screenshot debug salvo: 025_antes_preencher__NumeroInscricao_1752643971547.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 025_antes_preencher__NumeroInscricao_1752643971547.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #NumeroInscricao com: 1111111","log":"✅ Preenchido #NumeroInscricao com: 1111111"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #NumeroInscricao com: 1111111, log: ✅ Preenchido #NumeroInscricao com: 1111111, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #NumeroInscricao com: 1111111
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 026_depois_preencher__NumeroInscricao_1752643971726.png","log":"Screenshot debug salvo: 026_depois_preencher__NumeroInscricao_1752643971726.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 026_depois_preencher__NumeroInscricao_1752643971726.png, log: Screenshot debug salvo: 026_depois_preencher__NumeroInscricao_1752643971726.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 026_depois_preencher__NumeroInscricao_1752643971726.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #Endereco","log":"Executando passo: fill em #Endereco"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #Endereco, log: Executando passo: fill em #Endereco, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #Endereco
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #Endereco com dados de imovel.street","log":"Tentando preencher #Endereco com dados de imovel.street"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #Endereco com dados de imovel.street, log: Tentando preencher #Endereco com dados de imovel.street, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #Endereco com dados de imovel.street
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 027_antes_preencher__Endereco_1752643971924.png","log":"Screenshot debug salvo: 027_antes_preencher__Endereco_1752643971924.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 027_antes_preencher__Endereco_1752643971924.png, log: Screenshot debug salvo: 027_antes_preencher__Endereco_1752643971924.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 027_antes_preencher__Endereco_1752643971924.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #Endereco com: Rua Major Rúbens Vaz","log":"✅ Preenchido #Endereco com: Rua Major Rúbens Vaz"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #Endereco com: Rua Major Rúbens Vaz, log: ✅ Preenchido #Endereco com: Rua Major Rúbens Vaz, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #Endereco com: Rua Major Rúbens Vaz
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 028_depois_preencher__Endereco_1752643972131.png","log":"Screenshot debug salvo: 028_depois_preencher__Endereco_1752643972131.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 028_depois_preencher__Endereco_1752643972131.png, log: Screenshot debug salvo: 028_depois_preencher__Endereco_1752643972131.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 028_depois_preencher__Endereco_1752643972131.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #Numero","log":"Executando passo: fill em #Numero"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #Numero, log: Executando passo: fill em #Numero, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #Numero
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #Numero com dados de imovel.number","log":"Tentando preencher #Numero com dados de imovel.number"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #Numero com dados de imovel.number, log: Tentando preencher #Numero com dados de imovel.number, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #Numero com dados de imovel.number
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 029_antes_preencher__Numero_1752643972305.png","log":"Screenshot debug salvo: 029_antes_preencher__Numero_1752643972305.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 029_antes_preencher__Numero_1752643972305.png, log: Screenshot debug salvo: 029_antes_preencher__Numero_1752643972305.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 029_antes_preencher__Numero_1752643972305.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #Numero com: 498","log":"✅ Preenchido #Numero com: 498"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #Numero com: 498, log: ✅ Preenchido #Numero com: 498, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #Numero com: 498
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 030_depois_preencher__Numero_1752643972492.png","log":"Screenshot debug salvo: 030_depois_preencher__Numero_1752643972492.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 030_depois_preencher__Numero_1752643972492.png, log: Screenshot debug salvo: 030_depois_preencher__Numero_1752643972492.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 030_depois_preencher__Numero_1752643972492.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #Complemento","log":"Executando passo: fill em #Complemento"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #Complemento, log: Executando passo: fill em #Complemento, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #Complemento
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #Complemento com dados de imovel.complement","log":"Tentando preencher #Complemento com dados de imovel.complement"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #Complemento com dados de imovel.complement, log: Tentando preencher #Complemento com dados de imovel.complement, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #Complemento com dados de imovel.complement
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 031_antes_preencher__Complemento_1752643972704.png","log":"Screenshot debug salvo: 031_antes_preencher__Complemento_1752643972704.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 031_antes_preencher__Complemento_1752643972704.png, log: Screenshot debug salvo: 031_antes_preencher__Complemento_1752643972704.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 031_antes_preencher__Complemento_1752643972704.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #Complemento com: 102","log":"✅ Preenchido #Complemento com: 102"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #Complemento com: 102, log: ✅ Preenchido #Complemento com: 102, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #Complemento com: 102
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 032_depois_preencher__Complemento_1752643972874.png","log":"Screenshot debug salvo: 032_depois_preencher__Complemento_1752643972874.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 032_depois_preencher__Complemento_1752643972874.png, log: Screenshot debug salvo: 032_depois_preencher__Complemento_1752643972874.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 032_depois_preencher__Complemento_1752643972874.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: fill em #Bairro","log":"Executando passo: fill em #Bairro"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: fill em #Bairro, log: Executando passo: fill em #Bairro, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: fill em #Bairro
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Tentando preencher #Bairro com dados de imovel.neighborhood","log":"Tentando preencher #Bairro com dados de imovel.neighborhood"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Tentando preencher #Bairro com dados de imovel.neighborhood, log: Tentando preencher #Bairro com dados de imovel.neighborhood, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Tentando preencher #Bairro com dados de imovel.neighborhood
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 033_antes_preencher__Bairro_1752643973039.png","log":"Screenshot debug salvo: 033_antes_preencher__Bairro_1752643973039.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 033_antes_preencher__Bairro_1752643973039.png, log: Screenshot debug salvo: 033_antes_preencher__Bairro_1752643973039.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 033_antes_preencher__Bairro_1752643973039.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"✅ Preenchido #Bairro com: Gávea","log":"✅ Preenchido #Bairro com: Gávea"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: ✅ Preenchido #Bairro com: Gávea, log: ✅ Preenchido #Bairro com: Gávea, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status ✅ Preenchido #Bairro com: Gávea
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 034_depois_preencher__Bairro_1752643973211.png","log":"Screenshot debug salvo: 034_depois_preencher__Bairro_1752643973211.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 034_depois_preencher__Bairro_1752643973211.png, log: Screenshot debug salvo: 034_depois_preencher__Bairro_1752643973211.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 034_depois_preencher__Bairro_1752643973211.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Dados do imóvel preenchidos. Clicando em Continuar...","log":"Dados do imóvel preenchidos. Clicando em Continuar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Dados do imóvel preenchidos. Clicando em Continuar..., log: Dados do imóvel preenchidos. Clicando em Continuar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Dados do imóvel preenchidos. Clicando em Continuar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Dados do imóvel preenchidos. Clicando em Continuar...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: click em input[value=\"Continuar\"]","log":"Executando passo: click em input[value=\"Continuar\"]"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: click em input[value="Continuar"], log: Executando passo: click em input[value="Continuar"], action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em input[value="Continuar"]
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 035_antes_click_input_value__Continuar___1752643973383.png","log":"Screenshot debug salvo: 035_antes_click_input_value__Continuar___1752643973383.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 035_antes_click_input_value__Continuar___1752643973383.png, log: Screenshot debug salvo: 035_antes_click_input_value__Continuar___1752643973383.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 035_antes_click_input_value__Continuar___1752643973383.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em: input[value=\"Continuar\"]","log":"Clicado em: input[value=\"Continuar\"]"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em: input[value="Continuar"], log: Clicado em: input[value="Continuar"], action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em: input[value="Continuar"]
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 036_depois_click_input_value__Continuar___1752643975570.png","log":"Screenshot debug salvo: 036_depois_click_input_value__Continuar___1752643975570.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 036_depois_click_input_value__Continuar___1752643975570.png, log: Screenshot debug salvo: 036_depois_click_input_value__Continuar___1752643975570.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 036_depois_click_input_value__Continuar___1752643975570.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando seleção de finalidade carregar...","log":"Aguardando seleção de finalidade carregar..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando seleção de finalidade carregar..., log: Aguardando seleção de finalidade carregar..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando seleção de finalidade carregar...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando seleção de finalidade carregar...
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em #FinalidadeCombo","log":"Executando passo: wait_element em #FinalidadeCombo"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em #FinalidadeCombo, log: Executando passo: wait_element em #FinalidadeCombo, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: #FinalidadeCombo","log":"Aguardando elemento: #FinalidadeCombo"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: #FinalidadeCombo, log: Aguardando elemento: #FinalidadeCombo, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: #FinalidadeCombo","log":"Elemento encontrado: #FinalidadeCombo"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: #FinalidadeCombo, log: Elemento encontrado: #FinalidadeCombo, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #FinalidadeCombo
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #FinalidadeCombo
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #FinalidadeCombo
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em #FinalidadeCombo
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: #FinalidadeCombo
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: #FinalidadeCombo
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 037_elemento_encontrado__FinalidadeCombo_1752643975728.png","log":"Screenshot debug salvo: 037_elemento_encontrado__FinalidadeCombo_1752643975728.png"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 037_elemento_encontrado__FinalidadeCombo_1752643975728.png, log: Screenshot debug salvo: 037_elemento_encontrado__FinalidadeCombo_1752643975728.png, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 037_elemento_encontrado__FinalidadeCombo_1752643975728.png
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Selecionando finalidade: Compra e Venda...","log":"Selecionando finalidade: Compra e Venda..."}
+ 📨 [DEBUG] WebSocket message parsed: Object
+ 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Selecionando finalidade: Compra e Venda..., log: Selecionando finalidade: Compra e Venda..., action: undefined
+ 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Selecionando finalidade: Compra e Venda...
+ 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Selecionando finalidade: Compra e Venda...
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: select em #FinalidadeCombo","log":"Executando passo: select em #FinalidadeCombo"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: select em #FinalidadeCombo, log: Executando passo: select em #FinalidadeCombo, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Selecionado valor 176 em: #FinalidadeCombo","log":"Selecionado valor 176 em: #FinalidadeCombo"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Selecionado valor 176 em: #FinalidadeCombo, log: Selecionado valor 176 em: #FinalidadeCombo, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Finalidade selecionada. Procurando botão Confirmar...","log":"Finalidade selecionada. Procurando botão Confirmar..."}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Finalidade selecionada. Procurando botão Confirmar..., log: Finalidade selecionada. Procurando botão Confirmar..., action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: wait_element em button.btn.btn-primary[onclick=\"validar();\"]","log":"Executando passo: wait_element em button.btn.btn-primary[onclick=\"validar();\"]"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: wait_element em button.btn.btn-primary[onclick="validar();"], log: Executando passo: wait_element em button.btn.btn-primary[onclick="validar();"], action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando elemento: button.btn.btn-primary[onclick=\"validar();\"]","log":"Aguardando elemento: button.btn.btn-primary[onclick=\"validar();\"]"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando elemento: button.btn.btn-primary[onclick="validar();"], log: Aguardando elemento: button.btn.btn-primary[onclick="validar();"], action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: select em #FinalidadeCombo
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Selecionado valor 176 em: #FinalidadeCombo
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Finalidade selecionada. Procurando botão Confirmar...
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: select em #FinalidadeCombo
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Selecionado valor 176 em: #FinalidadeCombo
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Finalidade selecionada. Procurando botão Confirmar...
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: wait_element em button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando elemento: button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Elemento encontrado: button.btn.btn-primary[onclick=\"validar();\"]","log":"Elemento encontrado: button.btn.btn-primary[onclick=\"validar();\"]"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Elemento encontrado: button.btn.btn-primary[onclick="validar();"], log: Elemento encontrado: button.btn.btn-primary[onclick="validar();"], action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Elemento encontrado: button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 038_elemento_encontrado_button_btn_btn_primary_onclick__validar______1752643975891.png","log":"Screenshot debug salvo: 038_elemento_encontrado_button_btn_btn_primary_onclick__validar______1752643975891.png"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 038_elemento_encontrado_button_btn_btn_primary_onclick__validar______1752643975891.png, log: Screenshot debug salvo: 038_elemento_encontrado_button_btn_btn_primary_onclick__validar______1752643975891.png, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 038_elemento_encontrado_button_btn_btn_primary_onclick__validar______1752643975891.png
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: click em button.btn.btn-primary[onclick=\"validar();\"]","log":"Executando passo: click em button.btn.btn-primary[onclick=\"validar();\"]"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: click em button.btn.btn-primary[onclick="validar();"], log: Executando passo: click em button.btn.btn-primary[onclick="validar();"], action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: click em button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 039_antes_click_button_btn_btn_primary_onclick__validar______1752643976058.png","log":"Screenshot debug salvo: 039_antes_click_button_btn_btn_primary_onclick__validar______1752643976058.png"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 039_antes_click_button_btn_btn_primary_onclick__validar______1752643976058.png, log: Screenshot debug salvo: 039_antes_click_button_btn_btn_primary_onclick__validar______1752643976058.png, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 039_antes_click_button_btn_btn_primary_onclick__validar______1752643976058.png
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Clicado em: button.btn.btn-primary[onclick=\"validar();\"]","log":"Clicado em: button.btn.btn-primary[onclick=\"validar();\"]"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Clicado em: button.btn.btn-primary[onclick="validar();"], log: Clicado em: button.btn.btn-primary[onclick="validar();"], action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Clicado em: button.btn.btn-primary[onclick="validar();"]
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 040_depois_click_button_btn_btn_primary_onclick__validar______1752643978224.png","log":"Screenshot debug salvo: 040_depois_click_button_btn_btn_primary_onclick__validar______1752643978224.png"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 040_depois_click_button_btn_btn_primary_onclick__validar______1752643978224.png, log: Screenshot debug salvo: 040_depois_click_button_btn_btn_primary_onclick__validar______1752643978224.png, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 040_depois_click_button_btn_btn_primary_onclick__validar______1752643978224.png
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: toast_message em body","log":"Executando passo: toast_message em body"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: toast_message em body, log: Executando passo: toast_message em body, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Aguardando CAPTCHA aparecer...","log":"Aguardando CAPTCHA aparecer..."}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Aguardando CAPTCHA aparecer..., log: Aguardando CAPTCHA aparecer..., action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando CAPTCHA aparecer...
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: toast_message em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Aguardando CAPTCHA aparecer...
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Executando passo: captcha_modal em body","log":"Executando passo: captcha_modal em body"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Executando passo: captcha_modal em body, log: Executando passo: captcha_modal em body, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Sistema de CAPTCHA ativado!","log":"Sistema de CAPTCHA ativado!"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Sistema de CAPTCHA ativado!, log: Sistema de CAPTCHA ativado!, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: captcha_modal em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Sistema de CAPTCHA ativado!
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Executando passo: captcha_modal em body
+DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Sistema de CAPTCHA ativado!
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"Screenshot debug salvo: 041_captcha_apareceu_1752643978420.png","log":"Screenshot debug salvo: 041_captcha_apareceu_1752643978420.png"}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: Screenshot debug salvo: 041_captcha_apareceu_1752643978420.png, log: Screenshot debug salvo: 041_captcha_apareceu_1752643978420.png, action: undefined
+DueDiligenceModal.tsx:386 🔄 [DEBUG] Atualizando propertyItems para certidao_fazendaria
+2DueDiligenceModal.tsx:374 🔄 [DEBUG] Atualizando item certidao_fazendaria com status Screenshot debug salvo: 041_captcha_apareceu_1752643978420.png
+DueDiligenceModal.tsx:329 📨 [DEBUG] WebSocket message raw: {"type":"automation_update","certidaoId":"certidao_fazendaria","status":"CAPTCHA_MODAL_SHOW","log":"CAPTCHA_MODAL_SHOW","payload":{"message":"RESOLVA O CAPTCHA: Por favor, resolva o CAPTCHA que apareceu na tela e clique em \"Continuar\" quando terminar.","type":"captcha_required","action":"show_modal","captchaUrl":"https://www3.tjrj.jus.br/CJE/certidao/judicial/resumoImoveis","captchaImage":"data:image/png;base64,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","captchaInfo":{"found":true,"src":"https://newassets.hcaptcha.com/captcha/v1/ee96afb8830d210d20dfe35be15c0f6348aac944/static/hcaptcha.html#frame=checkbox&id=08czlkiaouf8&host=www3.tjrj.jus.br&sentry=true&reportapi=https%3A%2F%2Faccounts.hcaptcha.com&recaptchacompat=true&custom=false&hl=pt-BR&tplinks=on&andint=off&pstissuer=https%3A%2F%2Fpst-issuer.hcaptcha.com&sitekey=62febbd2-c2ac-4156-b9d9-e37347e954b5&theme=light&origin=https%3A%2F%2Fwww3.tjrj.jus.br","width":302,"height":76,"x":838,"y":783.125,"sitekey":"62febbd2-c2ac-4156-b9d9-e37347e954b5"}}}
+DueDiligenceModal.tsx:333 📨 [DEBUG] WebSocket message parsed: Object
+DueDiligenceModal.tsx:337 🔄 [DEBUG] Automation update - certidaoId: certidao_fazendaria, status: CAPTCHA_MODAL_SHOW, log: CAPTCHA_MODAL_SHOW, action: undefined
+DueDiligenceModal.tsx:341 🎯 [DEBUG] CAPTCHA modal solicitado!
+DueDiligenceModal.tsx:342 

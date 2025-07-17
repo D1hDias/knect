@@ -1,0 +1,476 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Definições de Projeto -->
+    <meta name="copyright" content="Tribunal de Justiça do Estado do Rio de Janeiro">
+    <meta name="author" content="Anderson Silva Oliveira">
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="icon" type="image/png" href="/CJE/master/images/tjrj-logo-65x65.png">
+    <!-- Tools -->
+    <script src="/CJE/master/js/jquery-3.2.1.min.js"></script>
+    <script src="/CJE/js/jquery.inputmask.bundle.js"></script><style type="text/css">span.im-caret {
+    -webkit-animation: 1s blink step-end infinite;
+    animation: 1s blink step-end infinite;
+}
+
+@keyframes blink {
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
+}
+
+@-webkit-keyframes blink {
+    from, to {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
+}
+
+span.im-static {
+    color: grey;
+}
+
+div.im-colormask {
+    display: inline-block;
+    border-style: inset;
+    border-width: 2px;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+div.im-colormask > input {
+    position: absolute;
+    display: inline-block;
+    background-color: transparent;
+    color: transparent;
+    -webkit-appearance: caret;
+    -moz-appearance: caret;
+    appearance: caret;
+    border-style: none;
+    left: 0; /*calculated*/
+}
+
+div.im-colormask > input:focus {
+    outline: none;
+}
+
+div.im-colormask > input::-moz-selection{
+    background: none;
+}
+
+div.im-colormask > input::selection{
+    background: none;
+}
+div.im-colormask > input::-moz-selection{
+    background: none;
+}
+
+div.im-colormask > div {
+    color: black;
+    display: inline-block;
+    width: 100px; /*calculated*/
+}</style>
+    <!-- Bootstrap + Customização -->
+    <link href="/CJE/master/css/LayoutBase.min.css" rel="stylesheet">
+    <link href="/CJE/css/portal-extrajudicial.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/ionicons@4.3.0/dist/css/ionicons.min.css" rel="stylesheet">
+    
+    <link href="/CJE/Fas/css/all.css" rel="stylesheet">
+
+    <title>CJE - Certidão Judicial Eletrônica - Certidão Judicial Eletrônica</title>
+</head>
+<body>
+    <div class="cabecalho">
+        <div class="container ">
+            <div class="row linha1">
+
+                <div class="col-sm-3 hidden-xs">
+                    <a href="http://cgj.tjrj.jus.br/">
+                        <img src="/CJE/master/images/cgj-logo.png" alt="Corregedoria Geral da Justiça" class="logo">
+                    </a>
+                </div>
+                <div class="col-sm-9 col-xs-12 text-right text-uppercase">
+                    
+                    
+                </div>
+            </div>
+            <div class="row linha2">
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="area-conteudo">
+
+            <div id="divMsgUsuario" class="row hidden">
+                <label id="lblMsgInteracao">
+                    
+                </label>
+            </div>
+            
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <nav>
+            <ol class="breadcrumb">
+                            <li><a href="/CJE/">Início</a></li>
+                            <li><a href="/CJE/certidao/judicial/">Certidão Judicial Eletrônica</a></li>
+                            <li><strong>Finalidade</strong></li>
+
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        
+
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-8">
+        
+
+
+
+
+<style>
+    #sidebar-2 {
+        display: none;
+    }
+
+    #centralizar {
+        padding-top: 15px;
+    }
+
+    input.escolha {
+        width: 20px;
+        height: 20px;
+        vertical-align: central;
+        position: relative;
+        top: 5px;
+        overflow: hidden;
+    }
+
+    label {
+        display: inline-block;
+    }
+
+    select {
+        height: 30px;
+        font-weight: bold;
+    }
+
+    hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        border: 0;
+        border-top: 1px solid #eee;
+    }
+
+    .form-control {
+        resize: none;
+        word-wrap: break-word;
+    }
+
+    ::-webkit-input-placeholder {
+        color: silver;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */
+        color: silver;
+    }
+
+    ::-moz-placeholder { /* Firefox 19+ */
+        color: silver;
+    }
+
+    :-ms-input-placeholder {
+        color: silver;
+    }
+</style>
+
+
+<form action="/CJE/certidao/judicial/validafinalidadeImovel" method="post" role="form">    
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Requerimento de Certidão Eletrônica</h1>
+                <h2>Finalidade</h2>
+                <p>Escolha a Finalidade da Certidão.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="FinalidadeCombo">Finalidade</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="FinalidadeCombo" name="FinalidadeCombo"><option selected="selected" value="0">Selecione a finalidade</option>
+<option value="164">Ação de Tutela</option>
+<option value="165">Adoção</option>
+<option value="166">Alienação Fiduciária</option>
+<option value="167">Alteração contratual</option>
+<option value="168">Aluguel</option>
+<option value="169">Apresentação à Polícia Federal</option>
+<option value="170">Apresentação na Polícia Civil</option>
+<option value="171">Apresentar a Receita Federal</option>
+<option value="172">Auditoria</option>
+<option value="173">Blindagem de Veículo </option>
+<option value="174">Cadastro</option>
+<option value="175">Cessão de Direitos</option>
+<option value="176">Compra e Venda</option>
+<option value="177">Concorrência e Licitação</option>
+<option value="178">Concurso</option>
+<option value="179">Conselho Tutelar</option>
+<option value="180">Contrato</option>
+<option value="181">Credenciamento Religioso</option>
+<option value="182">Curatela</option>
+<option value="183">Distrato Social</option>
+<option value="184">Doação</option>
+<option value="185">Dupla cidadania</option>
+<option value="186">Empréstimos</option>
+<option value="187">Escritura</option>
+<option value="188">Financiamento</option>
+<option value="189">Formal de Partilha</option>
+<option value="190">Hipoteca</option>
+<option value="191">Informação pessoal</option>
+<option value="192">Instrução Processual</option>
+<option value="193">Inventário</option>
+<option value="194">Junta comercial</option>
+<option value="195">Leilão</option>
+<option value="196">Locação</option>
+<option value="197">Localizar inventário</option>
+<option value="198">Maçonaria</option>
+<option value="199">Mandado judicial</option>
+<option value="200">Memorial de incorporação</option>
+<option value="201">Min. da Justiça</option>
+<option value="202">Min. do Exército</option>
+<option value="203">Min. do Trabalho</option>
+<option value="204">Motorista</option>
+<option value="205">Naturalização</option>
+<option value="206">Partilha</option>
+<option value="207">Perito Judicial</option>
+<option value="208">Pesquisa</option>
+<option value="209">Porte de Arma</option>
+<option value="210">Posse de Armas</option>
+<option value="211">Posse em Cargo Público</option>
+<option value="212">Procuração</option>
+<option value="213">Prova em Juízo</option>
+<option value="214">Registro Civil</option>
+<option value="215">Registro de Imóvel</option>
+<option value="216">Registro tardio</option>
+<option value="217">Renovação de Registro</option>
+<option value="218">Resolução 156/12 CNJ</option>
+<option value="219">Retificação de Assentamento</option>
+<option value="220">Réu preso</option>
+<option value="221">Separação</option>
+<option value="222">Sica</option>
+<option value="223">SMTR</option>
+<option value="224">Testamento</option>
+<option value="225">Trabalho</option>
+<option value="226">Transação imobiliária</option>
+<option value="227">Transferência Obá</option>
+<option value="228">Usucapião</option>
+<option value="229">Vigilante</option>
+<option value="230">Visto de Migração</option>
+</select>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Comarca para Busca - Capital</h2>
+        
+        <p> Comarca: Capital</p>
+        
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="text-right">
+                    <div class="col-md-12 col-sm-10 col-xs-12">
+                        <a class="btn btn-default" href="/CJE/certidao/judicial/requeridoImovel" style="color:#000;">Voltar</a>
+                        <button type="button" class="btn btn-primary" onclick="validar();">
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+
+        <script>
+
+            function validar(e) {
+
+                document.forms[0].submit();
+
+
+            }
+        </script>
+    
+</form>
+    </div>
+    <div id="sidebar" class="col-xs-12 col-sm-5 col-md-4 sidebar sticky">
+        <div class="row" id="sidebar-1">
+            <div class="col-xs-12">
+                
+    <style>
+    .navVoceEsta {
+    }
+
+        .navVoceEsta a {
+            font-size: 1.2em;
+            width: 100%;
+            clear: both;
+            display: block;
+            margin-top: 16px;
+            padding-bottom: 8px;
+        }
+
+            .navVoceEsta a i {
+                font-size: 1.8em;
+                width: 48px;
+                display: block;
+                float: left;
+                text-align: center;
+            }
+
+            .navVoceEsta a + i {
+                margin-left: 48px;
+            }
+
+        .navVoceEsta p {
+            margin-left: 48px;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+    .destaque {
+        border: solid 1px;
+        border-radius: 6px;
+        border-color: #e2d1d1;
+        padding-bottom: 8px;
+        box-shadow: 1px 3px 5px #888888;
+        margin-top: 8px;
+    }
+</style>
+<h1>Você está em:</h1>
+
+
+
+<nav class="navVoceEsta">
+    <div class="">
+        <a href="/CJE/certidao/judicial/solicitarCapital?comarca=Capital#"><i class="glyphicon glyphicon-inbox"></i>Seleção de Modelo</a>
+
+                <i>Ações Fazendárias</i>
+    </div>
+    <div class="">
+        <a href="/CJE/certidao/judicial/cadastrarequerenteCapital?voltar=V"><i class="glyphicon glyphicon-user"></i> Requerente</a>
+            <p><i>Diego Dias</i></p>
+    </div>
+    <div class="">
+        <a href="#"><i class="fas fa-user-plus"></i> Item para pesquisar</a>
+    </div>
+    <div class="destaque">
+        <a href="#"><i class="fas fa-map-marker-alt"></i> Onde será a pesquisa</a>
+    </div>
+    <div class="">
+        <a href="#"><i class="fas fa-glasses"></i> Resumo</a>
+    </div>
+    <div class="">
+        <a href="#"><i class="fas fa-flag-checkered"></i> Requerimento Finalizado</a>
+    </div>
+</nav>
+
+
+
+
+
+            </div>
+        </div>
+        <div class="row" id="sidebar-2">
+            <div class="col-xs-12">
+                
+
+<h1>Acesso Rápido</h1>
+<div class="acesso-rapido">
+    
+    <div class="acesso-rapido-item">
+        <a href="/CJE/certidao/">
+            <div class="ar-item-imagem">
+                <span class="PEJ-icone-acesso-rapido icon-certidao-eletronica-judicial"></span>
+            </div>
+            <div class="ar-item-texto"><span>Certidão Eletrônica de Distribuição Judicial</span></div>
+        </a>
+    </div>
+
+
+
+
+
+
+
+    
+    
+    
+</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+
+        </div>
+    </div>
+
+    
+    <div class="cabecalho">
+        <div class="container text-center small" style="padding-top: 1em;">
+            <p>
+                Corregedoria Geral da Justiça do Estado do Rio de Janeiro<br>
+                Av. Erasmo Braga, 115 - 7º e 8º andares - Lâmina I - Centro - Rio de Janeiro - RJ<br>
+                CEP:20020-903 - Telefone - (21)3133-2000<br>
+                E-mail - <a href="mailto:corregedoria@tjrj.jus.br">corregedoria@tjrj.jus.br</a><br>
+                Copyright © 2011 v1.2.4.41 R37
+            </p>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/CJE/master/js/bootstrap.min.js"></script>
+    
+    
+    
+
+
+
+
+</body></html>

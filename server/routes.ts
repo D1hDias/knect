@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, setupAuthRoutes, isAuthenticated } from "./auth";
-import { insertPropertySchema, insertProposalSchema, insertContractSchema, insertTimelineEntrySchema, properties } from "@shared/schema";
+import { insertPropertySchema, insertProposalSchema, insertContractSchema, insertTimelineEntrySchema, properties, users, propertyOwners } from "@shared/schema";
 import { z } from "zod";
 import { db } from "./db";
 import { documents as propertyDocuments } from "@shared/schema";
@@ -615,16 +615,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (async () => {
         let browser;
         try {
-          // 1. Launch browser
-          browser = await puppeteer.launch({ headless: false }); // Run in non-headless mode for debugging
-          const page = await browser.newPage();
+          // 1. Launch browser (headless mode)
+          browser = await puppeteer.launch({ 
+            headless: true,
+            defaultViewport: { width: 1920, height: 1080 },
+            args: [
+              '--no-sandbox',
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage',
+              '--disable-accelerated-2d-canvas',
+              '--no-first-run',
+              '--no-zygote',
+              '--disable-gpu'
+            ]
+          });
+          
+          // Usar a primeira aba existente ao invés de criar nova
+          const pages = await browser.pages();
+          const page = pages[0]; // Usar aba padrão que já existe
 
-          // 2. Gather context data
-          const owners = await storage.getPropertyOwners(propertyId);
+          // 2. Gather complete context data from database
+          
+          // Buscar dados completos do usuário logado
+          const usuarioCompleto = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+          if (!usuarioCompleto.length) {
+            throw new Error('Usuário não encontrado no banco de dados');
+          }
+          
+          // Buscar proprietários completos do imóvel
+          const proprietarios = await db.select().from(propertyOwners).where(eq(propertyOwners.propertyId, parseInt(propertyId)));
+          if (!proprietarios.length) {
+            throw new Error('Nenhum proprietário encontrado para este imóvel');
+          }
+          
+          // Montar contexto completo com dados reais do banco NEON
           const dadosContexto = {
-            usuario: req.session.user,
-            proprietario: owners?.[0], // Using the first owner for now
-            imovel: property,
+            usuario: {
+              id: usuarioCompleto[0].id,
+              fullName: `${usuarioCompleto[0].firstName || ''} ${usuarioCompleto[0].lastName || ''}`.trim(),
+              firstName: usuarioCompleto[0].firstName,
+              lastName: usuarioCompleto[0].lastName,
+              email: usuarioCompleto[0].email,
+              cpf: usuarioCompleto[0].cpf,
+              creci: usuarioCompleto[0].creci,
+              phone: usuarioCompleto[0].phone,
+            },
+            proprietario: {
+              id: proprietarios[0].id,
+              fullName: proprietarios[0].fullName,
+              cpf: proprietarios[0].cpf,
+              rg: proprietarios[0].rg,
+              phone: proprietarios[0].phone,
+              email: proprietarios[0].email,
+              birthDate: proprietarios[0].birthDate,
+              maritalStatus: proprietarios[0].maritalStatus,
+              fatherName: proprietarios[0].fatherName,
+              motherName: proprietarios[0].motherName,
+            },
+            imovel: {
+              id: property.id,
+              sequenceNumber: property.sequenceNumber,
+              type: property.type,
+              street: property.street,
+              number: property.number,
+              complement: property.complement,
+              neighborhood: property.neighborhood,
+              city: property.city,
+              state: property.state,
+              cep: property.cep,
+              value: property.value,
+              registrationNumber: property.registrationNumber,
+              municipalRegistration: property.municipalRegistration,
+              area: property.area,
+            },
+            // Todos os proprietários (caso tenha mais de um)
+            todosProprietarios: proprietarios
           };
 
           // 3. Create and run automator

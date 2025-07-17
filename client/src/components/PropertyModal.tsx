@@ -68,9 +68,7 @@ const ownerSchema = z.object({
   id: z.union([z.string(), z.number()]).transform(val => String(val)),
   fullName: z.string().min(1, "Nome completo é obrigatório"),
   cpf: z.string().min(1, "CPF é obrigatório"),
-  rg: z.string().optional(),
   birthDate: z.string().optional(),
-  maritalStatus: z.string().optional(),
   fatherName: z.string().optional(),
   motherName: z.string().optional(),
   phone: z.string().min(1, "Telefone é obrigatório"),
@@ -78,6 +76,8 @@ const ownerSchema = z.object({
     if (email === '') return true; // Permite vazio
     return /\S+@\S+\.\S+/.test(email); // Valida formato se não estiver vazio
   }, "E-mail inválido"),
+  rg: z.string().optional(),
+  maritalStatus: z.string().optional(),
 });
 
 const propertySchema = z.object({
@@ -163,13 +163,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
     id: crypto.randomUUID(),
     fullName: '',
     cpf: '',
-    rg: '',
     birthDate: '',
-    maritalStatus: '',
     fatherName: '',
     motherName: '',
     phone: '',
-    email: ''
+    email: '',
+    rg: '',
+    maritalStatus: ''
   }]);
 
   const form = useForm<PropertyFormData>({
@@ -188,13 +188,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
         id: crypto.randomUUID(),
         fullName: '',
         cpf: '',
-        rg: '',
         birthDate: '',
-        maritalStatus: '',
         fatherName: '',
         motherName: '',
         phone: '',
-        email: ''
+        email: '',
+        rg: '',
+        maritalStatus: ''
       }],
       registrationNumber: "",
       municipalRegistration: "",
@@ -231,24 +231,24 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
             id: owner.id || crypto.randomUUID(),
             fullName: owner.fullName || '',
             cpf: owner.cpf || '',
-            rg: owner.rg || '',
             birthDate: owner.birthDate || '',
-            maritalStatus: owner.maritalStatus || '',
             fatherName: owner.fatherName || '',
             motherName: owner.motherName || '',
             phone: owner.phone || '',
-            email: owner.email || ''
+            email: owner.email || '',
+            rg: owner.rg || '',
+            maritalStatus: owner.maritalStatus || ''
           })) : [{
             id: crypto.randomUUID(),
             fullName: '',
             cpf: '',
-            rg: '',
             birthDate: '',
-            maritalStatus: '',
             fatherName: '',
             motherName: '',
             phone: '',
-            email: ''
+            email: '',
+            rg: '',
+            maritalStatus: ''
           }]
       });
 
@@ -256,13 +256,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
         id: crypto.randomUUID(),
         fullName: '',
         cpf: '',
-        rg: '',
         birthDate: '',
-        maritalStatus: '',
         fatherName: '',
         motherName: '',
         phone: '',
-        email: ''
+        email: '',
+        rg: '',
+        maritalStatus: ''
       }]);
     } else if (!property && open) {
       // Reset para novo
@@ -280,13 +280,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
           id: crypto.randomUUID(),
           fullName: '',
           cpf: '',
-          rg: '',
           birthDate: '',
-          maritalStatus: '',
           fatherName: '',
           motherName: '',
           phone: '',
-          email: ''
+          email: '',
+          rg: '',
+          maritalStatus: ''
         }],
         registrationNumber: "",
         municipalRegistration: "",
@@ -295,13 +295,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
         id: crypto.randomUUID(),
         fullName: '',
         cpf: '',
-        rg: '',
         birthDate: '',
-        maritalStatus: '',
         fatherName: '',
         motherName: '',
         phone: '',
-        email: ''
+        email: '',
+        rg: '',
+        maritalStatus: ''
       }]);
     }
   }, [property, open, form]);
@@ -311,13 +311,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
       id: crypto.randomUUID(),
       fullName: '',
       cpf: '',
-      rg: '',
       birthDate: '',
-      maritalStatus: '',
       fatherName: '',
       motherName: '',
       phone: '',
-      email: ''
+      email: '',
+      rg: '',
+      maritalStatus: ''
     };
     const currentOwners = form.getValues('owners');
     const updatedOwners = [...currentOwners, newOwner];
@@ -1036,6 +1036,7 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Nome Completo */}
                     <FormField
                       control={form.control}
                       name={`owners.${index}.fullName`}
@@ -1050,6 +1051,7 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
                       )}
                     />
 
+                    {/* CPF */}
                     <FormField
                       control={form.control}
                       name={`owners.${index}.cpf`}
@@ -1073,6 +1075,76 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
                       )}
                     />
 
+                    {/* Data de Nascimento */}
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.birthDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Data de Nascimento</FormLabel>
+                          <FormControl>
+                            <Input 
+                              id="DN"
+                              name="DataNascimento"
+                              type="text"
+                              placeholder="DD/MM/AAAA" 
+                              {...field}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '');
+                                const formattedDate = value.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
+                                field.onChange(formattedDate);
+                              }}
+                              maxLength={10}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Nome do Pai */}
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.fatherName`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome do Pai</FormLabel>
+                          <FormControl>
+                            <Input 
+                              id="txtPai"
+                              name="NomePai"
+                              type="text"
+                              placeholder="Nome completo do pai"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Nome da Mãe */}
+                    <FormField
+                      control={form.control}
+                      name={`owners.${index}.motherName`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome da Mãe</FormLabel>
+                          <FormControl>
+                            <Input 
+                              id="txtMae"
+                              name="NomeMae"
+                              type="text"
+                              placeholder="Nome completo da mãe"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Telefone */}
                     <FormField
                       control={form.control}
                       name={`owners.${index}.phone`}
@@ -1096,6 +1168,7 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
                       )}
                     />
 
+                    {/* E-mail */}
                     <FormField
                       control={form.control}
                       name={`owners.${index}.email`}

@@ -192,11 +192,9 @@ export default function RiskAnalysis() {
   };
 
   const updateAnalysisData = (updates: Partial<RiskAnalysisData>) => {
-    setAnalysisData(prev => ({
-      ...prev,
-      ...updates,
-      timestamp: new Date().toISOString()
-    }));
+    // Função removida temporariamente para evitar loops
+    // mas mantida para compatibilidade
+    console.log('updateAnalysisData called with:', updates);
   };
 
   // Função separada para save manual quando necessário
@@ -397,51 +395,75 @@ IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. 
     const prompt = buildAIPrompt();
     
     try {
-      // Preparar payload exatamente como o workflow N8N espera
+      // Preparar payload para API do OpenRouter
       const aiPayload = {
-        analysisId: analysisDataRef.current.id,
-        prompt: prompt,
-        fullContext: analysisDataRef.current,
-        requestType: "risk_analysis"
+        model: "moonshotai/kimi-k2:free",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 2000
       };
 
-      console.log("📋 Campos obrigatórios validados:", {
-        analysisId: !!aiPayload.analysisId,
-        prompt: !!aiPayload.prompt,
-        fullContext: !!aiPayload.fullContext,
-        requestType: !!aiPayload.requestType
+      console.log("📋 Payload validado para OpenRouter:", {
+        model: aiPayload.model,
+        hasPrompt: !!prompt,
+        temperature: aiPayload.temperature
       });
       
-      // 🚀 CONECTANDO COM N8N WORKFLOW
-      console.log("🚀 Enviando para N8N Cloud:", {
-        url: 'http://localhost:5678/workflow/amu6v0qlSgoj5bql',
-        payload: aiPayload
+      // 🚀 CONECTANDO COM OPENROUTER
+      console.log("🚀 Enviando para OpenRouter:", {
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        model: aiPayload.model
       });
       
-      const response = await fetch('http://localhost:5678/workflow/amu6v0qlSgoj5bql', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'KNECT - Sistema Imobiliário'
         },
         body: JSON.stringify(aiPayload)
       });
 
       if (!response.ok) {
-        throw new Error(`Erro na API do N8N: ${response.status} ${response.statusText}`);
+        throw new Error(`Erro na API do OpenRouter: ${response.status} ${response.statusText}`);
       }
 
-      const aiResult = await response.json();
-      console.log("📥 Resposta do N8N:", aiResult);
+      const openrouterResponse = await response.json();
+      console.log("📥 Resposta do OpenRouter:", openrouterResponse);
       
-      // Verificar se há erro no workflow
-      if (aiResult.error) {
-        console.error("❌ Erro no workflow N8N:", aiResult.error);
+      // Verificar se há erro na resposta
+      if (openrouterResponse.error) {
+        console.error("❌ Erro na API OpenRouter:", openrouterResponse.error);
         console.log("🔄 Usando simulação como fallback...");
         const result = generateIntelligentResult();
         setAnalysisResult(result);
         setCurrentStep(6);
-        alert(`Erro no N8N: ${aiResult.error}. Usando análise simulada.`);
+        alert(`Erro no OpenRouter: ${openrouterResponse.error.message}. Usando análise simulada.`);
         return;
+      }
+      
+      // Extrair conteúdo da resposta e fazer parse do JSON
+      const content = openrouterResponse.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("Resposta da IA não contém conteúdo válido");
+      }
+      
+      let aiResult;
+      try {
+        // Tentar extrair JSON da resposta
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const jsonContent = jsonMatch ? jsonMatch[0] : content;
+        aiResult = JSON.parse(jsonContent);
+      } catch (parseError) {
+        console.error("❌ Erro ao fazer parse do JSON:", parseError);
+        throw new Error("IA retornou formato inválido");
       }
       
       // Verificar se tem todos os campos obrigatórios
@@ -454,14 +476,14 @@ IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. 
         const result = generateIntelligentResult();
         setAnalysisResult(result);
         setCurrentStep(6);
-        alert(`Resposta incompleta do N8N. Campos ausentes: ${missingFields.join(', ')}`);
+        alert(`Resposta incompleta da IA. Campos ausentes: ${missingFields.join(', ')}`);
         return;
       }
       
-      // Usar resultado do N8N se tudo estiver correto
+      // Usar resultado do OpenRouter se tudo estiver correto
       const result = aiResult;
       
-      console.log("✅ Análise N8N concluída com sucesso:", {
+      console.log("✅ Análise OpenRouter concluída com sucesso:", {
         riskLevel: result.riskLevel,
         alertsCount: result.alerts?.length || 0,
         recommendationsCount: result.recommendations?.length || 0,
@@ -485,7 +507,7 @@ IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. 
       setCurrentStep(6);
       
       // Mostrar erro amigável para o usuário
-      alert('Erro de conexão com N8N. Usando análise simulada como backup.');
+      alert('Erro de conexão com OpenRouter. Usando análise simulada como backup.');
     } finally {
       setIsAnalyzing(false);
     }
@@ -774,12 +796,12 @@ IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. 
               <CardContent>
                 <Bot className="h-16 w-16 text-blue-600 mx-auto mb-4 animate-pulse" />
                 <h3 className="text-xl font-semibold text-blue-800 mb-2">
-                  {isAnalyzing ? "Conectando com N8N..." : "Processando Análise"}
+                  {isAnalyzing ? "Conectando com OpenRouter..." : "Processando Análise"}
                 </h3>
                 <p className="text-blue-700 mb-6">
                   {isAnalyzing 
-                    ? "Enviando dados para o workflow N8N e aguardando resposta da IA..."
-                    : "Estamos utilizando OCR e IA para extrair dados, detectar inconsistências e identificar riscos"
+                    ? "Enviando dados para o OpenRouter e aguardando resposta..."
+                    : "Estamos utilizando IA avançada para analisar dados, detectar inconsistências e identificar riscos"
                   }
                 </p>
                 <Progress value={75} className="w-full mb-4" />
@@ -796,12 +818,12 @@ IMPORTANTE: Retorne APENAS o JSON válido, sem texto adicional antes ou depois. 
                 {isAnalyzing ? (
                   <>
                     <Clock className="h-4 w-4 mr-2 animate-spin" />
-                    Conectando com N8N...
+                    Conectando com OpenRouter...
                   </>
                 ) : (
                   <>
                     <Bot className="h-4 w-4 mr-2" />
-                    Iniciar Análise com N8N + IA
+                    Iniciar Análise com OpenRouter
                   </>
                 )}
               </Button>

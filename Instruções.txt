@@ -1,0 +1,22 @@
+Primeiro vamos construir a automação no item Certidão Fazendária.
+
+Como funciona:
+  1. Frontend: Usuário clica "Automatizar" no DueDiligenceModal
+  2. Backend: Puppeteer abre browser na URL "https://www3.tjrj.jus.br/CJE/certidao", navega para Requerimento de Certidão Eletrônica
+  3. Automação: Clica em "Solicitar"
+  3.1. Frontend: recebe toast "Estamos solicitando a certidão..." para acompanhamento dizendo as etapas concluídas.
+  4. Automação: Busca os dados cadastrados do "Property" em questão, lê "city" e escolhe a opção de acordo com o que retornar. Exemplo: O "Property" está cadastrado com "city" Rio de Janeiro. Aí a automação saberá que deve cicar em RJ/Capital. Se o "city" fosse Niterói, a automação clicaria em Niterói e assim por diante.
+  4.1. Frontend: recebe toast "Estamos escolhendo a Comarca exata..." para acompanhamento dizendo as etapas concluídas.
+  5. Automação: Lê o tipo de certidão e categoria escolhida e como estamos em "IMÓVEL > CERTIDÃO FAZENDÁRIA", clica na opção Fazendárias já que se trata da escolha de "Certidões Fazendárias" como inicialmente escolhido.
+  5.1. Frontend: recebe toast "Escolhida a opção Fazendárias." para acompanhamento dizendo as etapas concluídas. 
+  6. Automação: Lê o tipo de certidão e categoria escolhida e como estamos em "IMÓVEL" sabe que a opção é de "Imóveis", clica na opção.
+  6.1. Frontend: recebe toast "Escolhida a opção Imóveis." para acompanhamento dizendo as etapas concluídas.
+  7. Automação: Lê os campos um por um, identifica seus nomes, faz associações com os mesmos nomes dos campos cadastrados e preenche a seção "Dados do Requerente" com os exatos dados do usuário logado. Precisa buscar "Nome", "CPF", "E-mail" e "Telefone" do usuário cadastrado e vai preenchendo um a um de cima pra baixo. Ao finalizar preenchimento, pressiona o botão "Continuar".
+  7.1. Frontend: recebe toast "Preenchendo dados do Requerente..." para acompanhamento dizendo as etapas concluídas.
+  8. Automação: Lê os campos um por um, identifica seus nomes, faz associações com os mesmos nomes dos campos cadastrados e preenche a seção "Dados para Pesquisa" com os exatos dados do "Property cadastrado". Precisa buscar "Inscrição Municipal", "Rua/Avenida", "Número", "Complemento" e "Bairro" do "Property cadastrado" e vai preenchendo um a um de cima pra baixo. Ao finalizar preenchimento, pressiona o botão "Continuar".
+  8.1. Frontend: recebe toast "Preenchendo dados do imóvel..." para acompanhamento dizendo as etapas concluídas.
+  9. Automação: Lê a página e na caixa de seleção escolhe a opção 14 que é "compra e venda" e pressiona o botão "Continuar".
+  10. Na próxima e ultima tela que é a tela de captcha, envia o captha pro usuário resolver manualmente. 
+
+  BÔNUS. Automação: Executa steps sequencialmente com feedback via WebSocket.
+  BÔNUS 2. Frontend: Recebe updates em tempo real no modal através ds toasts explicados nos itens acima.

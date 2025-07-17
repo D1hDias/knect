@@ -29,7 +29,22 @@ export abstract class CertidaoAutomator {
    */
   protected async navegarParaPaginaInicial(): Promise<void> {
     console.log(`Navegando para: ${this.config.url}`);
+    this.notificarStatus(`Navegando para: ${this.config.url}`);
+    
     await this.page.goto(this.config.url, { waitUntil: 'networkidle2' });
+    
+    this.notificarStatus('Página carregada, verificando conteúdo...');
+    
+    // Log da página carregada para debug
+    const pageInfo = await this.page.evaluate(() => ({
+      url: window.location.href,
+      title: document.title,
+      hasBody: !!document.body,
+      elementCount: document.querySelectorAll('*').length
+    }));
+    
+    console.log('📋 Página carregada:', pageInfo);
+    this.notificarStatus(`Página carregada: ${pageInfo.title} (${pageInfo.elementCount} elementos)`);
   }
 
   /**

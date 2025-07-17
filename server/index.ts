@@ -70,7 +70,12 @@ app.use((req, res, next) => {
     log(`serving on ${host}:${port}`);
   });
 
-  // Setup WebSocket Server
-  const wss = new WebSocketServer({ server });
+  // Setup WebSocket Server with path filtering to avoid Vite conflicts
+  const wss = new WebSocketServer({ 
+    server,
+    path: '/automation-ws'
+  });
+  
+  console.log('🔌 WebSocket Server configurado em /automation-ws');
   wss.on('connection', handleWebSocketConnection);
 })();
