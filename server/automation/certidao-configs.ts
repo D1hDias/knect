@@ -115,5 +115,74 @@ export const CERTIDAO_CONFIGS: Record<string, CertidaoConfig> = {
       { action: 'toast_message', selector: 'body', message: 'Aguardando CAPTCHA aparecer...' },
       { action: 'captcha_modal', selector: 'body', message: 'RESOLVA O CAPTCHA: Por favor, resolva o CAPTCHA que apareceu na tela e clique em "Continuar" quando terminar.' }
     ]
+  },
+  segundo_distribuidor: {
+    id: 'segundo_distribuidor',
+    name: '2º Distribuidor - Pessoais (Vendedor)',
+    url: 'https://www3.tjrj.jus.br/CJE/certidao',
+    site_type: 'tjrj',
+    automation_class: 'TJRJAutomator',
+    required_data: ['usuario', 'proprietario', 'imovel'],
+    steps: [
+      // 1. Clicar no botão "Solicitar"
+      { action: 'toast_message', selector: 'body', message: 'Carregando página inicial do 2º Distribuidor...' },
+      { action: 'wait_element', selector: 'input[value="Solicitar"]' },
+      { action: 'click', selector: 'input[value="Solicitar"]' },
+      
+      // 2. Seleção de Comarca (igual ao anterior)
+      { action: 'toast_message', selector: 'body', message: 'Selecionando comarca do requerimento...' },
+      { action: 'wait_element', selector: '.bordasModelos' },
+      { action: 'select_by_city', selector: '.bordasModelos', value_from: 'imovel.city' },
+      
+      // 3. Clicar no botão "Ações Cíveis"
+      { action: 'toast_message', selector: 'body', message: 'Comarca selecionada, procurando Ações Cíveis...' },
+      { action: 'wait_element', selector: '.bordasModelos' },
+      { action: 'select_by_text', selector: '.bordasModelos', value: 'Ações Cíveis' },
+      
+      // 4. Preencher Dados do Requerente (igual ao anterior)
+      { action: 'toast_message', selector: 'body', message: 'Aguardando formulário de dados do Requerente carregar...' },
+      { action: 'wait_element', selector: '#nomerequerente' },
+      { action: 'toast_message', selector: 'body', message: 'Preenchendo dados do requerente...' },
+      
+      { action: 'fill', selector: '#nomerequerente', value_from: 'usuario.fullName' },
+      { action: 'fill', selector: '#cpfcnpj2', value_from: 'usuario.cpf' },
+      { action: 'fill', selector: '#email', value_from: 'usuario.email' },
+      { action: 'fill', selector: '#telefone', value_from: 'usuario.phone' },
+      
+      { action: 'toast_message', selector: 'body', message: 'Dados do requerente preenchidos. Continuando...' },
+      { action: 'click', selector: 'input[value="Continuar"]' },
+      
+      // 5. Preencher Dados para Pesquisa (dados pessoais do vendedor)
+      { action: 'toast_message', selector: 'body', message: 'Aguardando formulário de Dados para Pesquisa carregar...' },
+      { action: 'wait_element', selector: '#nomerequerido' },
+      { action: 'toast_message', selector: 'body', message: 'Preenchendo dados pessoais do vendedor...' },
+      
+      { action: 'fill', selector: '#nomerequerido', value_from: 'proprietario.fullName' },
+      { action: 'fill', selector: '#cpfcnpj', value_from: 'proprietario.cpf' },
+      { action: 'fill', selector: '#DN', value_from: 'proprietario.birthDate' },
+      { action: 'fill', selector: '#txtMae', value_from: 'proprietario.motherName' },
+      { action: 'fill', selector: '#txtPai', value_from: 'proprietario.fatherName' },
+      
+      // 6. Verificar se há segundo proprietário e continuar
+      { action: 'toast_message', selector: 'body', message: 'Dados preenchidos. Verificando se há segundo proprietário...' },
+      { action: 'click', selector: 'input[type="button"][value="Continuar"][onclick="validar();"]' },
+      
+      // 7. Selecionar finalidade "Compra e Venda"
+      { action: 'toast_message', selector: 'body', message: 'Aguardando seleção de finalidade carregar...' },
+      { action: 'wait_element', selector: 'select option[value="176"]' },
+      { action: 'toast_message', selector: 'body', message: 'Selecionando finalidade: Compra e Venda...' },
+      { action: 'select', selector: 'select', value: '176' },
+      
+      // 8. Não preencher campo complementar de finalidade (conforme instruções)
+      { action: 'toast_message', selector: 'body', message: 'Finalidade selecionada. Campo complementar deixado em branco...' },
+      
+      // 9. Clicar em Continuar
+      { action: 'wait_element', selector: 'button[type="button"][onclick="validar();"]' },
+      { action: 'click', selector: 'button[type="button"][onclick="validar();"]' },
+      
+      // 10. CAPTCHA Modal
+      { action: 'toast_message', selector: 'body', message: 'Aguardando CAPTCHA aparecer...' },
+      { action: 'captcha_modal', selector: 'body', message: 'RESOLVA O CAPTCHA: Por favor, resolva o CAPTCHA que apareceu na tela e clique em "Continuar" quando terminar.' }
+    ]
   }
 };
