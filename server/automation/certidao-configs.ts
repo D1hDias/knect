@@ -76,7 +76,7 @@ export const CERTIDAO_CONFIGS: Record<string, CertidaoConfig> = {
       { action: 'fill', selector: '#telefone', value_from: 'usuario.phone' },
       
       { action: 'toast_message', selector: 'body', message: 'Dados do requerente preenchidos. Clicando em Continuar...' },
-      { action: 'click', selector: 'input[value="Continuar"]' },
+      { action: 'click', selector: 'inpEsta etapa inclusive, é exatamente idêntica a mesma etapa utilizada na automação anterior de Id certidao_fazendaria. Após o preenchimento, clicar sobre o botão de value Continuar. ut[value="Continuar"]' },
       
       // ETAPA: Preencher Dados para Pesquisa (dados do imóvel)
       { action: 'toast_message', selector: 'body', message: 'Aguardando formulário de Dados para Pesquisa carregar...' },
@@ -119,69 +119,63 @@ export const CERTIDAO_CONFIGS: Record<string, CertidaoConfig> = {
   segundo_distribuidor: {
     id: 'segundo_distribuidor',
     name: '2º Distribuidor - Pessoais (Vendedor)',
-    url: 'https://www3.tjrj.jus.br/CJE/certidao',
+    url: 'https://www3.tjrj.jus.br/CJE/',
     site_type: 'tjrj',
     automation_class: 'TJRJAutomator',
     required_data: ['usuario', 'proprietario', 'imovel'],
     steps: [
-      // 1. Clicar no botão "Solicitar"
-      { action: 'toast_message', selector: 'body', message: 'Carregando página inicial do 2º Distribuidor...' },
-      { action: 'wait_element', selector: 'input[value="Solicitar"]' },
-      { action: 'click', selector: 'input[value="Solicitar"]' },
+      // Etapa 1: Clicar na imagem específica do Solicitar
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 1/10: Clicando em Nova Certidão...' },
+      { action: 'wait_element', selector: 'img[src="/CJE/Areas/certidao/images/icoNovaCert.png"]' },
+      { action: 'click', selector: 'img[src="/CJE/Areas/certidao/images/icoNovaCert.png"]' },
       
-      // 2. Seleção de Comarca (igual ao anterior)
-      { action: 'toast_message', selector: 'body', message: 'Selecionando comarca do requerimento...' },
+      // Etapa 2: Selecionar comarca (igual ao certidao_fazendaria)
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 2/10: Selecionando comarca...' },
       { action: 'wait_element', selector: '.bordasModelos' },
       { action: 'select_by_city', selector: '.bordasModelos', value_from: 'imovel.city' },
       
-      // 3. Clicar no botão "Ações Cíveis"
-      { action: 'toast_message', selector: 'body', message: 'Comarca selecionada, procurando Ações Cíveis...' },
-      { action: 'wait_element', selector: '.bordasModelos' },
-      { action: 'select_by_text', selector: '.bordasModelos', value: 'Ações Cíveis' },
+      // Etapa 3: Após seleção da comarca, clicar no elemento Ações Cíveis
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 3/10: Acessando Ações Cíveis...' },
+      { action: 'wait_element', selector: '#myForm1' },
+      { action: 'click', selector: '#myForm1 .bordasModelos' },
       
-      // 4. Preencher Dados do Requerente (igual ao anterior)
-      { action: 'toast_message', selector: 'body', message: 'Aguardando formulário de dados do Requerente carregar...' },
+      // Etapa 4: Preencher campos do usuário logado em REQUERIMENTO DE CERTIDÃO ELETRÔNICA
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 4/10: Preenchendo dados do requerente...' },
       { action: 'wait_element', selector: '#nomerequerente' },
-      { action: 'toast_message', selector: 'body', message: 'Preenchendo dados do requerente...' },
-      
       { action: 'fill', selector: '#nomerequerente', value_from: 'usuario.fullName' },
       { action: 'fill', selector: '#cpfcnpj2', value_from: 'usuario.cpf' },
       { action: 'fill', selector: '#email', value_from: 'usuario.email' },
       { action: 'fill', selector: '#telefone', value_from: 'usuario.phone' },
       
-      { action: 'toast_message', selector: 'body', message: 'Dados do requerente preenchidos. Continuando...' },
+      // Etapa 5: Clicar no botão Continuar/Confirmar para submeter o formulário
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 5/10: Avançando para dados do proprietário...' },
       { action: 'click', selector: 'input[value="Continuar"]' },
       
-      // 5. Preencher Dados para Pesquisa (dados pessoais do vendedor)
-      { action: 'toast_message', selector: 'body', message: 'Aguardando formulário de Dados para Pesquisa carregar...' },
+      // Etapa 6: Preencher dados do proprietário em "Dados para pesquisa"
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 6/10: Preenchendo dados do proprietário...' },
       { action: 'wait_element', selector: '#nomerequerido' },
-      { action: 'toast_message', selector: 'body', message: 'Preenchendo dados pessoais do vendedor...' },
-      
       { action: 'fill', selector: '#nomerequerido', value_from: 'proprietario.fullName' },
       { action: 'fill', selector: '#cpfcnpj', value_from: 'proprietario.cpf' },
       { action: 'fill', selector: '#DN', value_from: 'proprietario.birthDate' },
       { action: 'fill', selector: '#txtMae', value_from: 'proprietario.motherName' },
       { action: 'fill', selector: '#txtPai', value_from: 'proprietario.fatherName' },
       
-      // 6. Verificar se há segundo proprietário e continuar
-      { action: 'toast_message', selector: 'body', message: 'Dados preenchidos. Verificando se há segundo proprietário...' },
-      { action: 'click', selector: 'input[type="button"][value="Continuar"][onclick="validar();"]' },
+      // Etapa 7: Clicar em Continuar após preencher dados do proprietário
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 7/10: Avançando para seleção de finalidade...' },
+      { action: 'click', selector: 'input[value="Continuar"]' },
       
-      // 7. Selecionar finalidade "Compra e Venda"
-      { action: 'toast_message', selector: 'body', message: 'Aguardando seleção de finalidade carregar...' },
-      { action: 'wait_element', selector: 'select option[value="176"]' },
-      { action: 'toast_message', selector: 'body', message: 'Selecionando finalidade: Compra e Venda...' },
-      { action: 'select', selector: 'select', value: '176' },
+      // Etapa 8: Selecionar finalidade "Compra e Venda" (value 176)
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 8/10: Selecionando finalidade "Compra e Venda"...' },s
+      { action: 'wait_element', selector: '#FinalidadeCombo' },
+      { action: 'select', selector: '#FinalidadeCombo', value: '176' },
       
-      // 8. Não preencher campo complementar de finalidade (conforme instruções)
-      { action: 'toast_message', selector: 'body', message: 'Finalidade selecionada. Campo complementar deixado em branco...' },
+      // Etapa 9: Clicar no botão Confirmar para avançar
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 9/10: Confirmando solicitação...' },
+      { action: 'wait_element', selector: 'button.btn.btn-primary[onclick="validar();"]' },
+      { action: 'click', selector: 'button.btn.btn-primary[onclick="validar();"]' },
       
-      // 9. Clicar em Continuar
-      { action: 'wait_element', selector: 'button[type="button"][onclick="validar();"]' },
-      { action: 'click', selector: 'button[type="button"][onclick="validar();"]' },
-      
-      // 10. CAPTCHA Modal
-      { action: 'toast_message', selector: 'body', message: 'Aguardando CAPTCHA aparecer...' },
+      // Etapa 10: Abrir popup modal para interação do usuário com CAPTCHA
+      { action: 'toast_message', selector: 'body', message: '🤖 Etapa 10/10: Aguardando resolução do CAPTCHA...' },
       { action: 'captcha_modal', selector: 'body', message: 'RESOLVA O CAPTCHA: Por favor, resolva o CAPTCHA que apareceu na tela e clique em "Continuar" quando terminar.' }
     ]
   }

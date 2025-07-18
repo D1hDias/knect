@@ -231,7 +231,11 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
             id: owner.id || crypto.randomUUID(),
             fullName: owner.fullName || '',
             cpf: owner.cpf || '',
-            birthDate: owner.birthDate || '',
+            birthDate: owner.birthDate ? 
+              // Converter de YYYY-MM-DD para DD/MM/YYYY se necessário
+              (owner.birthDate.includes('-') ? 
+                owner.birthDate.split('-').reverse().join('/') : 
+                owner.birthDate) : '',
             fatherName: owner.fatherName || '',
             motherName: owner.motherName || '',
             phone: owner.phone || '',
@@ -252,7 +256,13 @@ export function PropertyModal({ open, onOpenChange, property, onDocumentUpdate }
           }]
       });
 
-      setOwners(property.owners || [{
+      setOwners(property.owners ? property.owners.map(owner => ({
+        ...owner,
+        birthDate: owner.birthDate ? 
+          (owner.birthDate.includes('-') ? 
+            owner.birthDate.split('-').reverse().join('/') : 
+            owner.birthDate) : ''
+      })) : [{
         id: crypto.randomUUID(),
         fullName: '',
         cpf: '',

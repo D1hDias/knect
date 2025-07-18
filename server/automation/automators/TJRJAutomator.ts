@@ -67,7 +67,6 @@ export class TJRJAutomator extends CertidaoAutomator {
 
           case 'select_by_city':
             currentPage = 'Seleção de Comarca';
-            this.notificarStatus(`Navegando: ${currentPage}`);
             await this.selectComarcaByCity(step.selector, step.value_from);
             break;
 
@@ -75,24 +74,14 @@ export class TJRJAutomator extends CertidaoAutomator {
             // Detectar mudança de página baseada no texto
             if (step.value === 'Imóveis') {
               currentPage = 'Seleção de Tipo';
-              this.notificarStatus(`Navegando: ${currentPage}`);
             }
             await this.selectByText(step.selector, step.value);
             break;
             
           case 'toast_message':
-            // Detectar mudanças de página importantes
-            if (step.message && step.message.includes('formulário')) {
-              if (step.message.includes('Requerente')) {
-                currentPage = 'Dados do Requerente';
-                this.notificarStatus(`Navegando: ${currentPage}`);
-              } else if (step.message.includes('Pesquisa')) {
-                currentPage = 'Dados do Imóvel';
-                this.notificarStatus(`Navegando: ${currentPage}`);
-              } else if (step.message.includes('finalidade')) {
-                currentPage = 'Seleção de Finalidade';
-                this.notificarStatus(`Navegando: ${currentPage}`);
-              }
+            // Enviar mensagem do toast diretamente da configuração
+            if (step.message) {
+              this.notificarStatus(step.message);
             }
             break;
             
@@ -135,7 +124,7 @@ export class TJRJAutomator extends CertidaoAutomator {
       'Volta Redonda': 'Capital'
     };
 
-    const comarcaTarget = cityToComarca[city] || 'Capital';
+    const comarcaTarget = city ? (cityToComarca[city] || 'Capital') : 'Capital';
     
     // Procurar e clicar no link da comarca correspondente
     const comarcaClicked = await this.page.evaluate((target) => {
@@ -175,26 +164,113 @@ export class TJRJAutomator extends CertidaoAutomator {
   private async selectByText(selector: string, targetText?: string): Promise<void> {
     if (!targetText) return;
     
-    // Procurar e clicar no elemento que contém o texto especificado
-    const elementClicked = await this.page.evaluate((cssSelector, text) => {
-      const elements = Array.from(document.querySelectorAll(cssSelector));
-      
-      for (const element of elements) {
-        if (element.textContent && element.textContent.includes(text)) {
-          (element as HTMLElement).click();
-          return { success: true };
+    // Aguardar até que o elemento apareça na página
+    let elementFound = false;
+    let attempts = 0;
+    const maxAttempts = targetText === 'Solicitar' ? 30 : 20; // 30 segundos para Solicitar, 20 para outros
+    
+    this.notificarStatus(`Procurando elemento com texto "${targetText}"...`);
+    
+    while (!elementFound && attempts < maxAttempts) {
+      // Fazer debug apenas na primeira tentativa
+      if (attempts === 0) {
+        const pageInfo = await this.page.evaluate((cssSelector, text) => {
+          const allElements = Array.from(document.querySelectorAll(cssSelector));
+          const matchingElements = allElements.filter(element => 
+            element.textContent && element.textContent.toLowerCase().includes(text.toLowerCase())
+          );
+          
+          // Listar todos os elementos disponíveis para debug
+          const allTexts = allElements.map(element => element.textContent?.trim()).filter(text => text && text.length > 0);
+          
+          return {
+            totalElements: allElements.length,
+            matchingElements: matchingElements.length,
+            availableTexts: allTexts.slice(0, 15) // Mostrar os primeiros 15 para debug
+          };
+        }, selector, targetText);
+        
+        this.notificarStatus(`Debug: ${pageInfo.totalElements} elementos encontrados, ${pageInfo.matchingElements} com texto "${targetText}"`);
+        
+        if (pageInfo.availableTexts.length > 0) {
+          this.notificarStatus(`Textos disponíveis: ${pageInfo.availableTexts.join(', ')}`);
         }
       }
       
-      return { success: false };
-    }, selector, targetText);
+      const elementClicked = await this.page.evaluate((cssSelector, text) => {
+        const elements = Array.from(document.querySelectorAll(cssSelector));
+        
+        for (const element of elements) {
+          const elementText = element.textContent?.trim() || '';
+          
+          // Múltiplas formas de verificar o texto
+          const textMatches = 
+            elementText.toLowerCase().includes(text.toLowerCase()) ||
+            elementText.toLowerCase() === text.toLowerCase() ||
+            (text === 'Solicitar' && (elementText.includes('Solicitar') || elementText.includes('SOLICITAR')));
+          
+          if (textMatches) {
+            // Verificar se o elemento está visível e clicável
+            const rect = element.getBoundingClientRect();
+            const isVisible = rect.width > 0 && rect.height > 0;
+            
+            if (isVisible) {
+              try {
+                (element as HTMLElement).click();
+                return { success: true, found: true, text: element.textContent };
+              } catch (error) {
+                return { success: false, found: true, error: 'Não clicável', text: element.textContent };
+              }
+            } else {
+              // Tentar fazer scroll para o elemento e torná-lo visível
+              element.scrollIntoView({ behavior: 'auto', block: 'center' });
+              
+              // Verificar novamente após o scroll
+              const newRect = element.getBoundingClientRect();
+              const nowVisible = newRect.width > 0 && newRect.height > 0;
+              
+              if (nowVisible) {
+                try {
+                  (element as HTMLElement).click();
+                  return { success: true, found: true, text: element.textContent };
+                } catch (error) {
+                  return { success: false, found: true, error: 'Não clicável após scroll', text: element.textContent };
+                }
+              }
+              
+              return { success: false, found: true, error: 'Não visível após scroll', text: element.textContent };
+            }
+          }
+        }
+        
+        return { success: false, found: false };
+      }, selector, targetText);
 
-    if (!elementClicked.success) {
-      throw new Error(`Elemento com texto "${targetText}" não encontrado`);
+      if (elementClicked.success) {
+        elementFound = true;
+        this.notificarStatus(`Clicado com sucesso em: "${elementClicked.text}"`);
+        // Aguardar possível navegação
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        return;
+      } else if (elementClicked.found && elementClicked.error === 'Não visível após scroll') {
+        // Se o elemento não ficou visível após scroll, aguardar mais um pouco
+        this.notificarStatus(`Aguardando página carregar completamente...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        attempts++;
+        continue;
+      } else if (elementClicked.found && !elementClicked.success) {
+        // Elemento encontrado mas não clicável, aguardar um pouco mais
+        this.notificarStatus(`Elemento encontrado mas ${elementClicked.error}: "${elementClicked.text}"`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
+      } else {
+        // Elemento não encontrado, aguardar aparecer
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
+      }
     }
-    
-    // Aguardar possível navegação
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    throw new Error(`Elemento com texto "${targetText}" não encontrado ou não clicável após ${maxAttempts} tentativas`);
   }
 
   private async handleCaptchaModal(message: string): Promise<void> {
@@ -291,7 +367,7 @@ export class TJRJAutomator extends CertidaoAutomator {
       while (!captchaResolved && attempts < maxAttempts) {
         // Verificar se o hCaptcha foi resolvido na página original
         const isResolved = await this.page.evaluate(() => {
-          const hcaptchaResponse = document.querySelector('textarea[name="h-captcha-response"]');
+          const hcaptchaResponse = document.querySelector('textarea[name="h-captcha-response"]') as HTMLTextAreaElement;
           if (hcaptchaResponse && hcaptchaResponse.value && hcaptchaResponse.value.length > 0) {
             return true;
           }
@@ -309,7 +385,7 @@ export class TJRJAutomator extends CertidaoAutomator {
         
         // Também verificar na janela visível
         const isResolvedVisible = await visiblePage.evaluate(() => {
-          const hcaptchaResponse = document.querySelector('textarea[name="h-captcha-response"]');
+          const hcaptchaResponse = document.querySelector('textarea[name="h-captcha-response"]') as HTMLTextAreaElement;
           if (hcaptchaResponse && hcaptchaResponse.value && hcaptchaResponse.value.length > 0) {
             return true;
           }
@@ -333,13 +409,13 @@ export class TJRJAutomator extends CertidaoAutomator {
           if (isResolvedVisible && !isResolved) {
             try {
               const captchaValue = await visiblePage.evaluate(() => {
-                const textarea = document.querySelector('textarea[name="h-captcha-response"]');
+                const textarea = document.querySelector('textarea[name="h-captcha-response"]') as HTMLTextAreaElement;
                 return textarea ? textarea.value : '';
               });
               
               if (captchaValue) {
                 await this.page.evaluate((value) => {
-                  const textarea = document.querySelector('textarea[name="h-captcha-response"]');
+                  const textarea = document.querySelector('textarea[name="h-captcha-response"]') as HTMLTextAreaElement;
                   if (textarea) {
                     textarea.value = value;
                   }
@@ -394,6 +470,17 @@ export class TJRJAutomator extends CertidaoAutomator {
       }
     }
     
-    return typeof value === 'string' ? value : String(value);
+    let finalValue = typeof value === 'string' ? value : String(value);
+    
+    // Converter data de nascimento de formato ISO para brasileiro
+    if (valuePath === 'proprietario.birthDate' && finalValue && finalValue.includes('-')) {
+      // Converte YYYY-MM-DD para DD/MM/YYYY
+      const dateParts = finalValue.split('-');
+      if (dateParts.length === 3) {
+        finalValue = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+      }
+    }
+    
+    return finalValue;
   }
 }
