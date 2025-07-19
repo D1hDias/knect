@@ -165,7 +165,7 @@ export const CERTIDAO_CONFIGS: Record<string, CertidaoConfig> = {
       { action: 'click', selector: 'input[value="Continuar"]' },
       
       // Etapa 8: Selecionar finalidade "Compra e Venda" (value 176)
-      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 8/10: Selecionando finalidade "Compra e Venda"...' },s
+      { action: 'toast_message', selector: 'body', message: '🔄 Etapa 8/10: Selecionando finalidade "Compra e Venda"...' },
       { action: 'wait_element', selector: '#FinalidadeCombo' },
       { action: 'select', selector: '#FinalidadeCombo', value: '176' },
       
