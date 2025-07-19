@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import logoImg from "@/assets/logo.jpeg";
 import {
   Home,
   Building2,
@@ -107,7 +108,7 @@ export default function Layout({ children }: LayoutProps) {
                 <Menu className="h-5 w-5" />
               </Button>
               <img 
-                src="/src/assets/logo.jpeg" 
+                src={logoImg} 
                 alt="KNECT" 
                 className="w-[120px] h-auto"
               />

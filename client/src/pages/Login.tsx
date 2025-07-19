@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Eye, EyeOff } from "lucide-react";
+import logoImg from "@/assets/logo.jpeg";
+import wallpaperImg from "@/assets/wallpaper-azul-papel-de-parede-azul-fundo-13.jpg";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -64,7 +66,7 @@ export default function Login() {
     <div 
       className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat relative"
       style={{
-        backgroundImage: `url('/src/assets/wallpaper-azul-papel-de-parede-azul-fundo-13.jpg')`
+        backgroundImage: `url('${wallpaperImg}')`
       }}
     >
       {/* Overlay para melhorar legibilidade */}
@@ -76,7 +78,7 @@ export default function Login() {
           <CardHeader className="space-y-1 text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
-                src="/src/assets/logo.jpeg" 
+                src={logoImg} 
                 alt="KNECT" 
                 className="w-[120px] h-auto"
               />
