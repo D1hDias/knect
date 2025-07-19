@@ -2,11 +2,26 @@ import type { Express } from "express";
 import session from "express-session";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
+import { db } from "./db";
+import { Pool } from "pg";
 
 // Configuração da sessão
 export function setupAuth(app: Express) {
+  const ConnectPgSimple = require('connect-pg-simple')(session);
+  
+  // Pool de conexão PostgreSQL para sessões
+  const pgPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  });
+
   app.use(
     session({
+      store: new ConnectPgSimple({
+        pool: pgPool,
+        tableName: 'user_sessions',
+        createTableIfMissing: true,
+      }),
       secret: process.env.SESSION_SECRET || "default-secret-key",
       resave: false,
       saveUninitialized: false,
