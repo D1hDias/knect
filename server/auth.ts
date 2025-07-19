@@ -23,6 +23,11 @@ export function setupAuth(app: Express) {
 
 // Middleware de autenticação
 export function isAuthenticated(req: any, res: any, next: any) {
+  console.log("Verificando autenticação:");
+  console.log("Session exists:", !!req.session);
+  console.log("Session user:", req.session?.user);
+  console.log("Session ID:", req.sessionID);
+  
   if (req.session && req.session.user) {
     return next();
   }
@@ -94,6 +99,9 @@ export function setupAuthRoutes(app: Express) {
         lastName: user.lastName,
         creci: user.creci,
       };
+
+      console.log("Sessão criada:", req.session.user);
+      console.log("Session ID:", req.sessionID);
 
       // Remover senha da resposta
       const { password: _, ...userWithoutPassword } = user;
